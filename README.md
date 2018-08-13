@@ -6,6 +6,7 @@ Talapoin uses:
 - [Slim][slim]: a micro framework for PHP
 - [Twig][twig]: The flexible, fast, and secure template engine for PHP
 - [Monolog][monolog]: Logging for PHP
+- [SHJS][shjs]: Syntax Highlighting in JavaScript
 
 You can find information about the talapoin, a small, yellow Central African
 monkey, here:
@@ -21,3 +22,4 @@ https://trainedmonkey.com/projects/talapoin/
 [slim]: https://www.slimframework.com
 [twig]: https://twig.symfony.com/
 [monolog]: https://seldaek.github.io/monolog/
+[shjs]: http://shjs.sourceforge.net

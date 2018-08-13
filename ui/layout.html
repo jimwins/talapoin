@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/1">
+  <title>
+    {% block title %}trainedmonkey{% endblock %}
+    {% if not block('title') matches '/trainedmonkey/' %}
+      @ trainedmonkey
+    {% endif %}
+  </title>
+  <link rel="shortcut icon" href="/common/fav.ico" />
+  <link rel="stylesheet" type="text/css" media="screen"
+        href="{% block style %}/common/screen.css{% endblock %}" />
+  <link rel="stylesheet" type="text/css" media="screen"
+        href="/common/sh_style.css" />
+  {% block extra_head %}{% endblock %}
+  <script type="text/javascript" src="/common/sh_main.min.js"></script>
+  <script type="text/javascript" src="/common/sh_sql.min.js"></script>
+</head>
+
+<body onload="sh_highlightDocument();">
+
+<ul class="hide">
+  <li><a href="#sidebar">skip to sidebar</a></li>
+  <li><a href="#search">skip to search box</a></li>
+</ul>
+
+<div id="content">
+{% block content %}{% endblock %}
+</div>
+
+<div id="sidebar">
+  {% block sidebar %}
+    <ul id="navigation">
+      <li><a rel="home" href="/">home</a></li>
+      <li><a rel="about" href="/about/">about</a></li>
+      <li><a rel="toc" href="/archive/">archive</a></li>
+      <li><a href="/projects/">projects</a></li>
+      <li><a href="http://www.flickr.com/photos/jimwinstead/">photos</a></li>
+      <li><a href="http://www.5thandspring.com/">celia</a></li>
+      <li><a href="http://213dog.blogspot.com/">wonton</a></li>
+      <li><a href="http://rawmaterialsLA.com/">raw materials</a></li>
+    </ul>
+
+    <form id="search" method="get" action="/">
+      <fieldset>
+        <legend>search</legend>
+        <input type="search" accesskey="4" id="livesearch" name="q"
+               value="" size="10"
+               style="width:100%"
+               placeholder="search"
+               autosave="tm_search"
+               results="10">
+      </fieldset>
+    </form>
+  {% endblock %}
+</div>
+
+<ul id="links">
+  <li><a rel="copyright" href="//creativecommons.org/licenses/publicdomain"><img src="/common/norights.png" width="88" height="31" alt="dedicated to the public domain" /></a></li>
+</ul>
+</body>
+</html>
+<!--
+<rdf:RDF xmlns="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <Work rdf:about="">
+  <license rdf:resource="http://web.resource.org/cc/PublicDomain" />
+ </Work>
+ <License rdf:about="http://web.resource.org/cc/PublicDomain">
+  <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+  <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+  <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+ </License>
+</rdf:RDF>
+-->

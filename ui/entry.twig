@@ -1,0 +1,44 @@
+{% macro permalink(e) %}
+  {{- e.entered | date('/Y/n/j/') }}{{ e.title ? e.title | slug : e.id -}}
+{% endmacro %}
+
+{% macro date_format(dt) %}
+  {% if dt | date('Y') == "now" | date('Y') %}
+    {{ dt | date('F j (l) g:ia') | lower }}
+  {% else %}
+    {{ dt | date('F j, Y g:ia') | lower }}
+  {% endif %}
+{% endmacro %}
+
+{% import _self as blog %}
+<div id="n {{ entry.id }} {% for tag in entry.tags %}{{ tag }} {% endfor %}">
+  {% if entry.title %}
+    <h3>{{ entry.title }}</h3>
+  {% endif %}
+  <p>
+    {{ entry.entry | paragraphs | expand_psuedo_urls | prettify_markup | raw }}
+  </p>
+  <div class="details">
+    &raquo; 
+    <a class="permalink"
+       href="{{ blog.permalink(entry) }}">
+      {{- blog.date_format(entry.entered) -}}
+    </a>
+    {% if entry.tags %}
+      &raquo;
+      {% for tag in entry.tags %}
+        <a href="{{ path_for('tag', { 'tag' : tag }) }}"
+           >{{ tag }}</a>{{ not loop.last ? ', ' }}
+      {% endfor %}
+    {% endif %}
+    &raquo;
+    <a href="{{ blog.permalink(entry) }}">
+      {% if entry.article %}more, {% endif %}
+      {% if not entry.comments %}
+        comment
+      {% else %}
+        {{ entry.comments }} comment{{ entry.comment > 1 ? 's' }}, add yours
+      {% endif %}
+    </a>
+  </div>
+</div>

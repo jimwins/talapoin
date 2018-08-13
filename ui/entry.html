@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+{% import 'entry.twig' as blog %}
+
+{% block title %}
+  {{- entry.title -}}
+  {{- entry.title ? ' / ' -}}
+  {{- entry.entered | date('F j, Y g:ia') -}}
+{% endblock %}
+
+{% block content %}
+  {% include 'entry.twig' %}
+
+  {% if previous.id or next.id %}
+    <div class="prevnext" style="text-align: center; border: none">
+      {% if previous.id %}
+        <a href="{{ blog.permalink(previous) }}">&laquo; {{ previous.title ? previous.title : blog.date_format(previous.entered) }}</a>
+      {% endif %}
+      {% if previous.id and next.id %}
+        &bull;
+      {% endif %}
+      {% if next.id %}
+        <a href="{{ blog.permalink(next) }}">{{ next.title ? next.title : blog.date_format(next.entered) }} &raquo;</a>
+      {% endif %}
+      <br clear="both">
+    </div>
+  {% endif %}
+
+  {% if entry.comments %}
+    <h2>comments</h2>
+
+    {% for comment in comments %}
+      <div class="comment" id="c{{ comment.id }}">
+        <p>{{ comment.comment | paragraphs | expand_psuedo_urls | prettify_markup | raw }}</p>
+        <div class="details">
+          &raquo;
+          {# XXX expose email to admin #}
+          {{ comment.name | escape }}
+          {% if comment.url %}
+            <a rel="nofollow" href="{% if not comment.url matches '/^https?:/' %}http://{% endif %}{{ comment.url }}">(link)</a>
+          {% endif %}
+          &raquo;
+          {# XXX admin link for delete #}
+          {{ blog.date_format(comment.entered) }}
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+{% endblock %}
