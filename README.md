@@ -16,7 +16,7 @@ http://www.factzoo.com/mammals/talapoin-small-yellow-central-african-monkey.html
 See the LICENSE file for licensing information. Please note that this license
 may be more permissive than some of the supporting libraries used.
 
-[Jim Winstead](mailto:jimw@trainedmonkey.com), August 2018
+[Jim Winstead](mailto:jimw@trainedmonkey.com), August 2018  
 https://trainedmonkey.com/projects/talapoin/
 
 [slim]: https://www.slimframework.com
