@@ -1,0 +1,8 @@
+#!/bin/sh
+mysqldump --routines --no-data \
+          talapoin | \
+  sed -e '1,2d' | \
+  sed -e 's/Host: .*Data/Data/' | \
+  sed -e 's/\(Dump completed \).*/\1/' | \
+  sed -e 's/ AUTO_INCREMENT=[0-9]*//' \
+  > talapoin.sql
