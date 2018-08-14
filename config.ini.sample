@@ -1,8 +1,9 @@
+; Top-level options for Slim
 displayErrorDetails= true
 addContentLengthHeader= false
 
 [db]
-host= db
-user= scat
-pass= scat
-dbname= talapoin;
+host= localhost
+user= username
+pass= psssword
+dbname= talapoin
