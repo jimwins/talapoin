@@ -1,0 +1,8 @@
+displayErrorDetails= true
+addContentLengthHeader= false
+
+[db]
+host= db
+user= scat
+pass= scat
+dbname= talapoin;

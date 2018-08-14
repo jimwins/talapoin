@@ -1,4 +1,4 @@
-# talapoin
+# [talapoin](https://trainedmonkey.com/projects/talapoin/)
 A small blogging/CMS system, used on trainedmonkey.com
 
 Talapoin uses:
