@@ -3,6 +3,7 @@
     "slim/slim": "^3.0",
     "twig/twig": "^2.0",
     "monolog/monolog": "^1.23",
-    "slim/twig-view": "^2.4"
+    "slim/twig-view": "^2.4",
+    "robmorgan/phinx": "^0.10.6"
   }
 }
