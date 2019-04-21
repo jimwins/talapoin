@@ -86,16 +86,16 @@ $id=    $args['slug'];
 if (is_numeric($id)) {
   $where= "id = $id";
 } else {
-  $where= "(DATE(entered) = '$year-$month-$day'
-            OR DATE(entered) = ('$year-$month-$day' + INTERVAL 1 DAY))
+  $where= "(DATE(created_at) = '$year-$month-$day'
+            OR DATE(created_at) = ('$year-$month-$day' + INTERVAL 1 DAY))
            AND title LIKE '" . addslashes($id) . "'";
 }
 
 $entry= get_entry($this->db, $where);
 
 /* Get next/previous */
-$previous= get_entry($this->db, "entered < '{$entry['entered']}'", "DESC");
-$next= get_entry($this->db, "entered > '{$entry['entered']}'", "ASC");
+$previous= get_entry($this->db, "created_at < '{$entry['created_at']}'", "DESC");
+$next= get_entry($this->db, "created_at > '{$entry['created_at']}'", "ASC");
 
 /* Get comments */
 $comments= [];
@@ -103,10 +103,10 @@ if ($entry['comments']) {
   $query=
   " SELECT id, name, email, url, title, comment,
          INET_NTOA(ip) AS ip,
-         UNIX_TIMESTAMP(entered) AS entered
+         UNIX_TIMESTAMP(created_at) AS created_at
     FROM comment
    WHERE entry_id = ? AND NOT tb
-   ORDER BY entered ASC
+   ORDER BY created_at ASC
   ";
 
   $sth= $this->db->prepare($query);
@@ -130,7 +130,7 @@ $order= "DESC";
 $limit= "LIMIT 12";
 
 $query=
-" SELECT id, title, entry, closed, entered, modified, article,
+" SELECT id, title, entry, closed, created_at, updated_at, article,
          (SELECT JSON_ARRAYAGG(name)
             FROM entry_to_tag, tag
            WHERE entry_id = entry.id AND tag_id = tag.id) AS tags,
@@ -139,7 +139,7 @@ $query=
            WHERE entry_id = entry.id AND NOT tb) AS comments
     FROM entry
    WHERE NOT draft $where
-   ORDER BY entered $order
+   ORDER BY created_at $order
    $limit
 ";
 
@@ -173,7 +173,7 @@ $app->run();
 
 function get_entry($db, $where, $order= 'ASC') {
   $query=
-  " SELECT id, title, entry, closed, entered, modified, article,
+  " SELECT id, title, entry, closed, created_at, updated_at, article,
            (SELECT JSON_ARRAYAGG(name)
               FROM entry_to_tag, tag
              WHERE entry_id = entry.id AND tag_id = tag.id) AS tags,

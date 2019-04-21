@@ -1,5 +1,5 @@
 {% macro permalink(e) %}
-  {{- e.entered | date('/Y/n/j/') }}{{ e.title ? e.title | slug : e.id -}}
+  {{- e.created_at | date('/Y/n/j/') }}{{ e.title ? e.title | slug : e.id -}}
 {% endmacro %}
 
 {% macro date_format(dt) %}
@@ -22,7 +22,7 @@
     &raquo; 
     <a class="permalink"
        href="{{ blog.permalink(entry) }}">
-      {{- blog.date_format(entry.entered) -}}
+      {{- blog.date_format(entry.created_at) -}}
     </a>
     {% if entry.tags %}
       &raquo;

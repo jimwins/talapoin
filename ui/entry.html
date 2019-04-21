@@ -4,7 +4,7 @@
 {% block title %}
   {{- entry.title -}}
   {{- entry.title ? ' / ' -}}
-  {{- entry.entered | date('F j, Y g:ia') -}}
+  {{- entry.created_at | date('F j, Y g:ia') -}}
 {% endblock %}
 
 {% block content %}
@@ -13,13 +13,13 @@
   {% if previous.id or next.id %}
     <div class="prevnext" style="text-align: center; border: none">
       {% if previous.id %}
-        <a href="{{ blog.permalink(previous) }}">&laquo; {{ previous.title ? previous.title : blog.date_format(previous.entered) }}</a>
+        <a href="{{ blog.permalink(previous) }}">&laquo; {{ previous.title ? previous.title : blog.date_format(previous.created_at) }}</a>
       {% endif %}
       {% if previous.id and next.id %}
         &bull;
       {% endif %}
       {% if next.id %}
-        <a href="{{ blog.permalink(next) }}">{{ next.title ? next.title : blog.date_format(next.entered) }} &raquo;</a>
+        <a href="{{ blog.permalink(next) }}">{{ next.title ? next.title : blog.date_format(next.created_at) }} &raquo;</a>
       {% endif %}
       <br clear="both">
     </div>
@@ -40,7 +40,7 @@
           {% endif %}
           &raquo;
           {# XXX admin link for delete #}
-          {{ blog.date_format(comment.entered) }}
+          {{ blog.date_format(comment.created_at) }}
         </div>
       </div>
     {% endfor %}
