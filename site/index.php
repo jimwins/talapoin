@@ -155,6 +155,31 @@ return $this->view->render($res, 'index.html', [ 'entries' => $entries ]);
 
           })->setName('entry');
 
+$app->get('/archive/', function (Request $req, Response $res, array $args) {
+  $query= "SELECT AVG(total)
+           FROM (SELECT COUNT(*) AS total
+                   FROM entry_to_tag
+                  GROUP BY tag_id) avg";
+  $avg= $this->db->query($query)->fetchColumn();
+
+  $query= "SELECT name, COUNT(*) AS total
+             FROM tag
+             JOIN entry_to_tag ON (id = tag_id)
+            GROUP BY id
+            ORDER BY name";
+  $tags= $this->db->query($query);
+
+  $query= "SELECT DISTINCT YEAR(created_at) AS year
+             FROM entry
+            ORDER BY year DESC";
+  $years= $this->db->query($query);
+
+  return $this->view->render($res, 'archive.html', [
+    'avg' => $avg,
+    'tags' => $tags,
+    'years' => $years,
+  ]);
+})->setName('archive');
 
 $app->get('/tag/{tag}',
           function (Request $req, Response $res, array $args) {
