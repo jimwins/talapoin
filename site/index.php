@@ -169,6 +169,17 @@ $app->get('/hello/{name}', function (Request $request, Response $response, array
     return $response;
 });
 
+$app->get('[/{slug:.*}]', function (Request $req, Response $res, array $args) {
+  $slug= preg_replace('!/$!', '', $args['slug']); # trim trailing /
+  $query= "SELECT * FROM page WHERE slug = ?";
+  $stmt= $this->db->prepare($query);
+  if ($stmt->execute([$slug]) && $stmt->rowCount()) {
+    $page= $stmt->fetch(\PDO::FETCH_ASSOC);
+    return $this->view->render($res, 'page.html', [ 'page' => $page ]);
+  }
+  throw new \Slim\Exception\NotFoundException($req, $res);
+});
+
 $app->run();
 
 function get_entry($db, $where, $order= 'ASC') {

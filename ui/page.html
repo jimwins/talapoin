@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  {{- page.title -}}
+{% endblock %}
+
+{% block content %}
+  {{- page.content | raw -}}
+{% endblock %}
