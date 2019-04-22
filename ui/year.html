@@ -65,9 +65,11 @@ table.calendar a:hover {
         </tr>
         <tr>
           {% set fdow= first|date('w') %}
-          {% for x in 1..fdow %}
-            <td>&nbsp;</td>
-          {% endfor %}
+          {% if fdow %}
+            {% for x in 1..fdow %}
+              <td>&nbsp;</td>
+            {% endfor %}
+          {% endif %}
           {% for d in 1..(first|date('t')) %}
             <td>
               {% set t= "%4d%02d%02d"|format(year, month, d) %}
