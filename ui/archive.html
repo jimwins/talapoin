@@ -27,7 +27,8 @@
   tags @ trainedmonkey
 {% endblock %}
 
-{% block extra_sidebar %}
+{% block sidebar %}
+  {{ parent() }}
   <ul>
     <li>
       {% for year in years %}

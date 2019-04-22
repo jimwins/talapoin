@@ -30,7 +30,8 @@ table.calendar a:hover {
   {{ (year ~ '-' ~ month ~ '-1')|date("F Y")|lower }} archives @ trainedmonkey
 {% endblock %}
 
-{% block extra_sidebar %}
+{% block sidebar %}
+  {{ parent() }}
   <ul>
     <li><a href="/{{ year }}">{{ year }}</a></li>
     <li>

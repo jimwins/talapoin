@@ -38,7 +38,8 @@ table.calendar a:hover {
   {{ year }} archives @ trainedmonkey
 {% endblock %}
 
-{% block extra_sidebar %}
+{% block sidebar %}
+  {{ parent() }}
   <ul>
     <li>
       {% for yr in years %}
