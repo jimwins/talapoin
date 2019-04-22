@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+
+{% block extra_head %}
+<style type="text/css">
+table.calendar {
+  text-align: center;
+  width: 100%;
+}
+table.calendar th {
+  width: 12%;
+  font-size: smaller;
+  font-weight: normal;
+  color: #333;
+  color: rgba(0,0,0,0.8);
+}
+table.calendar a {
+  display: block;
+  background: #aaa;
+  color: inherit;
+  text-decoration: none;
+}
+table.calendar a:hover {
+  background: #999;
+  color: inherit;
+}
+</style>
+{% endblock %}
+
+{% block title %}
+  {{ (year ~ '-' ~ month ~ '-1')|date("F Y")|lower }} archives @ trainedmonkey
+{% endblock %}
+
+{% block extra_sidebar %}
+  <ul>
+    <li><a href="/{{ year }}">{{ year }}</a></li>
+    <li>
+      {% for m in months %}
+        {% if month != m.ym|date('m') %}
+          <a href="/{{ m.ym|date('Y/n') }}/">{{ m.ym|date('F')|lower }}</a>
+        {% endif %}
+      {% endfor %}
+    </li>
+  </ul>
+{% endblock %}
+
+{% block content %}
+  <h1>
+    {{ (year ~ '-' ~ month ~ '-1')|date("F Y")|lower }} archives
+  </h1>
+  {% set i= 0 %}
+  {% set first= entries[i].created_at %}
+  <table class="calendar"
+         summary="links to days with posts from {{ first|date('F') }}">
+    <tr>
+      <th>sun</th><th>mon</th><th>tue</th><th>wed</th><th>thu</th><th>fri</th><th>sat</th>
+    </tr>
+    <tr>
+      {% set fdow= first|date('w') %}
+      {% if fdow %}
+        {% for x in 1..fdow %}
+          <td>&nbsp;</td>
+        {% endfor %}
+      {% endif %}
+      {% for d in 1..(first|date('t')) %}
+        <td>
+          {% set t= "%4d%02d%02d"|format(year, month, d) %}
+          {% if i < entries|length and
+                entries[i].created_at|date('Ymd') == t %}
+            <a href="{{ entries[i].created_at|date('/Y/n/j/') }}">{{ d }}</a>
+            {% set i = i + 1 %}
+          {% else %}
+            {{ d }}
+          {% endif %}
+        </td>
+        {% if ((d + fdow) % 7) == 0 %}
+          </tr><tr>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+
+  {# previous and last month links #}
+  <div style="text-align: center">
+    {% if prev %}
+      <a href="{{ prev.created_at | date('/Y/n') }}">
+        &laquo; {{ prev.created_at | date('F Y') | lower }}
+      </a>
+    {% endif %}
+    {% if next and prev %}
+      &bull;
+    {% endif %}
+    {% if next %}
+      <a href="{{ next.created_at | date('/Y/n') }}">
+        {{ next.created_at | date('F Y') | lower }} &raquo;
+      </a>
+    {% endif %}
+  </div>
+
+{% endblock %}

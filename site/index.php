@@ -75,7 +75,7 @@ $filter= new Twig_SimpleFilter('slug', function ($text) {
 $container->get('view')->getEnvironment()->addFilter($filter);
 
 /* A single entry */
-$app->get('/{year:[0-9]+}[/{month:[0-9]+}[/{day:[0-9]+}[/{slug}]]]',
+$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{slug}',
           function (Request $req, Response $res, array $args) {
 
 $year=  (int)$args['year'];
@@ -152,6 +152,56 @@ QUERY;
     'years' => $years,
   ]);
 })->setName('year');
+
+$app->get('/{year:[0-9]+}/{month:[0-9]+}',
+          function (Request $req, Response $res, array $args) {
+  $year= $args['year'];
+  $month= $args['month'];
+
+  $query= "SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m-01') AS ym
+             FROM entry
+            WHERE created_at BETWEEN '$year-1-1' AND '$year-12-31'";
+  $months= $this->db->query($query);
+
+  $query= <<<QUERY
+    SELECT MIN(created_at) AS created_at,
+           DAYOFMONTH(MIN(created_at)) AS day,
+           MONTH(MIN(created_at)) AS month,
+           YEAR(MIN(created_at)) AS year,
+           TO_DAYS(created_at) AS ymd
+      FROM entry
+     WHERE created_at BETWEEN '$year-$month-1'
+                          AND '$year-$month-1' + INTERVAL 1 MONTH
+     GROUP BY ymd
+     ORDER BY month ASC, day ASC
+QUERY;
+
+  $entries= $this->db->query($query)->fetchALl();
+
+  $query= <<<QUERY
+    SELECT created_at FROM entry
+     WHERE created_at < '$year-$month-1'
+     ORDER BY created_at DESC LIMIT 1
+QUERY;
+  $prev= $this->db->query($query)->fetch();
+
+  $query= <<<QUERY
+    SELECT created_at FROM entry
+     WHERE created_at >= '$year-$month-1' + INTERVAL 1 MONTH
+     ORDER BY created_at ASC LIMIT 1
+QUERY;
+  $next= $this->db->query($query)->fetch();
+
+  return $this->view->render($res, 'month.html', [
+  'query' => $query,
+    'year' => $year,
+    'month' => $month,
+    'entries' => $entries,
+    'months' => $months,
+    'next' => $next,
+    'prev' => $prev,
+  ]);
+})->setName('month');
 
 $app->get('/', function (Request $req, Response $res, array $args) {
   $entries= get_entries($this->db, '', 'DESC', 'LIMIT 12');
