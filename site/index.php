@@ -181,6 +181,7 @@ QUERY;
   $query= <<<QUERY
     SELECT created_at FROM entry
      WHERE created_at < '$year-$month-1'
+       AND NOT draft
      ORDER BY created_at DESC LIMIT 1
 QUERY;
   $prev= $this->db->query($query)->fetch();
@@ -188,6 +189,7 @@ QUERY;
   $query= <<<QUERY
     SELECT created_at FROM entry
      WHERE created_at >= '$year-$month-1' + INTERVAL 1 MONTH
+       AND NOT draft
      ORDER BY created_at ASC LIMIT 1
 QUERY;
   $next= $this->db->query($query)->fetch();
