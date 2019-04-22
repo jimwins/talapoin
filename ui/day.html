@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  {{ ymd | date('F, j, Y') | lower }} archives
+    @ trainedmonkey
+{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+ #pix a img {
+  border: 2px solid #999;
+  border: 2px solid rgba(0,0,0,0.2);
+ }
+ #pix a:hover img {
+  border: 2px solid #ddd;
+  border: 2px solid rgba(0,0,0,0.4);
+ }
+ #pix a, #pix a:hover {
+  background: none;
+  border: none;
+ }
+</style>
+{% endblock %}
+
+{% block content %}
+  <h1>
+    {{ ymd | date('F, j, Y') | lower }} archives
+  </h1>
+
+  {% include 'entries.twig' %}
+
+  {# previous and next day links #}
+  <div style="text-align: center; border: none">
+    {% if prev %}
+      <a href="{{ prev.created_at | date('/Y/n/j') }}">
+        &laquo; {{ prev.created_at | date('l, F j, Y') | lower }}
+      </a>
+    {% endif %}
+    {% if next and prev %}
+      &bull;
+    {% endif %}
+    {% if next %}
+      <a href="{{ next.created_at | date('/Y/n/j') }}">
+        {{ next.created_at | date('l, F j, Y') | lower }} &raquo;
+      </a>
+    {% endif %}
+  </div>
+{% endblock %}

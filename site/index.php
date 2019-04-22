@@ -205,6 +205,41 @@ QUERY;
   ]);
 })->setName('month');
 
+$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
+          function (Request $req, Response $res, array $args) {
+  $year= $args['year'];
+  $month= $args['month'];
+  $day= $args['day'];
+
+  $where= "AND created_at BETWEEN '$year-$month-$day' AND
+                                  '$year-$month-$day' + INTERVAL 1 DAY";
+  $entries= get_entries($this->db, $where, 'ASC', '');
+
+  $query= <<<QUERY
+    SELECT created_at FROM entry
+     WHERE created_at < '$year-$month-$day'
+       AND NOT draft
+     ORDER BY created_at DESC LIMIT 1
+QUERY;
+  $prev= $this->db->query($query)->fetch();
+
+  $query= <<<QUERY
+    SELECT created_at FROM entry
+     WHERE created_at >= '$year-$month-$day' + INTERVAL 1 DAY
+       AND NOT draft
+     ORDER BY created_at ASC LIMIT 1
+QUERY;
+  $next= $this->db->query($query)->fetch();
+
+  return $this->view->render($res, 'day.html', [
+  'query' => $query,
+    'ymd' => "$year-$month-$day",
+    'entries' => $entries,
+    'next' => $next,
+    'prev' => $prev,
+  ]);
+})->setName('day');
+
 $app->get('/', function (Request $req, Response $res, array $args) {
   $entries= get_entries($this->db, '', 'DESC', 'LIMIT 12');
   return $this->view->render($res, 'index.html', [ 'entries' => $entries ]);
