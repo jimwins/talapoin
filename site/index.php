@@ -295,6 +295,12 @@ $app->get('/hello/{name}', function (Request $request, Response $response, array
     return $response;
 });
 
+$app->get('/scratch[/{path:.*}]',
+          function (Request $req, Response $res, array $args) {
+  $static= $this->settings['static'];
+  return $res->withRedirect($static . '/' . $args['path']);
+});
+
 $app->get('[/{slug:.*}]', function (Request $req, Response $res, array $args) {
   $slug= preg_replace('!/$!', '', $args['slug']); # trim trailing /
   $query= "SELECT * FROM page WHERE slug = ?";
