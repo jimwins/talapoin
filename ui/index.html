@@ -1,7 +1,15 @@
 {% extends 'layout.html' %}
 
+{% if tag %}
+  {% set title = "with '" ~ tag ~ "' tag " %}
+{% endif %}
+
 {% block title %}
-trainedmonkey: keyboard bangings about living, working, and playing
+  {% if title %}
+    {{ title }} @ trainedmonkey
+  {% else %}
+    trainedmonkey: keyboard bangings about living, working, and playing
+  {% endif %}
 {% endblock %}
 
 {% block extra_head %}
@@ -39,7 +47,13 @@ trainedmonkey: keyboard bangings about living, working, and playing
 {% endblock %}
 
 {% block content %}
-  <h1>trained<b>monkey</b></h1>
+  <h1>
+    {% if tag %}
+      with '{{ tag }}' tag
+    {% else %}
+      trained<b>monkey</b>
+    {% endif %}
+  </h1>
 
   {% include 'entries.twig' %}
 {% endblock %}

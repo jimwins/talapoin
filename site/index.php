@@ -122,38 +122,10 @@ return $this->view->render($res, 'entry.html', [ 'entry' => $entry,
 
           })->setName('entry');
 
-$app->get('/',
-          function (Request $req, Response $res, array $args) {
-
-$where= "";
-$order= "DESC";
-$limit= "LIMIT 12";
-
-$query=
-" SELECT id, title, entry, closed, created_at, updated_at, article,
-         (SELECT JSON_ARRAYAGG(name)
-            FROM entry_to_tag, tag
-           WHERE entry_id = entry.id AND tag_id = tag.id) AS tags,
-         (SELECT COUNT(*)
-            FROM comment
-           WHERE entry_id = entry.id AND NOT tb) AS comments
-    FROM entry
-   WHERE NOT draft $where
-   ORDER BY created_at $order
-   $limit
-";
-
-$stmt= $this->db->query($query);
-
-$entries= [];
-while (($entry= $stmt->fetch())) {
-  $entry['tags']= json_decode($entry['tags']);
-  $entries[]= $entry;
-}
-
-return $this->view->render($res, 'index.html', [ 'entries' => $entries ]);
-
-          })->setName('entry');
+$app->get('/', function (Request $req, Response $res, array $args) {
+  $entries= get_entries($this->db, '', 'DESC', 'LIMIT 12');
+  return $this->view->render($res, 'index.html', [ 'entries' => $entries ]);
+})->setName('top');
 
 $app->get('/archive/', function (Request $req, Response $res, array $args) {
   $query= "SELECT AVG(total)
@@ -181,9 +153,20 @@ $app->get('/archive/', function (Request $req, Response $res, array $args) {
   ]);
 })->setName('archive');
 
-$app->get('/tag/{tag}',
-          function (Request $req, Response $res, array $args) {
-          })->setName('tag');
+$app->get('/tag/{tag}', function (Request $req, Response $res, array $args) {
+  $tag= $this->db->quote($args['tag']);
+
+  $where= " AND $tag IN
+                (SELECT name FROM tag, entry_to_tag ec
+                  WHERE entry_id = entry.id AND tag_id = tag.id)";
+
+  $entries= get_entries($this->db, $where, "DESC", "");
+
+  return $this->view->render($res, 'index.html', [
+    'tag' => $args['tag'],
+    'entries' => $entries,
+  ]);
+})->setName('tag');
 
 $app->get('/hello/{name}', function (Request $request, Response $response, array $args) {
     $name= $args['name'];
@@ -208,8 +191,8 @@ $app->get('[/{slug:.*}]', function (Request $req, Response $res, array $args) {
 $app->run();
 
 function get_entry($db, $where, $order= 'ASC') {
-  $query=
-  " SELECT id, title, entry, closed, created_at, updated_at, article,
+  $query= <<<QUERY
+    SELECT id, title, entry, closed, created_at, updated_at, article,
            (SELECT JSON_ARRAYAGG(name)
               FROM entry_to_tag, tag
              WHERE entry_id = entry.id AND tag_id = tag.id) AS tags,
@@ -219,7 +202,7 @@ function get_entry($db, $where, $order= 'ASC') {
       FROM entry
      WHERE $where AND NOT draft
      ORDER BY id $order
-  ";
+QUERY;
 
   $stmt= $db->query($query);
 
@@ -227,4 +210,30 @@ function get_entry($db, $where, $order= 'ASC') {
   $entry['tags']= json_decode($entry['tags']);
 
   return $entry;
+}
+
+function get_entries($db, $where, $order, $limit) {
+  $query= <<<QUERY
+    SELECT id, title, entry, closed, created_at, updated_at, article,
+           (SELECT JSON_ARRAYAGG(name)
+              FROM entry_to_tag, tag
+             WHERE entry_id = entry.id AND tag_id = tag.id) AS tags,
+           (SELECT COUNT(*)
+              FROM comment
+             WHERE entry_id = entry.id AND NOT tb) AS comments
+      FROM entry
+     WHERE NOT draft $where
+     ORDER BY created_at $order
+     $limit
+QUERY;
+
+  $stmt= $db->query($query);
+
+  $entries= [];
+  while (($entry= $stmt->fetch())) {
+    $entry['tags']= json_decode($entry['tags']);
+    $entries[]= $entry;
+  }
+
+  return $entries;
 }
