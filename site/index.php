@@ -122,6 +122,37 @@ return $this->view->render($res, 'entry.html', [ 'entry' => $entry,
 
           })->setName('entry');
 
+$app->get('/{year:[0-9]+}/',
+          function (Request $req, Response $res, array $args) {
+  $year= $args['year'];
+
+  $query= "SELECT DISTINCT YEAR(created_at) AS year
+             FROM entry
+            ORDER BY year DESC";
+  $years= $this->db->query($query);
+
+  $query= <<<QUERY
+    SELECT MIN(created_at) AS created_at,
+           DAYOFMONTH(MIN(created_at)) AS day,
+           MONTH(MIN(created_at)) AS month,
+           YEAR(MIN(created_at)) AS year,
+           TO_DAYS(created_at) AS ymd
+      FROM entry
+     WHERE created_at BETWEEN '$year-1-1' AND '$year-1-1' + INTERVAL 1 YEAR
+     GROUP BY ymd
+     ORDER BY month ASC, day ASC
+QUERY;
+
+  $entries= $this->db->query($query)->fetchALl();
+
+  return $this->view->render($res, 'year.html', [
+  'query' => $query,
+    'year' => $year,
+    'entries' => $entries,
+    'years' => $years,
+  ]);
+})->setName('year');
+
 $app->get('/', function (Request $req, Response $res, array $args) {
   $entries= get_entries($this->db, '', 'DESC', 'LIMIT 12');
   return $this->view->render($res, 'index.html', [ 'entries' => $entries ]);

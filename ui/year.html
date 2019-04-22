@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+
+{% block extra_head %}
+<style type="text/css">
+table.calendar {
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(0,0,0,0.8);
+  margin-bottom: 20px;
+}
+table.calendar caption {
+  font-size: larger;
+  font-weight: bold;
+}
+table.calendar caption a {
+  background-color: inherit;
+}
+table.calendar th {
+  width: 12%;
+  font-size: smaller;
+  font-weight: normal;
+  color: #333;
+  color: rgba(0,0,0,0.8);
+}
+table.calendar a {
+  color: #33c;
+  text-decoration: none;
+}
+table.calendar a:hover {
+  color: #33c;
+  text-decoration: underline;
+}
+</style>
+{% endblock %}
+
+{% block title %}
+  {{ year }} archives @ trainedmonkey
+{% endblock %}
+
+{% block extra_sidebar %}
+  <ul>
+    <li>
+      {% for yr in years %}
+        {% if yr.year != year %}
+          <a href="/{{ yr.year }}/">{{ yr.year }}</a>
+        {% endif %}
+      {% endfor %}
+    </li>
+  </ul>
+{% endblock %}
+
+{% block content %}
+  {% set i= 0 %}
+  {% for month in 1..12 %}
+    {% if i < entries|length and month == entries[i].created_at|date('n') %}
+      {% set first= entries[i].created_at %}
+      <table class="calendar"
+             summary="links to days with posts from {{ first|date('F') }}">
+        <caption>
+          <a href="/{{ year }}/{{ month }}">{{ first|date("F")|lower }}</a>
+        </caption>
+        <tr>
+          <th>sun</th><th>mon</th><th>tue</th><th>wed</th><th>thu</th><th>fri</th><th>sat</th>
+        </tr>
+        <tr>
+          {% set fdow= first|date('w') %}
+          {% for x in 1..fdow %}
+            <td>&nbsp;</td>
+          {% endfor %}
+          {% for d in 1..(first|date('t')) %}
+            <td>
+              {% set t= "%4d%02d%02d"|format(year, month, d) %}
+              {% if i < entries|length and
+                    entries[i].created_at|date('Ymd') == t %}
+                <a href="{{ entries[i].created_at|date('/Y/n/j/') }}">{{ d }}</a>
+                {% set i = i + 1 %}
+              {% else %}
+                {{ d }}
+              {% endif %}
+            </td>
+            {% if ((d + fdow) % 7) == 0 %}
+              </tr><tr>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      </table>
+    {% endif %}
+  {% endfor %}
+
+{% endblock %}
