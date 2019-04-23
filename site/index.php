@@ -129,6 +129,11 @@ return $this->view->render($res, 'entry.html', [ 'entry' => $entry,
 
           })->setName('entry');
 
+/* Year archive */
+$app->get('/{year:[0-9]+}',
+          function (Request $req, Response $res, array $args) {
+  return $res->withRedirect($this->router->pathFor('year', $args));
+});
 $app->get('/{year:[0-9]+}/',
           function (Request $req, Response $res, array $args) {
   $year= $args['year'];
@@ -160,7 +165,12 @@ QUERY;
   ]);
 })->setName('year');
 
+/* Month archive */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}',
+          function (Request $req, Response $res, array $args) {
+  return $res->withRedirect($this->router->pathFor('month', $args));
+});
+$app->get('/{year:[0-9]+}/{month:[0-9]+}/',
           function (Request $req, Response $res, array $args) {
   $year= $args['year'];
   $month= $args['month'];
@@ -212,7 +222,12 @@ QUERY;
   ]);
 })->setName('month');
 
+/* Day archive */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
+          function (Request $req, Response $res, array $args) {
+  return $res->withRedirect($this->router->pathFor('day', $args));
+});
+$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/',
           function (Request $req, Response $res, array $args) {
   $year= $args['year'];
   $month= $args['month'];
