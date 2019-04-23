@@ -1,6 +1,6 @@
 ; Top-level options for Slim
 displayErrorDetails= true
-addContentLengthHeader= false
+static=//static.example.net
 
 [db]
 host= localhost
