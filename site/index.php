@@ -74,6 +74,13 @@ $filter= new Twig_SimpleFilter('slug', function ($text) {
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
+/* 404 handler */
+$container['notFoundHandler']= function ($c) {
+  return function ($req, $res) use ($c) {
+    return $c['view']->render($res->withStatus(404), '404.html');
+  };
+};
+
 /* A single entry */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{slug}',
           function (Request $req, Response $res, array $args) {
