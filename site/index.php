@@ -5,7 +5,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require '../vendor/autoload.php';
 
-$config= parse_ini_file('../config.ini', TRUE, INI_SCANNER_TYPED);
+$config= parse_ini_file($_ENV['TALAPOIN_CONFIG']?:'../config.ini',
+                        TRUE, INI_SCANNER_TYPED);
 
 $app= new \Slim\App([ 'settings' => $config ]);
 
