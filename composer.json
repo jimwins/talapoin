@@ -5,5 +5,8 @@
     "monolog/monolog": "^1.23",
     "slim/twig-view": "^2.4",
     "robmorgan/phinx": "^0.10.6"
+  },
+  "require-dev": {
+    "deployer/recipes": "^6.2"
   }
 }

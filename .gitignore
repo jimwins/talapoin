@@ -1,4 +1,3 @@
-composer.phar
 config.ini
-/old/
+hosts.yml
 /vendor/
