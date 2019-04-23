@@ -100,6 +100,16 @@ if (is_numeric($id)) {
 
 $entry= get_entry($this->db, $where);
 
+/* Use slug in canonical URL for items with title */
+if (is_numeric($id) && $entry['title']) {
+  return $res->withRedirect(
+    sprintf('/%s/%s',
+      (new \DateTime($entry['created_at']))->format("Y/m/d"),
+      $entry['title'] ?
+        preg_replace('/[^-A-Za-z0-9,]/u', '_', $entry['title']) :
+        $entry['id']));
+}
+
 /* Get next/previous */
 $previous= get_entry($this->db, "created_at < '{$entry['created_at']}'", "DESC");
 $next= get_entry($this->db, "created_at > '{$entry['created_at']}'", "ASC");
@@ -130,7 +140,7 @@ return $this->view->render($res, 'entry.html', [ 'entry' => $entry,
           })->setName('entry');
 
 /* Year archive */
-$app->get('/{year:[0-9]+}',
+$app->get('/{year:2[0-9][0-9][0-9]}',
           function (Request $req, Response $res, array $args) {
   return $res->withRedirect($this->router->pathFor('year', $args));
 });
@@ -323,13 +333,38 @@ $app->get('/scratch[/{path:.*}]',
   return $res->withRedirect($static . '/' . $args['path']);
 });
 
-$app->get('[/{slug:.*}]', function (Request $req, Response $res, array $args) {
-  $slug= preg_replace('!/$!', '', $args['slug']); # trim trailing /
+/* Pages have trailing slashes */
+$app->get('/{slug:.*}/', function (Request $req, Response $res, array $args) {
   $query= "SELECT * FROM page WHERE slug = ?";
   $stmt= $this->db->prepare($query);
-  if ($stmt->execute([$slug]) && $stmt->rowCount()) {
+  if ($stmt->execute([$args['slug']]) && $stmt->rowCount()) {
     $page= $stmt->fetch(\PDO::FETCH_ASSOC);
     return $this->view->render($res, 'page.html', [ 'page' => $page ]);
+  }
+  throw new \Slim\Exception\NotFoundException($req, $res);
+});
+
+/* Handle /123 as redirect to blog entry */
+$app->get('/{id:[0-9]+}', function (Request $req, Response $res, array $args) {
+  $entry= get_entry($this->db, "id = {$args['id']}");
+  if ($entry) {
+    return $res->withRedirect(
+      sprintf('/%s/%s',
+        (new \DateTime($entry['created_at']))->format("Y/m/d"),
+        $entry['title'] ?
+          preg_replace('/[^-A-Za-z0-9,]/u', '_', $entry['title']) :
+          $entry['id']));
+  }
+  throw new \Slim\Exception\NotFoundException($req, $res);
+});
+
+/* Force trailing slashes on pages (but check first, so we can 404 bad links) */
+$app->get('/{slug:.*}', function (Request $req, Response $res, array $args) {
+  $query= "SELECT * FROM page WHERE slug = ?";
+  $stmt= $this->db->prepare($query);
+  if ($stmt->execute([$args['slug']]) && $stmt->rowCount()) {
+    $page= $stmt->fetch(\PDO::FETCH_ASSOC);
+    return $res->withRedirect('/' . $args['slug'] . '/');
   }
   throw new \Slim\Exception\NotFoundException($req, $res);
 });
