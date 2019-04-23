@@ -4,10 +4,10 @@
  xml:lang="en"
  xmlns="http://www.w3.org/2005/Atom"
 >
- <id>http://trainedmonkey.com/</id>
- <title>trained monkey</title>
- <link rel="self" type="application/atom+xml" href="http://trainedmonkey.com{{ path_for('atom') }}" />
- <link rel="alternate" type="text/html" href="http://trainedmonkey.com/" />
+ <id>https://trainedmonkey.com/</id>
+ <title>{{ tag ? tag ~ ' @ '}}trainedmonkey</title>
+ <link rel="self" type="application/atom+xml" href="https://trainedmonkey.com{{ path_for(tag ? 'tag_atom' : 'atom', { 'tag': tag }) }}" />
+ <link rel="alternate" type="text/html" href="https://trainedmonkey.com/" />
  <author>
   <name>jim winstead jr.</name>
  </author>
@@ -21,12 +21,12 @@
      {% else %}
        <title />
      {% endif %}
-     <link rel="alternate" type="text/html" href="http://trainedmonkey.com{{ blog.permalink(entry) }}" />
+     <link rel="alternate" type="text/html" href="https://trainedmonkey.com{{ blog.permalink(entry) }}" />
      <id>tag:trainedmonkey.com,{{ entry.created_at | date('Y-m-d') }}:{{ entry.id }}</id>
      <updated>{{ entry.updated_at | date('Y-m-d\\TH:i:s\\Z', 'UTC') }}</updated>
      <published>{{ entry.created_at | date('c', 'America/Los_Angeles') }}</published>
      {% for tag in entry.tags %}
-       <category term="{{ tag }}" scheme="http://trainedmonkey.com/archive/" />
+       <category term="{{ tag }}" scheme="https://trainedmonkey.com/archive/" />
      {% endfor %}
      <content type="html">{{ entry.entry | paragraphs | expand_psuedo_urls | prettify_markup | escape }}</content>
    </entry>

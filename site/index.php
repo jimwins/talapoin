@@ -330,7 +330,7 @@ $app->get('/scratch[/{path:.*}]',
   return $res->withRedirect($static . '/' . $args['path']);
 });
 
-/* Atom feed */
+/* Atom feeds */
 $app->get('/index.atom', function (Request $req, Response $res, array $args) {
   $entries= get_entries($this->db, "", 'DESC', "LIMIT 15");
 
@@ -338,6 +338,20 @@ $app->get('/index.atom', function (Request $req, Response $res, array $args) {
     ->render($res, 'index.atom', [ 'entries' => $entries ])
     ->withHeader('Content-Type', 'application/atom+xml');
 })->setName('atom');
+$app->get('/{tag}/index.atom',
+          function (Request $req, Response $res, array $args) {
+  $tag= $this->db->quote($args['tag']);
+
+  $where= " AND $tag IN
+                (SELECT name FROM tag, entry_to_tag ec
+                  WHERE entry_id = entry.id AND tag_id = tag.id)";
+
+  $entries= get_entries($this->db, $where, "DESC", "LIMIT 15");
+
+  return $this->view
+    ->render($res, 'index.atom', [ 'entries' => $entries, 'tag' => $args['tag'] ])
+    ->withHeader('Content-Type', 'application/atom+xml');
+})->setName('tag_atom');
 
 /* Pages have trailing slashes */
 $app->get('/{slug:.*}/', function (Request $req, Response $res, array $args) {
