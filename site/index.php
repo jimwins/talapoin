@@ -318,15 +318,6 @@ $app->get('/tag/{tag}', function (Request $req, Response $res, array $args) {
   ]);
 })->setName('tag');
 
-$app->get('/hello/{name}', function (Request $request, Response $response, array $args) {
-    $name= $args['name'];
-    $response->getBody()->write("Hello, $name");
-
-    $this->logger->addInfo('Something interesting happened');
-
-    return $response;
-});
-
 $app->get('/scratch[/{path:.*}]',
           function (Request $req, Response $res, array $args) {
   $static= $this->settings['static'];
