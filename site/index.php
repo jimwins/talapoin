@@ -353,19 +353,9 @@ $app->get('/{tag}/index.atom',
     ->withHeader('Content-Type', 'application/atom+xml');
 })->setName('tag_atom');
 
-/* Pages have trailing slashes */
-$app->get('/{slug:.*}/', function (Request $req, Response $res, array $args) {
-  $query= "SELECT * FROM page WHERE slug = ?";
-  $stmt= $this->db->prepare($query);
-  if ($stmt->execute([$args['slug']]) && $stmt->rowCount()) {
-    $page= $stmt->fetch(\PDO::FETCH_ASSOC);
-    return $this->view->render($res, 'page.html', [ 'page' => $page ]);
-  }
-  throw new \Slim\Exception\NotFoundException($req, $res);
-});
-
-/* Handle /123 as redirect to blog entry */
-$app->get('/{id:[0-9]+}', function (Request $req, Response $res, array $args) {
+/* Handle /s/123 as redirect to blog entry (tmky.us goes through this) */
+$app->get('/s/{id:[0-9]+}',
+          function (Request $req, Response $res, array $args) {
   $entry= get_entry($this->db, "id = {$args['id']}");
   if ($entry) {
     return $res->withRedirect(
@@ -378,14 +368,38 @@ $app->get('/{id:[0-9]+}', function (Request $req, Response $res, array $args) {
   throw new \Slim\Exception\NotFoundException($req, $res);
 });
 
-/* Force trailing slashes on pages (but check first, so we can 404 bad links) */
-$app->get('/{slug:.*}', function (Request $req, Response $res, array $args) {
-  $query= "SELECT * FROM page WHERE slug = ?";
+/* Default for everything else (pages, redirects) */
+$app->get('/{path:.*}', function (Request $req, Response $res, array $args) {
+  $path= $args['path'];
+
+  // check for redirects
+  $query= "SELECT source, dest FROM redirect WHERE ? LIKE source";
   $stmt= $this->db->prepare($query);
-  if ($stmt->execute([$args['slug']]) && $stmt->rowCount()) {
-    $page= $stmt->fetch(\PDO::FETCH_ASSOC);
-    return $res->withRedirect('/' . $args['slug'] . '/');
+  if ($stmt->execute([$path]) && ($redir= $stmt->fetch())) {
+    if (($pos= strpos($redir['source'], '%'))) {
+      $dest= $redir['dest'] . substr($path, $pos);
+    } else {
+      $dest= $redir['dest'];
+    }
+    return $res->withRedirect($dest);
   }
+
+  /* No trailing slash? Might need to redirect to page */
+  if (substr($path, -1) != '/') {
+    $query= "SELECT * FROM page WHERE slug = ?";
+    $stmt= $this->db->prepare($query);
+    if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
+      return $res->withRedirect($path . '/');
+    }
+  } else {
+    $path= substr($path, 0, -1);
+    $query= "SELECT * FROM page WHERE slug = ?";
+    $stmt= $this->db->prepare($query);
+    if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
+      return $this->view->render($res, 'page.html', [ 'page' => $page ]);
+    }
+  }
+
   throw new \Slim\Exception\NotFoundException($req, $res);
 });
 
