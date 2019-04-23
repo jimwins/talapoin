@@ -52,6 +52,7 @@ table.calendar a:hover {
 {% endblock %}
 
 {% block content %}
+  <h1>{{ year }} archives</h1>
   {% set i= 0 %}
   {% for month in 1..12 %}
     {% if i < entries|length and month == entries[i].created_at|date('n') %}
