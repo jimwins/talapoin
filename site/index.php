@@ -39,6 +39,12 @@ $container['view']= function ($container) {
   $basePath= $container->get('request')->getUri()->getBasePath();
   $basePath= rtrim(str_ireplace('index.php', '', $basePath), '/');
 
+  if (($tz= $container['settings']['Twig']['timezone'])) {
+    $view->getEnvironment()
+      ->getExtension('Twig_Extension_Core')
+      ->setTimezone($tz);
+  }
+
   $view->addExtension(new Slim\Views\TwigExtension($container->get('router'),
                                                    $basePath));
 
@@ -323,6 +329,15 @@ $app->get('/scratch[/{path:.*}]',
   $static= $this->settings['static'];
   return $res->withRedirect($static . '/' . $args['path']);
 });
+
+/* Atom feed */
+$app->get('/index.atom', function (Request $req, Response $res, array $args) {
+  $entries= get_entries($this->db, "", 'DESC', "LIMIT 15");
+
+  return $this->view
+    ->render($res, 'index.atom', [ 'entries' => $entries ])
+    ->withHeader('Content-Type', 'application/atom+xml');
+})->setName('atom');
 
 /* Pages have trailing slashes */
 $app->get('/{slug:.*}/', function (Request $req, Response $res, array $args) {
