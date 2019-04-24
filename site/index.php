@@ -385,8 +385,8 @@ $app->get('/{tag}/index.atom',
     ->withHeader('Content-Type', 'application/atom+xml');
 })->setName('tag_atom');
 
-/* Handle /s/123 as redirect to blog entry (tmky.us goes through this) */
-$app->get('/s/{id:[0-9]+}',
+/* Handle /entry/123 as redirect to blog entry (tmky.us goes through this) */
+$app->get('/entry/{id:[0-9]+}',
           function (Request $req, Response $res, array $args) {
   $entry= get_entry($this->db, "id = {$args['id']}");
   if ($entry) {
