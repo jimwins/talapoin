@@ -30,6 +30,15 @@ $container['db']= function ($c) {
   return $pdo;
 };
 
+/* Search */
+$container['search']= function ($c) {
+  $search= $c['settings']['search'];
+  $pdo= new PDO($search['dsn'], $search['user'], $search['pass']);
+  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+  return $pdo;
+};
+
 /* Twig for templating */
 $container['view']= function ($container) {
   $view= new \Slim\Views\Twig('../ui', [
@@ -325,6 +334,28 @@ $app->get('/tag/{tag}', function (Request $req, Response $res, array $args) {
   ]);
 })->setName('tag');
 
+$app->get('/search', function (Request $req, Response $res, array $args) {
+  $q= $req->getParam('q');
+
+  $query= "SELECT id FROM talapoin WHERE MATCH(?)";
+  $stmt= $this->search->prepare($query);
+
+  $stmt->execute([$q]);
+
+  $ids= array_map(function ($e) { return $e['id']; }, $stmt->fetchAll());
+
+  if ($ids) {
+    $entries= get_entries($this->db,
+                          'AND id IN (' . join(',', $ids) . ')',
+                          "DESC", "");
+  }
+
+  return $this->view->render($res, 'search.html', [
+    'q' => $q,
+    'entries' => $entries,
+  ]);
+});
+
 $app->get('/scratch[/{path:.*}]',
           function (Request $req, Response $res, array $args) {
   $static= $this->settings['static'];
@@ -367,6 +398,31 @@ $app->get('/s/{id:[0-9]+}',
           $entry['id']));
   }
   throw new \Slim\Exception\NotFoundException($req, $res);
+});
+
+/* Behind the scenes stuff */
+$app->get('/~reindex', function (Request $req, Response $res, array $args) {
+  $entries= get_entries($this->db, "", "ASC", "");
+
+  $this->search->query("DELETE FROM talapoin WHERE id > 0");
+
+  $query= "INSERT INTO talapoin (id, title, content, created_at, tags)
+           VALUES (?, ?, ?, ?, ?)";
+  $stmt= $this->search->prepare($query);
+
+  $rows= 0;
+  foreach ($entries as $entry) {
+    $stmt->execute([
+      $entry['id'],
+      $entry['title'],
+      $entry['entry'],
+      $entry['created_at'],
+      $entry['tags'] ? join(' ', $entry['tags']) : ""
+    ]);
+    $rows+= $stmt->rowCount();
+  }
+
+  return $res->getBody()->write("Indexed $rows rows.");
 });
 
 /* Default for everything else (pages, redirects) */

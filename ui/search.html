@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% if tag %}
+  {% set title = "with '" ~ tag ~ "' tag " %}
+{% endif %}
+
+{% block title %}
+  search results for '{{ q }}' @ trainedmonkey
+{% endblock %}
+
+{% block content %}
+  <h1>
+    search results for <b>'{{ q }}'</b>
+  </h1>
+
+  {% if entries|length %}
+    {% include 'entries.twig' %}
+  {% else %}
+    <p class="error">
+      <strong>nothing found!</strong><br>
+      there must not be anything that matches your search parameters.
+      please try again!
+    </p>
+  {% endif %}
+{% endblock %}
