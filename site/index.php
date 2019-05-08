@@ -435,6 +435,10 @@ $app->post('/~webhook/post-entry',
     return $res->withStatus(403, "Not allowed.");
   }
 
+  if ($this->settings['debug_webhook']) {
+    file_put_contents("/tmp/debug_webhook", (string)$req->getBody());
+  }
+
   $data= $req->getParsedBody();
 
   if ($data['sender'] != $this->settings['post_from']) {
