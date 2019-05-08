@@ -425,6 +425,39 @@ $app->get('/~reindex', function (Request $req, Response $res, array $args) {
   return $res->getBody()->write("Indexed $rows rows.");
 });
 
+/* Posting via email2webhook */
+$app->post('/~webhook/post-entry',
+           function (Request $req, Response $res, array $args) {
+  $key= $req->getParam('key');
+  $post_key= $this->settings['post_key'];
+
+  if ($key != $post_key) {
+    return $res->withStatus(403, "Not allowed.");
+  }
+
+  $data= $req->getParsedBody();
+
+  if ($data['sender'] != $this->settings['post_from']) {
+    return $res->withStatus(403, "Not allowed.");
+  }
+
+  $title= $data['content']['subject'];
+  $entry= $data['content']['body'];
+
+  if (!$entry) {
+    throw new \Exception("No entry.");
+  }
+
+  $query= "INSERT INTO entry (title, entry) VALUES (?,?)";
+  $stmt= $this->db->prepare($query);
+
+  if ($stmt->execute([$title, $entry])) {
+    return $res->withStatus(200, "Success.");
+  }
+
+  return $res->withStatus(500, "Something bad happened.");
+});
+
 /* Default for everything else (pages, redirects) */
 $app->get('/{path:.*}', function (Request $req, Response $res, array $args) {
   $path= $args['path'];
