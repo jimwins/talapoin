@@ -24,7 +24,7 @@ $container['logger']= function($c) {
 $container['db']= function ($c) {
   $db= $c['settings']['db'];
   $dsn= 'mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'];
-  $pdo= new PDO($dsn. ';charset=utf8', $db['user'], $db['pass']);
+  $pdo= new PDO($dsn. ';charset=utf8mb4', $db['user'], $db['pass']);
   $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
   return $pdo;
@@ -445,9 +445,9 @@ $app->post('/~webhook/post-entry',
     return $res->withStatus(403, "Not allowed.");
   }
 
-  // email2webhook encodes the subject incorrectly
+  // email2webhook encodes the subject and body incorrectly (sigh)
   $title= utf8_decode($data['content']['subject']);
-  $entry= $data['content']['body'];
+  $entry= utf8_decode($data['content']['body']);
 
   if (!$entry) {
     throw new \Exception("No entry.");
