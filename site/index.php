@@ -445,9 +445,8 @@ $app->post('/~webhook/post-entry',
     return $res->withStatus(403, "Not allowed.");
   }
 
-  // email2webhook encodes the subject and body incorrectly (sigh)
-  $title= utf8_decode($data['content']['subject']);
-  $entry= utf8_decode($data['content']['body']);
+  $title= $data['subject'];
+  $entry= $data['body_plain'];
 
   if (!$entry) {
     throw new \Exception("No entry.");
