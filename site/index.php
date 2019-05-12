@@ -452,10 +452,47 @@ $app->post('/~webhook/post-entry',
     throw new \Exception("No entry.");
   }
 
+  $tags= [];
+  if (preg_match('!^tags:\s*(.+)$!m', $entry, $m, PREG_OFFSET_CAPTURE)) {
+    $tags= preg_split('!\s*,\s*!', $m[1][0]);
+    // trim off the tags
+    $entry= substr_replace($entry, "", $m[0][1], $m[0][1] + strlen($m[0][0]));
+  }
+  if (!$tags) die($entry);
+
+  trim($subject);
+  trim($entry);
+
+  $this->db->beginTransaction();
   $query= "INSERT INTO entry (title, entry) VALUES (?,?)";
   $stmt= $this->db->prepare($query);
 
+  $find_tag= $this->db->prepare("SELECT id FROM tag WHERE name = ?");
+  $add_tag= $this->db->prepare("INSERT INTO tag SET name = ?");
+  $add_link= $this->db->prepare("INSERT INTO entry_to_tag SET entry_id = ?, tag_id = ?");
+
   if ($stmt->execute([$title, $entry])) {
+    $entry_id= $this->db->lastInsertId();
+    foreach ($tags as $tag) {
+      $tag= trim($tag);
+
+      if ($find_tag->execute([$tag])) {
+        $tag_id= $find_tag->fetchColumn();
+      }
+
+      if (!$tag_id) {
+        if (!$add_tag->execute([$tag]))
+          throw new \Exception("Unable to add new tag '$tag'.");
+        $tag_id= $this->db->lastInsertId();
+      }
+
+      if ($tag_id) {
+        if (!$add_link->execute([$entry_id, $tag_id]))
+          throw new \Exception("Unable to add tag for entry.");
+      }
+    }
+    $this->db->commit();
+
     return $res->withStatus(200, "Success.");
   }
 
