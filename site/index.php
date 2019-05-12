@@ -74,7 +74,7 @@ $filter= new Twig_SimpleFilter('expand_psuedo_urls', function ($text) {
 $container->get('view')->getEnvironment()->addFilter($filter);
 
 $filter= new Twig_SimpleFilter('paragraphs', function ($text) {
-  return preg_replace('!\n\n!', '</p><p>', $text);
+  return preg_replace('!\r?\n\r?\n!', '</p><p>', $text);
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
