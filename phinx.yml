@@ -8,10 +8,10 @@ environments:
 
     db:
         adapter: mysql
-        host: '%%PHINX_DBHOST%%'
-        name: '%%PHINX_DBNAME%%'
-        user: '%%PHINX_DBUSER%%'
-        pass: '%%PHINX_DBPASS%%'
+        host: '%%PHINX_HOST_NAME%%'
+        user: '%%PHINX_USER%%'
+        pass: '%%PHINX_PASSWORD%%'
+        name: 'talapoin'
         port: 3306
         charset: utf8mb4
         collation: utf8mb4_0900_ai_ci
