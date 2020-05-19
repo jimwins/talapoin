@@ -452,26 +452,42 @@ $app->post('/~webhook/post-entry',
     throw new \Exception("No entry.");
   }
 
+  $page= null;
+  if (preg_match('!^page:\s*([-/a-z0-9]+)$!m', $entry, $m, PREG_OFFSET_CAPTURE))
+  {
+    $page= $m[1][0];
+    // trim off the tags
+    $entry= substr_replace($entry, "", $m[0][1], $m[0][1] + strlen($m[0][0]));
+  }
+
   $tags= [];
   if (preg_match('!^tags:\s*(.+)$!m', $entry, $m, PREG_OFFSET_CAPTURE)) {
     $tags= preg_split('!\s*,\s*!', $m[1][0]);
     // trim off the tags
     $entry= substr_replace($entry, "", $m[0][1], $m[0][1] + strlen($m[0][0]));
   }
-  if (!$tags) die($entry);
+  if (!$tags && !$page) die($entry);
 
   trim($subject);
   trim($entry);
 
   $this->db->beginTransaction();
-  $query= "INSERT INTO entry (title, entry) VALUES (?,?)";
-  $stmt= $this->db->prepare($query);
 
-  $find_tag= $this->db->prepare("SELECT id FROM tag WHERE name = ?");
-  $add_tag= $this->db->prepare("INSERT INTO tag SET name = ?");
-  $add_link= $this->db->prepare("INSERT INTO entry_to_tag SET entry_id = ?, tag_id = ?");
+  if ($page) {
+    $query= "INSERT INTO page (title, slug, entry) VALUES (?,?,?)";
+    $stmt= $this->db->prepare($query);
 
-  if ($stmt->execute([$title, $entry])) {
+    $stmt->execute([$title, $page, $entry]));
+  } else {
+    $query= "INSERT INTO entry (title, entry) VALUES (?,?)";
+    $stmt= $this->db->prepare($query);
+
+    $find_tag= $this->db->prepare("SELECT id FROM tag WHERE name = ?");
+    $add_tag= $this->db->prepare("INSERT INTO tag SET name = ?");
+    $add_link= $this->db->prepare("INSERT INTO entry_to_tag SET entry_id = ?, tag_id = ?");
+
+    $stmt->execute([$title, $entry]);
+
     $entry_id= $this->db->lastInsertId();
     foreach ($tags as $tag) {
       $tag= trim($tag);
@@ -491,12 +507,11 @@ $app->post('/~webhook/post-entry',
           throw new \Exception("Unable to add tag for entry.");
       }
     }
-    $this->db->commit();
-
-    return $res->withStatus(200, "Success.");
   }
 
-  return $res->withStatus(500, "Something bad happened.");
+  $this->db->commit();
+
+  return $res->withStatus(200, "Success.");
 });
 
 /* Default for everything else (pages, redirects) */
