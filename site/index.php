@@ -477,7 +477,7 @@ $app->post('/~webhook/post-entry',
     $query= "INSERT INTO page (title, slug, entry) VALUES (?,?,?)";
     $stmt= $this->db->prepare($query);
 
-    $stmt->execute([$title, $page, $entry]));
+    $stmt->execute([$title, $page, $entry]);
   } else {
     $query= "INSERT INTO entry (title, entry) VALUES (?,?)";
     $stmt= $this->db->prepare($query);
