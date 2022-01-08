@@ -400,6 +400,10 @@ $app->get('/entry/{id:[0-9]+}',
   throw new \Slim\Exception\NotFoundException($req, $res);
 });
 
+$app->get('/entry', function (Request $request, Response $response) {
+  return $res->withRedirect('/');
+}
+
 /* Behind the scenes stuff */
 $app->get('/~reindex', function (Request $req, Response $res, array $args) {
   $entries= get_entries($this->db, "", "ASC", "");
