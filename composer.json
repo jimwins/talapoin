@@ -1,10 +1,10 @@
 {
   "require": {
-    "slim/slim": "^3.0",
-    "twig/twig": "^2.0",
+    "slim/slim": "4.*",
+    "twig/twig": "^2.6",
     "monolog/monolog": "^1.23",
-    "slim/twig-view": "^2.4",
-    "robmorgan/phinx": "^0.10.6"
+    "slim/twig-view": "^3.0",
+    "robmorgan/phinx": "^0.11"
   },
   "require-dev": {
     "deployer/recipes": "^6.2"
