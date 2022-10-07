@@ -1,68 +1,84 @@
 <?php
-
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
-
 require '../vendor/autoload.php';
 
-$config= parse_ini_file($_ENV['TALAPOIN_CONFIG']?:'../config.ini',
-                        TRUE, INI_SCANNER_TYPED);
+$DEBUG= false;
 
-$app= new \Slim\App([ 'settings' => $config ]);
+use \Slim\Http\ServerRequest as Request;
+use \Slim\Http\Response as Response;
+use \Slim\Views\Twig as View;
+use \Respect\Validation\Validator as v;
+use \Slim\Routing\RouteCollectorProxy as RouteCollectorProxy;
 
-$container= $app->getContainer();
+/* Some defaults */
+error_reporting(E_ALL);
+$tz= @$_ENV['PHP_TIMEZONE'] ?: @$_ENV['TZ'];
+if ($tz) date_default_timezone_set($tz);
 
-/* We use monolog for logging (but still just through PHP's log for now) */
-$container['logger']= function($c) {
-  $logger= new \Monolog\Logger('talapoin');
-  $handler= new \Monolog\Handler\ErrorLogHandler();
-  $logger->pushHandler($handler);
-  return $logger;
-};
+$config_file= @$_ENV['TALAPOIN_CONFIG'] ?: dirname(__FILE__).'/../config.ini';
+
+if (file_exists($config_file)) {
+  $config= parse_ini_file($config_file, TRUE, INI_SCANNER_TYPED);
+} else {
+  die("Unable to find config");
+}
+
+$builder= new \DI\ContainerBuilder();
+$builder->addDefinitions([
+  'Slim\Views\Twig' => \DI\get('view'),
+]);
+$container= $builder->build();
+$container->set('config', $config);
+
+\Slim\Factory\AppFactory::setContainer($container);
+$app= \Slim\Factory\AppFactory::create();
+$app->addRoutingMiddleware();
 
 /* PDO */
-$container['db']= function ($c) {
-  $db= $c['settings']['db'];
+$container->set('db', function ($c) {
+  $db= $c->get('config')['db'];
   $dsn= 'mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'];
   $pdo= new PDO($dsn. ';charset=utf8mb4', $db['user'], $db['pass']);
   $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
   return $pdo;
-};
+});
 
 /* Search */
-$container['search']= function ($c) {
-  $search= $c['settings']['search'];
-  $pdo= new PDO($search['dsn'], $search['user'], $search['pass']);
+$container->set('search', function ($c) {
+  $search= $c->get('config')['search'];
+  $pdo= new PDO($search['dsn'], $search['user'], $search['password']);
   $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
   return $pdo;
-};
+});
 
 /* Twig for templating */
-$container['view']= function ($container) {
-  $view= new \Slim\Views\Twig('../ui', [
-    'cache' => false /* No cache for now */
-  ]);
+$container->set('view', function($container) {
+  /* No cache for now */
+  $view= \Slim\Views\Twig::create(
+    [ '../ui' ],
+    [ 'cache' => false ]
+  );
 
-  // Instantiate and add Slim specific extension
-  $basePath= $container->get('request')->getUri()->getBasePath();
-  $basePath= rtrim(str_ireplace('index.php', '', $basePath), '/');
-
-  if (($tz= $container['settings']['Twig']['timezone'])) {
+  /* Set timezone for date functions */
+  $tz= @$_ENV['PHP_TIMEZONE'] ?: @$_ENV['TZ'];
+  if ($tz) {
     $view->getEnvironment()
-      ->getExtension('Twig_Extension_Core')
+      ->getExtension(\Twig\Extension\CoreExtension::class)
       ->setTimezone($tz);
   }
 
-  $view->addExtension(new Slim\Views\TwigExtension($container->get('router'),
-                                                   $basePath));
+  // Add the HTML extension
+  $view->addExtension(new \Twig\Extra\Html\HtmlExtension());
+
+  // Add StringLoader extension
+  $view->addExtension(new \Twig\Extension\StringLoaderExtension());
 
   return $view;
-};
+});
 
 /* Add filters for blog entries */
-$filter= new Twig_SimpleFilter('expand_psuedo_urls', function ($text) {
+$filter= new \Twig\TwigFilter('expand_psuedo_urls', function ($text) {
   $text= preg_replace('/isbn:([0-9x]+)/i',
                       'http://www.amazon.com/exec/obidos/ASIN/$1/trainedmonkey',
                       $text);
@@ -73,33 +89,42 @@ $filter= new Twig_SimpleFilter('expand_psuedo_urls', function ($text) {
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
-$filter= new Twig_SimpleFilter('paragraphs', function ($text) {
+$filter= new \Twig\TwigFilter('paragraphs', function ($text) {
   return preg_replace('!\r?\n\r?\n!', '</p><p>', $text);
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
-$filter= new Twig_SimpleFilter('prettify_markup', function ($text) {
+$filter= new \Twig\TwigFilter('prettify_markup', function ($text) {
   $text= preg_replace('!<q>!', '&ldquo;', $text);
   $text= preg_replace('!</q>!', '&rdquo;', $text);
   return $text;
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
-$filter= new Twig_SimpleFilter('slug', function ($text) {
+$filter= new \Twig\TwigFilter('slug', function ($text) {
   return preg_replace('/[^-A-Za-z0-9,]/u', '_', $text);
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
-/* 404 handler */
-$container['notFoundHandler']= function ($c) {
-  return function ($req, $res) use ($c) {
-    return $c['view']->render($res->withStatus(404), '404.html');
-  };
-};
+$app->add(\Slim\Views\TwigMiddleware::createFromContainer($app));
+
+$app->add((new \Middlewares\TrailingSlash(false))->redirect());
+
+$errorMiddleware= $app->addErrorMiddleware($DEBUG, true, true);
+
+/* 404 */
+$errorMiddleware->setErrorHandler(
+  \Slim\Exception\HttpNotFoundException::class,
+  function (Request $request, Throwable $exception,
+            bool $displayErrorDetails) use ($container)
+  {
+    $response= new \Slim\Psr7\Response();
+    return $container->get('view')->render($response->withStatus(404), '404.html');
+  });
 
 /* A single entry */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{slug}',
-          function (Request $req, Response $res, array $args) {
+          function (Request $request, Response $response, $args) {
 
 $year=  (int)$args['year'];
 $month= sprintf("%02d", (int)$args['month']);
@@ -114,11 +139,11 @@ if (is_numeric($id)) {
            AND title LIKE '" . addslashes($id) . "'";
 }
 
-$entry= get_entry($this->db, $where);
+$entry= get_entry($this->get('db'), $where);
 
 /* Use slug in canonical URL for items with title */
 if (is_numeric($id) && $entry['title']) {
-  return $res->withRedirect(
+  return $response->withRedirect(
     sprintf('/%s/%s',
       (new \DateTime($entry['created_at']))->format("Y/m/d"),
       $entry['title'] ?
@@ -127,8 +152,8 @@ if (is_numeric($id) && $entry['title']) {
 }
 
 /* Get next/previous */
-$previous= get_entry($this->db, "created_at < '{$entry['created_at']}'", "DESC");
-$next= get_entry($this->db, "created_at > '{$entry['created_at']}'", "ASC");
+$previous= get_entry($this->get('db'), "created_at < '{$entry['created_at']}'", "DESC");
+$next= get_entry($this->get('db'), "created_at > '{$entry['created_at']}'", "ASC");
 
 /* Get comments */
 $comments= [];
@@ -142,13 +167,13 @@ if ($entry['comments']) {
    ORDER BY created_at ASC
   ";
 
-  $sth= $this->db->prepare($query);
+  $sth= $this->get('db')->prepare($query);
   $sth->execute([$entry['id']]);
 
   $comments= $sth->fetchAll();
 }
 
-return $this->view->render($res, 'entry.html', [ 'entry' => $entry,
+return $this->get('view')->render($response, 'entry.html', [ 'entry' => $entry,
                                                  'next' => $next,
                                                  'previous' => $previous,
                                                  'comments' => $comments ]);
@@ -156,18 +181,14 @@ return $this->view->render($res, 'entry.html', [ 'entry' => $entry,
           })->setName('entry');
 
 /* Year archive */
-$app->get('/{year:2[0-9][0-9][0-9]}',
-          function (Request $req, Response $res, array $args) {
-  return $res->withRedirect($this->router->pathFor('year', $args));
-});
-$app->get('/{year:[0-9]+}/',
-          function (Request $req, Response $res, array $args) {
-  $year= $args['year'];
+$app->get('/{year:[0-9]+}',
+          function (Request $request, Response $response, array $args) {
+  $year= (int)$args['year'];
 
   $query= "SELECT DISTINCT YEAR(created_at) AS year
              FROM entry
             ORDER BY year DESC";
-  $years= $this->db->query($query);
+  $years= $this->get('db')->query($query);
 
   $query= <<<QUERY
     SELECT MIN(created_at) AS created_at,
@@ -181,30 +202,24 @@ $app->get('/{year:[0-9]+}/',
      ORDER BY month ASC, day ASC
 QUERY;
 
-  $entries= $this->db->query($query)->fetchALl();
+  $entries= $this->get('db')->query($query)->fetchALl();
 
-  return $this->view->render($res, 'year.html', [
+  return $this->get('view')->render($response, 'year.html', [
   'query' => $query,
-    'year' => $year,
+    'year' => $args['year'],
     'entries' => $entries,
     'years' => $years,
   ]);
 })->setName('year');
 
-/* Month archive */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}',
-          function (Request $req, Response $res, array $args) {
-  return $res->withRedirect($this->router->pathFor('month', $args));
-});
-$app->get('/{year:[0-9]+}/{month:[0-9]+}/',
-          function (Request $req, Response $res, array $args) {
-  $year= $args['year'];
-  $month= $args['month'];
-
+          function (Request $request, Response $response, $args) {
+  $year= (int)$args['year'];
+  $month= (int)$args['month'];
   $query= "SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m-01') AS ym
              FROM entry
             WHERE created_at BETWEEN '$year-1-1' AND '$year-12-31'";
-  $months= $this->db->query($query);
+  $months= $this->get('db')->query($query);
 
   $query= <<<QUERY
     SELECT MIN(created_at) AS created_at,
@@ -219,7 +234,7 @@ $app->get('/{year:[0-9]+}/{month:[0-9]+}/',
      ORDER BY month ASC, day ASC
 QUERY;
 
-  $entries= $this->db->query($query)->fetchALl();
+  $entries= $this->get('db')->query($query)->fetchALl();
 
   $query= <<<QUERY
     SELECT created_at FROM entry
@@ -227,7 +242,7 @@ QUERY;
        AND NOT draft
      ORDER BY created_at DESC LIMIT 1
 QUERY;
-  $prev= $this->db->query($query)->fetch();
+  $prev= $this->get('db')->query($query)->fetch();
 
   $query= <<<QUERY
     SELECT created_at FROM entry
@@ -235,9 +250,9 @@ QUERY;
        AND NOT draft
      ORDER BY created_at ASC LIMIT 1
 QUERY;
-  $next= $this->db->query($query)->fetch();
+  $next= $this->get('db')->query($query)->fetch();
 
-  return $this->view->render($res, 'month.html', [
+  return $this->get('view')->render($response, 'month.html', [
   'query' => $query,
     'year' => $year,
     'month' => $month,
@@ -250,18 +265,14 @@ QUERY;
 
 /* Day archive */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
-          function (Request $req, Response $res, array $args) {
-  return $res->withRedirect($this->router->pathFor('day', $args));
-});
-$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/',
-          function (Request $req, Response $res, array $args) {
-  $year= $args['year'];
-  $month= $args['month'];
-  $day= $args['day'];
+          function (Request $request, Response $response, $args) {
+  $year= (int)$args['year'];
+  $month= (int)$args['month'];
+  $day= (int)$args['day'];
 
   $where= "AND created_at BETWEEN '$year-$month-$day' AND
                                   '$year-$month-$day' + INTERVAL 1 DAY";
-  $entries= get_entries($this->db, $where, 'ASC', '');
+  $entries= get_entries($this->get('db'), $where, 'ASC', '');
 
   $query= <<<QUERY
     SELECT created_at FROM entry
@@ -269,7 +280,7 @@ $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/',
        AND NOT draft
      ORDER BY created_at DESC LIMIT 1
 QUERY;
-  $prev= $this->db->query($query)->fetch();
+  $prev= $this->get('db')->query($query)->fetch();
 
   $query= <<<QUERY
     SELECT created_at FROM entry
@@ -277,9 +288,9 @@ QUERY;
        AND NOT draft
      ORDER BY created_at ASC LIMIT 1
 QUERY;
-  $next= $this->db->query($query)->fetch();
+  $next= $this->get('db')->query($query)->fetch();
 
-  return $this->view->render($res, 'day.html', [
+  return $this->get('view')->render($response, 'day.html', [
   'query' => $query,
     'ymd' => "$year-$month-$day",
     'entries' => $entries,
@@ -288,131 +299,135 @@ QUERY;
   ]);
 })->setName('day');
 
-$app->get('/', function (Request $req, Response $res, array $args) {
-  $entries= get_entries($this->db, '', 'DESC', 'LIMIT 12');
-  return $this->view->render($res, 'index.html', [ 'entries' => $entries ]);
+$app->get('/', function (Request $request, Response $response) {
+  $view= $this->get('view');
+  $entries= get_entries($this->get('db'), '', 'DESC', 'LIMIT 12');
+  return $view->render($response, 'index.html', [ 'entries' => $entries ]);
 })->setName('top');
 
-$app->get('/archive/', function (Request $req, Response $res, array $args) {
+$app->get('/archive', function (Request $request, Response $response) {
   $query= "SELECT AVG(total)
            FROM (SELECT COUNT(*) AS total
                    FROM entry_to_tag
                   GROUP BY tag_id) avg";
-  $avg= $this->db->query($query)->fetchColumn();
+  $avg= $this->get('db')->query($query)->fetchColumn();
 
   $query= "SELECT name, COUNT(*) AS total
              FROM tag
              JOIN entry_to_tag ON (id = tag_id)
             GROUP BY id
             ORDER BY name";
-  $tags= $this->db->query($query);
+  $tags= $this->get('db')->query($query);
 
   $query= "SELECT DISTINCT YEAR(created_at) AS year
              FROM entry
             ORDER BY year DESC";
-  $years= $this->db->query($query);
+  $years= $this->get('db')->query($query);
 
-  return $this->view->render($res, 'archive.html', [
+  return $this->get('view')->render($response, 'archive.html', [
     'avg' => $avg,
     'tags' => $tags,
     'years' => $years,
   ]);
 })->setName('archive');
 
-$app->get('/tag/{tag}', function (Request $req, Response $res, array $args) {
-  $tag= $this->db->quote($args['tag']);
+$app->get('/tag/{tag}', function (Request $request, Response $response, $args) {
+  $qtag= $this->get('db')->quote($args['tag']);
 
-  $where= " AND $tag IN
+  $where= " AND $qtag IN
                 (SELECT name FROM tag, entry_to_tag ec
                   WHERE entry_id = entry.id AND tag_id = tag.id)";
 
-  $entries= get_entries($this->db, $where, "DESC", "");
+  $entries= get_entries($this->get('db'), $where, "DESC", "");
 
-  return $this->view->render($res, 'index.html', [
+  return $this->get('view')->render($response, 'index.html', [
     'tag' => $args['tag'],
     'entries' => $entries,
   ]);
 })->setName('tag');
 
-$app->get('/search', function (Request $req, Response $res, array $args) {
-  $q= $req->getParam('q');
+$app->get('/search', function (Request $request, Response $response) {
+  $q= $request->getParam('q');
 
   $query= "SELECT id FROM talapoin WHERE MATCH(?)";
-  $stmt= $this->search->prepare($query);
+  $stmt= $this->get('search')->prepare($query);
 
   $stmt->execute([$q]);
 
   $ids= array_map(function ($e) { return $e['id']; }, $stmt->fetchAll());
 
   if ($ids) {
-    $entries= get_entries($this->db,
+    $entries= get_entries($this->get('db'),
                           'AND id IN (' . join(',', $ids) . ')',
                           "DESC", "");
+  } else {
+    $entries= [];
   }
 
-  return $this->view->render($res, 'search.html', [
+  return $this->get('view')->render($response, 'search.html', [
     'q' => $q,
     'entries' => $entries,
   ]);
 });
 
-$app->get('/scratch[/{path:.*}]',
-          function (Request $req, Response $res, array $args) {
-  $static= $this->settings['static'];
-  return $res->withRedirect($static . '/' . $args['path']);
+$app->get('/scratch[/{path:.*}]', function (Request $request, Response $response, $args) {
+  $path= $args['path'];
+  $config= $this->get('config');
+  return $response->withRedirect($config['static'] . '/' . $path);
 });
 
 /* Atom feeds */
-$app->get('/index.atom', function (Request $req, Response $res, array $args) {
-  $entries= get_entries($this->db, "", 'DESC', "LIMIT 15");
+$app->get('/index.atom', function (Request $request, Response $response) {
+  $entries= get_entries($this->get('db'), "", 'DESC', "LIMIT 15");
 
-  return $this->view
-    ->render($res, 'index.atom', [ 'entries' => $entries ])
+  return $this->get('view')
+    ->render($response, 'index.atom', [ 'entries' => $entries ])
     ->withHeader('Content-Type', 'application/atom+xml');
 })->setName('atom');
 $app->get('/{tag}/index.atom',
-          function (Request $req, Response $res, array $args) {
-  $tag= $this->db->quote($args['tag']);
+          function (Request $request, Response $response, $args) {
+  $qtag= $this->get('db')->quote($args['tag']);
 
-  $where= " AND $tag IN
+  $where= " AND $qtag IN
                 (SELECT name FROM tag, entry_to_tag ec
                   WHERE entry_id = entry.id AND tag_id = tag.id)";
 
-  $entries= get_entries($this->db, $where, "DESC", "LIMIT 15");
+  $entries= get_entries($this->get('db'), $where, "DESC", "LIMIT 15");
 
-  return $this->view
-    ->render($res, 'index.atom', [ 'entries' => $entries, 'tag' => $args['tag'] ])
+  return $this->get('view')
+    ->render($response, 'index.atom', [ 'entries' => $entries, 'tag' => $args['tag'] ])
     ->withHeader('Content-Type', 'application/atom+xml');
 })->setName('tag_atom');
 
 /* Handle /entry/123 as redirect to blog entry (tmky.us goes through this) */
 $app->get('/entry/{id:[0-9]+}',
-          function (Request $req, Response $res, array $args) {
-  $entry= get_entry($this->db, "id = {$args['id']}");
+          function (Request $request, Response $response, $args) {
+  $id= (int)$args['id'];
+  $entry= get_entry($this->get('db'), "id = $id");
   if ($entry) {
-    return $res->withRedirect(
+    return $response->withRedirect(
       sprintf('/%s/%s',
         (new \DateTime($entry['created_at']))->format("Y/m/d"),
         $entry['title'] ?
           preg_replace('/[^-A-Za-z0-9,]/u', '_', $entry['title']) :
           $entry['id']));
   }
-  throw new \Slim\Exception\NotFoundException($req, $res);
+  throw new \Slim\Exception\HttpNotFoundException($request, $response);
 });
 
 $app->get('/entry', function (Request $request, Response $response) {
-  return $res->withRedirect('/');
-}
+  return $response->withRedirect('/');
+});
 
 /* Behind the scenes stuff */
-$app->get('/~reindex', function (Request $req, Response $res, array $args) {
-  $entries= get_entries($this->db, "", "ASC", "");
+$app->get('/~reindex', function (Request $request, Response $response) {
+  $entries= get_entries($this->get('db'), "", "ASC", "");
 
-  $this->search->query("DELETE FROM talapoin WHERE id > 0");
+  $this->get('search')->query("DELETE FROM talapoin WHERE id > 0");
 
   $query= "INSERT INTO talapoin (id, title, content, created_at, tags)
            VALUES (?, ?, ?, ?, ?)";
-  $stmt= $this->search->prepare($query);
+  $stmt= $this->get('search')->prepare($query);
 
   $rows= 0;
   foreach ($entries as $entry) {
@@ -426,27 +441,28 @@ $app->get('/~reindex', function (Request $req, Response $res, array $args) {
     $rows+= $stmt->rowCount();
   }
 
-  return $res->getBody()->write("Indexed $rows rows.");
+  $response->getBody()->write("Indexed $rows rows.");
+  return $response;
 });
 
 /* Posting via email2webhook */
 $app->post('/~webhook/post-entry',
-           function (Request $req, Response $res, array $args) {
-  $key= $req->getParam('key');
+           function (Request $request, Response $response) {
+  $key= $request->getParam('key');
   $post_key= $this->settings['post_key'];
 
   if ($key != $post_key) {
-    return $res->withStatus(403, "Not allowed.");
+    return $response->withStatus(403, "Not allowed.");
   }
 
   if ($this->settings['debug_webhook']) {
-    file_put_contents("/tmp/debug_webhook", (string)$req->getBody());
+    file_put_contents("/tmp/debug_webhook", (string)$request->getBody());
   }
 
-  $data= $req->getParsedBody();
+  $data= $request->getParsedBody();
 
   if ($data['sender'] != $this->settings['post_from']) {
-    return $res->withStatus(403, "Not allowed.");
+    return $response->withStatus(403, "Not allowed.");
   }
 
   $title= $data['subject'];
@@ -478,24 +494,24 @@ $app->post('/~webhook/post-entry',
   // get rid of smart double-quotes
   $entry= preg_replace('/[“”]/', '"', $entry);
 
-  $this->db->beginTransaction();
+  $this->get('db')->beginTransaction();
 
   if ($page) {
     $query= "INSERT INTO page (title, slug, entry) VALUES (?,?,?)";
-    $stmt= $this->db->prepare($query);
+    $stmt= $this->get('db')->prepare($query);
 
     $stmt->execute([$title, $page, $entry]);
   } else {
     $query= "INSERT INTO entry (title, entry) VALUES (?,?)";
-    $stmt= $this->db->prepare($query);
+    $stmt= $this->get('db')->prepare($query);
 
-    $find_tag= $this->db->prepare("SELECT id FROM tag WHERE name = ?");
-    $add_tag= $this->db->prepare("INSERT INTO tag SET name = ?");
-    $add_link= $this->db->prepare("INSERT INTO entry_to_tag SET entry_id = ?, tag_id = ?");
+    $find_tag= $this->get('db')->prepare("SELECT id FROM tag WHERE name = ?");
+    $add_tag= $this->get('db')->prepare("INSERT INTO tag SET name = ?");
+    $add_link= $this->get('db')->prepare("INSERT INTO entry_to_tag SET entry_id = ?, tag_id = ?");
 
     $stmt->execute([$title, $entry]);
 
-    $entry_id= $this->db->lastInsertId();
+    $entry_id= $this->get('db')->lastInsertId();
     foreach ($tags as $tag) {
       $tag= trim($tag);
 
@@ -506,7 +522,7 @@ $app->post('/~webhook/post-entry',
       if (!$tag_id) {
         if (!$add_tag->execute([$tag]))
           throw new \Exception("Unable to add new tag '$tag'.");
-        $tag_id= $this->db->lastInsertId();
+        $tag_id= $this->get('db')->lastInsertId();
       }
 
       if ($tag_id) {
@@ -516,44 +532,44 @@ $app->post('/~webhook/post-entry',
     }
   }
 
-  $this->db->commit();
+  $this->get('db')->commit();
 
-  return $res->withStatus(200, "Success.");
+  return $response->withStatus(200, "Success.");
 });
 
 /* Default for everything else (pages, redirects) */
-$app->get('/{path:.*}', function (Request $req, Response $res, array $args) {
+$app->get('/{path:.*}', function (Request $request, Response $response, $args) {
   $path= $args['path'];
 
   // check for redirects
   $query= "SELECT source, dest FROM redirect WHERE ? LIKE source";
-  $stmt= $this->db->prepare($query);
+  $stmt= $this->get('db')->prepare($query);
   if ($stmt->execute([$path]) && ($redir= $stmt->fetch())) {
     if (($pos= strpos($redir['source'], '%'))) {
       $dest= $redir['dest'] . substr($path, $pos);
     } else {
       $dest= $redir['dest'];
     }
-    return $res->withRedirect($dest);
+    return $response->withRedirect($dest);
   }
 
-  /* No trailing slash? Might need to redirect to page */
-  if (substr($path, -1) != '/') {
-    $query= "SELECT * FROM page WHERE slug = ?";
-    $stmt= $this->db->prepare($query);
-    if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
-      return $res->withRedirect($path . '/');
-    }
-  } else {
+  /* Trailing slash? Might need to redirect to page */
+  if (substr($path, -1) == '/') {
     $path= substr($path, 0, -1);
     $query= "SELECT * FROM page WHERE slug = ?";
-    $stmt= $this->db->prepare($query);
+    $stmt= $this->get('db')->prepare($query);
     if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
-      return $this->view->render($res, 'page.html', [ 'page' => $page ]);
+      return $response->withRedirect($path);
+    }
+  } else {
+    $query= "SELECT * FROM page WHERE slug = ?";
+    $stmt= $this->get('db')->prepare($query);
+    if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
+      return $this->get('view')->render($response, 'page.html', [ 'page' => $page ]);
     }
   }
 
-  throw new \Slim\Exception\NotFoundException($req, $res);
+  throw new \Slim\Exception\HttpNotFoundException($request, $response);
 });
 
 $app->run();
@@ -575,7 +591,9 @@ QUERY;
   $stmt= $db->query($query);
 
   $entry= $stmt->fetch();
-  $entry['tags']= json_decode($entry['tags']);
+  if ($entry && $entry['tags']) {
+    $entry['tags']= json_decode($entry['tags']);
+  }
 
   return $entry;
 }
@@ -599,7 +617,9 @@ QUERY;
 
   $entries= [];
   while (($entry= $stmt->fetch())) {
-    $entry['tags']= json_decode($entry['tags']);
+    if ($entry['tags']) {
+      $entry['tags']= json_decode($entry['tags']);
+    }
     $entries[]= $entry;
   }
 

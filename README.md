@@ -5,7 +5,6 @@ Talapoin uses:
 
 - [Slim][slim]: a micro framework for PHP
 - [Twig][twig]: The flexible, fast, and secure template engine for PHP
-- [Monolog][monolog]: Logging for PHP
 - [Phinx][phinx]: PHP database migrations for everyone
 - [SHJS][shjs]: Syntax Highlighting in JavaScript
 
