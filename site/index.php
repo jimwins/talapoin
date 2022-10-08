@@ -449,19 +449,19 @@ $app->get('/~reindex', function (Request $request, Response $response) {
 $app->post('/~webhook/post-entry',
            function (Request $request, Response $response) {
   $key= $request->getParam('key');
-  $post_key= $this->settings['post_key'];
+  $post_key= $this->get('config')['post_key'];
 
   if ($key != $post_key) {
     return $response->withStatus(403, "Not allowed.");
   }
 
-  if ($this->settings['debug_webhook']) {
+  if ($this->get('config')['debug_webhook']) {
     file_put_contents("/tmp/debug_webhook", (string)$request->getBody());
   }
 
   $data= $request->getParsedBody();
 
-  if ($data['sender'] != $this->settings['post_from']) {
+  if ($data['sender'] != $this->get('config')['post_from']) {
     return $response->withStatus(403, "Not allowed.");
   }
 
