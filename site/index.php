@@ -488,7 +488,7 @@ $app->post('/~webhook/post-entry',
   }
   if (!$tags && !$page) die($entry);
 
-  trim($subject);
+  trim($title);
   trim($entry);
 
   // get rid of smart double-quotes
