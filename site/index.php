@@ -546,6 +546,19 @@ if ($DEBUG) {
               $response->getBody()->write(ob_get_clean());
               return $response;
             })->setName('info');
+
+  $app->get('/info/db',
+            function (Request $request, Response $response) {
+              $db= $this->get('db');
+
+              $stmt= $db->prepare("SHOW VARIABLES");
+
+              $stmt->execute();
+
+              $vars= $stmt->fetchAll();
+
+              return $this->get('view')->render($response, 'info-db.html', [ 'vars' => $vars ]);
+            });
 }
 
 /* Default for everything else (pages, redirects) */

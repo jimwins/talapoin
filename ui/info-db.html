@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  {{- page.title -}}
+{% endblock %}
+
+{% block content %}
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for var in vars %}
+        <tr>
+          <td>{{ var.Variable_name }}</td>
+          <td>{{ var.Value }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
