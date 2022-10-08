@@ -572,6 +572,17 @@ $app->get('/{path:.*}', function (Request $request, Response $response, $args) {
   throw new \Slim\Exception\HttpNotFoundException($request, $response);
 });
 
+/* DEBUG only */
+if ($DEBUG) {
+  $app->get('/info',
+            function (Request $request, Response $response) {
+              ob_start();
+              phpinfo();
+              $response->getBody()->write(ob_get_clean());
+              return $response;
+            })->setName('info');
+}
+
 $app->run();
 
 function get_entry($db, $where, $order= 'ASC') {
