@@ -491,9 +491,6 @@ $app->post('/~webhook/post-entry',
   trim($title);
   trim($entry);
 
-  // get rid of smart double-quotes
-  $entry= preg_replace('/[“”]/', '"', $entry);
-
   $this->get('db')->beginTransaction();
 
   if ($page) {
