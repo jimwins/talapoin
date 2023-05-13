@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  edit entry @ trainedmonkey.com
+{% endblock %}
+
+{% block content %}
+
+<style>
+  form {
+    margin-top: 2em;
+  }
+  form label {
+    display: block;
+    margin-bottom: 1em;
+  }
+  form input[type="text"], form textarea {
+    width: 100ch;
+  }
+</style>
+
+<p>
+  <a href="{{ url_for('admin') }}">&larr; Back to admin</a>
+</p>
+
+<form method="POST" action="{{ url_for('editEntry', entry.id ? { id: entry.id } : {}) }}">
+  <label>
+    Title
+    <input type="text" name="title" value="{{ entry.title | e('html_attr') }}">
+  </label>
+
+  <label>
+    Entry
+    <textarea name="entry" rows="10">{{ entry.entry }}</textarea>
+  </label>
+
+  <label>
+    Tags
+    <input type="text" name="tags" value="{{ entry.tags | join(', ') | e('html_attr') }}">
+  </label>
+
+  <label>
+    <input type="checkbox" name="draft" value="1" {{ entry.draft ? 'checked' }}> draft
+  </label>
+
+  <input type="submit" value="Save">
+</form>
+
+{{ include('entry.twig') }}
+
+{% endblock %}

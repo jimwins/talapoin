@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  admin @ trainedmonkey.com
+{% endblock %}
+
+{% block content %}
+
+<ul>
+  <li>
+    <a href="{{ url_for('editEntry') }}">New entry</a>
+  {% for entry in entries %}
+    <li>
+      <a href="{{ url_for('editEntry', { id: entry.id }) }}">{{ entry.title ?: 'untitled' }}</a>
+      <small>{{ entry.created_at }}</small>
+    </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

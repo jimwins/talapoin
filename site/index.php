@@ -2,6 +2,7 @@
 require '../vendor/autoload.php';
 
 $DEBUG= false;
+$ORM_DEBUG= true;
 
 use \Slim\Http\ServerRequest as Request;
 use \Slim\Http\Response as Response;
@@ -10,7 +11,7 @@ use \Respect\Validation\Validator as v;
 use \Slim\Routing\RouteCollectorProxy as RouteCollectorProxy;
 
 /* Some defaults */
-error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_DEPRECATED);
 $tz= @$_ENV['PHP_TIMEZONE'] ?: @$_ENV['TZ'];
 if ($tz) date_default_timezone_set($tz);
 
@@ -25,12 +26,16 @@ if (file_exists($config_file)) {
 $builder= new \DI\ContainerBuilder();
 $builder->addDefinitions([
   'Slim\Views\Twig' => \DI\get('view'),
+  'Talapoin\Service\Data' => \DI\get('data'),
 ]);
 $container= $builder->build();
 $container->set('config', $config);
 
-\Slim\Factory\AppFactory::setContainer($container);
-$app= \Slim\Factory\AppFactory::create();
+/* Hook up the data service, but not lazily because we rely on side-effects */
+$container->set('data', new \Talapoin\Service\Data($config));
+
+$app= \DI\Bridge\Slim\Bridge::create($container);
+
 $app->addRoutingMiddleware();
 
 /* PDO */
@@ -123,13 +128,8 @@ $errorMiddleware->setErrorHandler(
   });
 
 /* A single entry */
-$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{slug}',
-          function (Request $request, Response $response, $args) {
-
-$year=  (int)$args['year'];
-$month= sprintf("%02d", (int)$args['month']);
-$day=   sprintf("%02d", (int)$args['day']);
-$id=    $args['slug'];
+$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{id}',
+          function (Request $request, Response $response, $year, $month, $day, $id) {
 
 if (is_numeric($id)) {
   $where= "id = $id";
@@ -139,7 +139,7 @@ if (is_numeric($id)) {
            AND title LIKE '" . addslashes($id) . "'";
 }
 
-$entry= get_entry($this->get('db'), $where);
+$entry= get_entry($GLOBALS['container']->get('db'), $where);
 
 /* Use slug in canonical URL for items with title */
 if (is_numeric($id) && $entry['title']) {
@@ -152,8 +152,8 @@ if (is_numeric($id) && $entry['title']) {
 }
 
 /* Get next/previous */
-$previous= get_entry($this->get('db'), "created_at < '{$entry['created_at']}'", "DESC");
-$next= get_entry($this->get('db'), "created_at > '{$entry['created_at']}'", "ASC");
+$previous= get_entry($GLOBALS['container']->get('db'), "created_at < '{$entry['created_at']}'", "DESC");
+$next= get_entry($GLOBALS['container']->get('db'), "created_at > '{$entry['created_at']}'", "ASC");
 
 /* Get comments */
 $comments= [];
@@ -167,13 +167,13 @@ if ($entry['comments']) {
    ORDER BY created_at ASC
   ";
 
-  $sth= $this->get('db')->prepare($query);
+  $sth= $GLOBALS['container']->get('db')->prepare($query);
   $sth->execute([$entry['id']]);
 
   $comments= $sth->fetchAll();
 }
 
-return $this->get('view')->render($response, 'entry.html', [ 'entry' => $entry,
+return $GLOBALS['container']->get('view')->render($response, 'entry.html', [ 'entry' => $entry,
                                                  'next' => $next,
                                                  'previous' => $previous,
                                                  'comments' => $comments ]);
@@ -182,13 +182,11 @@ return $this->get('view')->render($response, 'entry.html', [ 'entry' => $entry,
 
 /* Year archive */
 $app->get('/{year:[0-9]+}',
-          function (Request $request, Response $response, array $args) {
-  $year= (int)$args['year'];
-
+          function (Request $request, Response $response, $year) {
   $query= "SELECT DISTINCT YEAR(created_at) AS year
              FROM entry
             ORDER BY year DESC";
-  $years= $this->get('db')->query($query);
+  $years= $GLOBALS['container']->get('db')->query($query);
 
   $query= <<<QUERY
     SELECT MIN(created_at) AS created_at,
@@ -202,24 +200,22 @@ $app->get('/{year:[0-9]+}',
      ORDER BY month ASC, day ASC
 QUERY;
 
-  $entries= $this->get('db')->query($query)->fetchALl();
+  $entries= $GLOBALS['container']->get('db')->query($query)->fetchALl();
 
-  return $this->get('view')->render($response, 'year.html', [
+  return $GLOBALS['container']->get('view')->render($response, 'year.html', [
   'query' => $query,
-    'year' => $args['year'],
+    'year' => $year,
     'entries' => $entries,
     'years' => $years,
   ]);
 })->setName('year');
 
 $app->get('/{year:[0-9]+}/{month:[0-9]+}',
-          function (Request $request, Response $response, $args) {
-  $year= (int)$args['year'];
-  $month= (int)$args['month'];
+          function (Request $request, Response $response, $year, $month) {
   $query= "SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m-01') AS ym
              FROM entry
             WHERE created_at BETWEEN '$year-1-1' AND '$year-12-31'";
-  $months= $this->get('db')->query($query);
+  $months= $GLOBALS['container']->get('db')->query($query);
 
   $query= <<<QUERY
     SELECT MIN(created_at) AS created_at,
@@ -234,7 +230,7 @@ $app->get('/{year:[0-9]+}/{month:[0-9]+}',
      ORDER BY month ASC, day ASC
 QUERY;
 
-  $entries= $this->get('db')->query($query)->fetchALl();
+  $entries= $GLOBALS['container']->get('db')->query($query)->fetchALl();
 
   $query= <<<QUERY
     SELECT created_at FROM entry
@@ -242,7 +238,7 @@ QUERY;
        AND NOT draft
      ORDER BY created_at DESC LIMIT 1
 QUERY;
-  $prev= $this->get('db')->query($query)->fetch();
+  $prev= $GLOBALS['container']->get('db')->query($query)->fetch();
 
   $query= <<<QUERY
     SELECT created_at FROM entry
@@ -250,9 +246,9 @@ QUERY;
        AND NOT draft
      ORDER BY created_at ASC LIMIT 1
 QUERY;
-  $next= $this->get('db')->query($query)->fetch();
+  $next= $GLOBALS['container']->get('db')->query($query)->fetch();
 
-  return $this->get('view')->render($response, 'month.html', [
+  return $GLOBALS['container']->get('view')->render($response, 'month.html', [
   'query' => $query,
     'year' => $year,
     'month' => $month,
@@ -265,14 +261,10 @@ QUERY;
 
 /* Day archive */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
-          function (Request $request, Response $response, $args) {
-  $year= (int)$args['year'];
-  $month= (int)$args['month'];
-  $day= (int)$args['day'];
-
+          function (Request $request, Response $response, $year, $month, $day) {
   $where= "AND created_at BETWEEN '$year-$month-$day' AND
                                   '$year-$month-$day' + INTERVAL 1 DAY";
-  $entries= get_entries($this->get('db'), $where, 'ASC', '');
+  $entries= get_entries($GLOBALS['container']->get('db'), $where, 'ASC', '');
 
   $query= <<<QUERY
     SELECT created_at FROM entry
@@ -280,7 +272,7 @@ $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
        AND NOT draft
      ORDER BY created_at DESC LIMIT 1
 QUERY;
-  $prev= $this->get('db')->query($query)->fetch();
+  $prev= $GLOBALS['container']->get('db')->query($query)->fetch();
 
   $query= <<<QUERY
     SELECT created_at FROM entry
@@ -288,9 +280,9 @@ QUERY;
        AND NOT draft
      ORDER BY created_at ASC LIMIT 1
 QUERY;
-  $next= $this->get('db')->query($query)->fetch();
+  $next= $GLOBALS['container']->get('db')->query($query)->fetch();
 
-  return $this->get('view')->render($response, 'day.html', [
+  return $GLOBALS['container']->get('view')->render($response, 'day.html', [
   'query' => $query,
     'ymd' => "$year-$month-$day",
     'entries' => $entries,
@@ -300,8 +292,8 @@ QUERY;
 })->setName('day');
 
 $app->get('/', function (Request $request, Response $response) {
-  $view= $this->get('view');
-  $entries= get_entries($this->get('db'), '', 'DESC', 'LIMIT 12');
+  $view= $GLOBALS['container']->get('view');
+  $entries= get_entries($GLOBALS['container']->get('db'), '', 'DESC', 'LIMIT 12');
   return $view->render($response, 'index.html', [ 'entries' => $entries ]);
 })->setName('top');
 
@@ -310,38 +302,38 @@ $app->get('/archive', function (Request $request, Response $response) {
            FROM (SELECT COUNT(*) AS total
                    FROM entry_to_tag
                   GROUP BY tag_id) avg";
-  $avg= $this->get('db')->query($query)->fetchColumn();
+  $avg= $GLOBALS['container']->get('db')->query($query)->fetchColumn();
 
   $query= "SELECT name, COUNT(*) AS total
              FROM tag
              JOIN entry_to_tag ON (id = tag_id)
             GROUP BY id
             ORDER BY name";
-  $tags= $this->get('db')->query($query);
+  $tags= $GLOBALS['container']->get('db')->query($query);
 
   $query= "SELECT DISTINCT YEAR(created_at) AS year
              FROM entry
             ORDER BY year DESC";
-  $years= $this->get('db')->query($query);
+  $years= $GLOBALS['container']->get('db')->query($query);
 
-  return $this->get('view')->render($response, 'archive.html', [
+  return $GLOBALS['container']->get('view')->render($response, 'archive.html', [
     'avg' => $avg,
     'tags' => $tags,
     'years' => $years,
   ]);
 })->setName('archive');
 
-$app->get('/tag/{tag}', function (Request $request, Response $response, $args) {
-  $qtag= $this->get('db')->quote($args['tag']);
+$app->get('/tag/{tag}', function (Request $request, Response $response, $tag) {
+  $qtag= $GLOBALS['container']->get('db')->quote($tag);
 
   $where= " AND $qtag IN
                 (SELECT name FROM tag, entry_to_tag ec
                   WHERE entry_id = entry.id AND tag_id = tag.id)";
 
-  $entries= get_entries($this->get('db'), $where, "DESC", "");
+  $entries= get_entries($GLOBALS['container']->get('db'), $where, "DESC", "");
 
-  return $this->get('view')->render($response, 'index.html', [
-    'tag' => $args['tag'],
+  return $GLOBALS['container']->get('view')->render($response, 'index.html', [
+    'tag' => $tag,
     'entries' => $entries,
   ]);
 })->setName('tag');
@@ -350,60 +342,58 @@ $app->get('/search', function (Request $request, Response $response) {
   $q= $request->getParam('q');
 
   $query= "SELECT id FROM talapoin WHERE MATCH(?)";
-  $stmt= $this->get('search')->prepare($query);
+  $stmt= $GLOBALS['container']->get('search')->prepare($query);
 
   $stmt->execute([$q]);
 
   $ids= array_map(function ($e) { return $e['id']; }, $stmt->fetchAll());
 
   if ($ids) {
-    $entries= get_entries($this->get('db'),
+    $entries= get_entries($GLOBALS['container']->get('db'),
                           'AND id IN (' . join(',', $ids) . ')',
                           "DESC", "");
   } else {
     $entries= [];
   }
 
-  return $this->get('view')->render($response, 'search.html', [
+  return $GLOBALS['container']->get('view')->render($response, 'search.html', [
     'q' => $q,
     'entries' => $entries,
   ]);
 });
 
-$app->get('/scratch[/{path:.*}]', function (Request $request, Response $response, $args) {
-  $path= $args['path'];
-  $config= $this->get('config');
+$app->get('/scratch[/{path:.*}]', function (Request $request, Response $response, $path) {
+  $config= $GLOBALS['container']->get('config');
   return $response->withRedirect($config['static'] . '/' . $path);
 });
 
 /* Atom feeds */
 $app->get('/index.atom', function (Request $request, Response $response) {
-  $entries= get_entries($this->get('db'), "", 'DESC', "LIMIT 15");
+  $entries= get_entries($GLOBALS['container']->get('db'), "", 'DESC', "LIMIT 15");
 
-  return $this->get('view')
+  return $GLOBALS['container']->get('view')
     ->render($response, 'index.atom', [ 'entries' => $entries ])
     ->withHeader('Content-Type', 'application/atom+xml');
 })->setName('atom');
 $app->get('/{tag}/index.atom',
-          function (Request $request, Response $response, $args) {
-  $qtag= $this->get('db')->quote($args['tag']);
+          function (Request $request, Response $response, $tag) {
+  $qtag= $GLOBALS['container']->get('db')->quote($tag);
 
   $where= " AND $qtag IN
                 (SELECT name FROM tag, entry_to_tag ec
                   WHERE entry_id = entry.id AND tag_id = tag.id)";
 
-  $entries= get_entries($this->get('db'), $where, "DESC", "LIMIT 15");
+  $entries= get_entries($GLOBALS['container']->get('db'), $where, "DESC", "LIMIT 15");
 
-  return $this->get('view')
-    ->render($response, 'index.atom', [ 'entries' => $entries, 'tag' => $args['tag'] ])
+  return $GLOBALS['container']->get('view')
+    ->render($response, 'index.atom', [ 'entries' => $entries, 'tag' => $tag ])
     ->withHeader('Content-Type', 'application/atom+xml');
 })->setName('tag_atom');
 
-/* Handle /entry/123 as redirect to blog entry (tmky.us goes through this) */
+/* Handle /entry/123 as redirect to blog entry (tmky.us goes through GLOBALS['container']) */
 $app->get('/entry/{id:[0-9]+}',
-          function (Request $request, Response $response, $args) {
-  $id= (int)$args['id'];
-  $entry= get_entry($this->get('db'), "id = $id");
+          function (Request $request, Response $response, $id) {
+  $entry= get_entry($GLOBALS['container']->get('db'), "id = $id");
   if ($entry) {
     return $response->withRedirect(
       sprintf('/%s/%s',
@@ -421,13 +411,13 @@ $app->get('/entry', function (Request $request, Response $response) {
 
 /* Behind the scenes stuff */
 $app->get('/~reindex', function (Request $request, Response $response) {
-  $entries= get_entries($this->get('db'), "", "ASC", "");
+  $entries= get_entries($GLOBALS['container']->get('db'), "", "ASC", "");
 
-  $this->get('search')->query("DELETE FROM talapoin WHERE id > 0");
+  $GLOBALS['container']->get('search')->query("DELETE FROM talapoin WHERE id > 0");
 
   $query= "INSERT INTO talapoin (id, title, content, created_at, tags)
            VALUES (?, ?, ?, ?, ?)";
-  $stmt= $this->get('search')->prepare($query);
+  $stmt= $GLOBALS['container']->get('search')->prepare($query);
 
   $rows= 0;
   foreach ($entries as $entry) {
@@ -449,19 +439,19 @@ $app->get('/~reindex', function (Request $request, Response $response) {
 $app->post('/~webhook/post-entry',
            function (Request $request, Response $response) {
   $key= $request->getParam('key');
-  $post_key= $this->get('config')['post_key'];
+  $post_key= $GLOBALS['container']->get('config')['post_key'];
 
   if ($key != $post_key) {
     return $response->withStatus(403, "Not allowed.");
   }
 
-  if ($this->get('config')['debug_webhook']) {
+  if ($GLOBALS['container']->get('config')['debug_webhook']) {
     file_put_contents("/tmp/debug_webhook", (string)$request->getBody());
   }
 
   $data= $request->getParsedBody();
 
-  if ($data['sender'] != $this->get('config')['post_from']) {
+  if ($data['sender'] != $GLOBALS['container']->get('config')['post_from']) {
     return $response->withStatus(403, "Not allowed.");
   }
 
@@ -491,24 +481,24 @@ $app->post('/~webhook/post-entry',
   trim($title);
   trim($entry);
 
-  $this->get('db')->beginTransaction();
+  $GLOBALS['container']->get('db')->beginTransaction();
 
   if ($page) {
     $query= "INSERT INTO page (title, slug, entry) VALUES (?,?,?)";
-    $stmt= $this->get('db')->prepare($query);
+    $stmt= $GLOBALS['container']->get('db')->prepare($query);
 
     $stmt->execute([$title, $page, $entry]);
   } else {
     $query= "INSERT INTO entry (title, entry) VALUES (?,?)";
-    $stmt= $this->get('db')->prepare($query);
+    $stmt= $GLOBALS['container']->get('db')->prepare($query);
 
-    $find_tag= $this->get('db')->prepare("SELECT id FROM tag WHERE name = ?");
-    $add_tag= $this->get('db')->prepare("INSERT INTO tag SET name = ?");
-    $add_link= $this->get('db')->prepare("INSERT INTO entry_to_tag SET entry_id = ?, tag_id = ?");
+    $find_tag= $GLOBALS['container']->get('db')->prepare("SELECT id FROM tag WHERE name = ?");
+    $add_tag= $GLOBALS['container']->get('db')->prepare("INSERT INTO tag SET name = ?");
+    $add_link= $GLOBALS['container']->get('db')->prepare("INSERT INTO entry_to_tag SET entry_id = ?, tag_id = ?");
 
     $stmt->execute([$title, $entry]);
 
-    $entry_id= $this->get('db')->lastInsertId();
+    $entry_id= $GLOBALS['container']->get('db')->lastInsertId();
     foreach ($tags as $tag) {
       $tag= trim($tag);
 
@@ -519,7 +509,7 @@ $app->post('/~webhook/post-entry',
       if (!$tag_id) {
         if (!$add_tag->execute([$tag]))
           throw new \Exception("Unable to add new tag '$tag'.");
-        $tag_id= $this->get('db')->lastInsertId();
+        $tag_id= $GLOBALS['container']->get('db')->lastInsertId();
       }
 
       if ($tag_id) {
@@ -529,9 +519,23 @@ $app->post('/~webhook/post-entry',
     }
   }
 
-  $this->get('db')->commit();
+  $GLOBALS['container']->get('db')->commit();
 
   return $response->withStatus(200, "Success.");
+});
+
+/* Admin */
+$app->group('/~admin', function (RouteCollectorProxy $app) {
+  $app->get('', [ \Talapoin\Controller\Admin::class, 'top' ])
+    ->setName('admin');
+
+  $app->get('/entry[/{id}]', [ \Talapoin\Controller\Admin::class, 'editEntry' ])
+    ->setName('editEntry');
+  $app->post('/entry[/{id}]', [ \Talapoin\Controller\Admin::class, 'updateEntry' ]);
+
+  $app->get('/page[/{id}]', [ \Talapoin\Controller\Admin::class, 'editPage' ])
+    ->setName('editPage');
+  $app->post('/page[/{id}]', [ \Talapoin\Controller\Admin::class, 'updatePage' ]);
 });
 
 /* DEBUG only */
@@ -546,7 +550,7 @@ if ($DEBUG) {
 
   $app->get('/info/db',
             function (Request $request, Response $response) {
-              $db= $this->get('db');
+              $db= $GLOBALS['container']->get('db');
 
               $stmt= $db->prepare("SHOW VARIABLES");
 
@@ -554,17 +558,15 @@ if ($DEBUG) {
 
               $vars= $stmt->fetchAll();
 
-              return $this->get('view')->render($response, 'info-db.html', [ 'vars' => $vars ]);
+              return $GLOBALS['container']->get('view')->render($response, 'info-db.html', [ 'vars' => $vars ]);
             });
 }
 
 /* Default for everything else (pages, redirects) */
-$app->get('/{path:.*}', function (Request $request, Response $response, $args) {
-  $path= $args['path'];
-
+$app->get('/{path:.*}', function (Request $request, Response $response, $path) {
   // check for redirects
   $query= "SELECT source, dest FROM redirect WHERE ? LIKE source";
-  $stmt= $this->get('db')->prepare($query);
+  $stmt= $GLOBALS['container']->get('db')->prepare($query);
   if ($stmt->execute([$path]) && ($redir= $stmt->fetch())) {
     if (($pos= strpos($redir['source'], '%'))) {
       $dest= $redir['dest'] . substr($path, $pos);
@@ -578,15 +580,15 @@ $app->get('/{path:.*}', function (Request $request, Response $response, $args) {
   if (substr($path, -1) == '/') {
     $path= substr($path, 0, -1);
     $query= "SELECT * FROM page WHERE slug = ?";
-    $stmt= $this->get('db')->prepare($query);
+    $stmt= $GLOBALS['container']->get('db')->prepare($query);
     if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
       return $response->withRedirect($path);
     }
   } else {
     $query= "SELECT * FROM page WHERE slug = ?";
-    $stmt= $this->get('db')->prepare($query);
+    $stmt= $GLOBALS['container']->get('db')->prepare($query);
     if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
-      return $this->get('view')->render($response, 'page.html', [ 'page' => $page ]);
+      return $GLOBALS['container']->get('view')->render($response, 'page.html', [ 'page' => $page ]);
     }
   }
 
