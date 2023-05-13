@@ -27,9 +27,10 @@ $builder= new \DI\ContainerBuilder();
 $builder->addDefinitions([
   'Slim\Views\Twig' => \DI\get('view'),
   'Talapoin\Service\Data' => \DI\get('data'),
+  'Talapoin\Service\Config' => \DI\get('config'),
 ]);
 $container= $builder->build();
-$container->set('config', $config);
+$container->set('config', new \Talapoin\Service\Config($config));
 
 /* Hook up the data service, but not lazily because we rely on side-effects */
 $container->set('data', new \Talapoin\Service\Data($config));
@@ -536,7 +537,7 @@ $app->group('/~admin', function (RouteCollectorProxy $app) {
   $app->get('/page[/{id}]', [ \Talapoin\Controller\Admin::class, 'editPage' ])
     ->setName('editPage');
   $app->post('/page[/{id}]', [ \Talapoin\Controller\Admin::class, 'updatePage' ]);
-});
+})->add($container->get(\Talapoin\Middleware\Auth::class));
 
 /* DEBUG only */
 if ($DEBUG) {
