@@ -17,33 +17,6 @@
 <link rel="shortcut icon" href="/common/fav.ico" />
 <meta name="ICBM" content="34.0480,-118.2473" />
 <meta name="geo.position" content="34.0480;-118.2473" />
-<style type="text/css">
- #pix a img {
-  border: 2px solid #999;
-  border: 2px solid rgba(0,0,0,0.2);
- }
- #pix a:hover img {
-  border: 2px solid #ddd;
-  border: 2px solid rgba(0,0,0,0.4);
- }
- #pix a, #pix a:hover {
-  background: none;
-  border: none;
- }
- #sidebar .powered:visited, #sidebar .powered:link {
-  font-size: smaller;
-  border-bottom: none;
- }
-</style>
-{% endblock %}
-
-{% block sidebar %}
-  {{ parent() }}
-
-  <div id="pix">
-    <script type="text/javascript" src="//www.flickr.com/badge_code_v2.gne?count=4&display=random&size=t&layout=v&source=user&user=81342178%40N00"></script>
-    <a class="powered" href="//www.flickr.com/"><strong style="color:#3993ff">flick<span style="color:#ff1c92">r</span></strong> powered</a>
-  </div>
 {% endblock %}
 
 {% block content %}

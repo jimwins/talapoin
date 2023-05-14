@@ -9,7 +9,7 @@
   </title>
   <link rel="shortcut icon" href="/common/fav.ico" />
   <link rel="stylesheet" type="text/css" media="screen"
-        href="{% block style %}/common/screen.css{% endblock %}" />
+        href="/common/screen.css?{{ current_release() }}" />
   <link rel="stylesheet" type="text/css" media="screen"
         href="/common/sh_style.css" />
   {% block extra_head %}{% endblock %}
@@ -24,36 +24,38 @@
   <li><a href="#search">skip to search box</a></li>
 </ul>
 
-<div id="content">
-{% block content %}{% endblock %}
-</div>
+<div class="left-sidebar-grid">
+  <div class="main-content">
+    {% block content %}{% endblock %}
+  </div>
 
-<div id="sidebar">
-  {% block sidebar %}
-    <ul id="navigation">
-      <li><a rel="home" href="/">home</a></li>
-      <li><a rel="about" href="/about/">about</a></li>
-      <li><a rel="toc" href="/archive/">archive</a></li>
-      <li><a href="/projects/">projects</a></li>
-      <li><a href=//www.flickr.com/photos/jimwinstead/">photos</a></li>
-      <li><a href="http://www.5thandspring.com/">celia</a></li>
-      <li><a href="http://213dog.blogspot.com/">wonton</a></li>
-      <li><a href="//rawmaterialsla.com/">raw materials</a></li>
-      <li><a rel="me" href="https://mefi.social/@jimw">toots</a></li>
-    </ul>
+  <div class="left-sidebar">
+    {% block sidebar %}
+      <ul id="navigation">
+        <li><a rel="home" href="/">home</a></li>
+        <li><a rel="about" href="/about/">about</a></li>
+        <li><a rel="toc" href="/archive/">archive</a></li>
+        <li><a href="/projects/">projects</a></li>
+        <li><a href=//www.flickr.com/photos/jimwinstead/">photos</a></li>
+        <li><a href="http://www.5thandspring.com/">celia</a></li>
+        <li><a href="http://213dog.blogspot.com/">wonton</a></li>
+        <li><a href="//rawmaterialsla.com/">raw materials</a></li>
+        <li><a rel="me" href="https://mefi.social/@jimw">@jimw@mefi.social</a></li>
+      </ul>
 
-    <form id="search" method="get" action="/search">
-      <fieldset>
-        <legend>search</legend>
-        <input type="search" accesskey="4" id="livesearch" name="q"
-               value="{{ q }}" size="10"
-               style="width:100%"
-               placeholder="search"
-               autosave="tm_search"
-               results="10">
-      </fieldset>
-    </form>
-  {% endblock %}
+      <form id="search" method="get" action="/search">
+        <fieldset>
+          <legend>search</legend>
+          <input type="search" accesskey="4" id="livesearch" name="q"
+                 value="{{ q }}" size="10"
+                 style="width:100%"
+                 placeholder="search"
+                 autosave="tm_search"
+                 results="10">
+        </fieldset>
+      </form>
+    {% endblock %}
+  </div>
 </div>
 
 <ul id="links">
