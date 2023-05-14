@@ -112,6 +112,15 @@ $filter= new \Twig\TwigFilter('slug', function ($text) {
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
+$func= new \Twig\TwigFunction('current_release', function() {
+  $link= @readlink('/app/current');
+  if ($link) {
+    return basename($link);
+  }
+  return 'dev';
+});
+$container->get('view')->getEnvironment()->addFunction($func);
+
 $app->add(\Slim\Views\TwigMiddleware::createFromContainer($app));
 
 $app->add((new \Middlewares\TrailingSlash(false))->redirect());
