@@ -145,8 +145,14 @@ form {
   }
 }
 
+.left-sidebar-grid {
+}
+
 .left-sidebar {
+ max-height: 100vh;
  text-align: right;
+ position: sticky;
+ top: 0;
 }
 
 .left-sidebar div, .left-sidebar form {
@@ -243,13 +249,10 @@ form {
 }
 
 #links {
- clear: both;
  list-style: none;
  text-align: right;
- max-width: 600px;
- margin-left: 150px;
- margin-right: auto;
  padding-right: 10px;
+ max-width: 80ch;
 }
 #links li {
  display: inline;
