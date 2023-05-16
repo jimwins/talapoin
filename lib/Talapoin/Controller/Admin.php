@@ -34,6 +34,18 @@ class Admin {
         'tags' => [],
         'draft' => 1
       ];
+
+      if (($url= $request->getParam('url'))) {
+        $title= $request->getParam('title') ?: $url;
+        $quote= $request->getParam('description');
+
+        $entry['entry']=
+          '<a href="' . htmlspecialchars($url) . '">' .
+          htmlspecialchars($title) . '</a>';
+        if ($quote) {
+          $entry['entry'].= "\n\n<blockquote>" . htmlspecialchars($quote) . "</blockquote>";
+        }
+      }
     }
 
     return $view->render($response, 'admin/edit-entry.html', [ 'entry' => $entry ]);
