@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  edit page @ trainedmonkey.com
+{% endblock %}
+
+{% block content %}
+
+<style>
+  form {
+    margin-top: 2em;
+  }
+  form label {
+    display: block;
+    margin-bottom: 1em;
+  }
+  form input[type="text"], form textarea {
+    width: 100ch;
+  }
+</style>
+
+<p>
+  <a href="{{ url_for('admin') }}">&larr; Back to admin</a>
+</p>
+
+<form method="POST" action="{{ url_for('editPage', page.id ? { id: page.id } : {}) }}">
+  <label>
+    Title
+    <input type="text" name="title" value="{{ page.title | e('html_attr') }}">
+  </label>
+
+  <label>
+    Entry
+    <textarea name="content" rows="10">{{ page.content }}</textarea>
+  </label>
+
+  <label>
+    Description
+    <textarea name="description" rows="3">{{ page.description }}</textarea>
+  </label>
+
+  <label>
+    Slug
+    <input type="text" name="slug" value="{{ page.slug | e('html_attr') }}">
+  </label>
+
+  <label>
+    <input type="checkbox" name="draft" value="1" {{ page.draft ? 'checked' }}> draft
+  </label>
+
+  <input type="submit" value="Save">
+</form>
+
+{% endblock %}

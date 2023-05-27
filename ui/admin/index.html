@@ -6,6 +6,8 @@
 
 {% block content %}
 
+<h2>Entries</h2>
+
 <ul>
   <li>
     <a href="{{ url_for('editEntry') }}">New entry</a>
@@ -17,4 +19,15 @@
   {% endfor %}
 </ul>
 
+<h2>Pages</h2>
+<ul>
+  <li>
+    <a href="{{ url_for('editPage') }}">New page</a>
+  {% for page in pages %}
+    <li>
+      <a href="{{ url_for('editPage', { id: page.id }) }}">{{ page.title ?: 'untitled' }}</a>
+      <small>{{ page.slug }}</small>
+    </li>
+  {% endfor %}
+</ul>
 {% endblock %}

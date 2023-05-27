@@ -18,7 +18,15 @@ class Admin {
         ->order_by_desc('created_at')
         ->find_many();
 
-    return $view->render($response, 'admin/index.html', [ 'entries' => $entries ]);
+    $pages=
+      $this->data->factory('Page')
+        ->order_by_asc('slug')
+        ->find_many();
+
+    return $view->render($response, 'admin/index.html', [
+      'entries' => $entries,
+      'pages' => $pages,
+    ]);
   }
 
   public function editEntry(Request $request, Response $response, View $view, $id= null) {
@@ -130,5 +138,45 @@ class Admin {
     }
 
     return $view->render($response, 'admin/edit-page.html', [ 'page' => $page ]);
+  }
+
+  public function updatePage(
+    Request $request, Response $response,
+    View $view,
+    $id= null
+  ) {
+    if ($id) {
+      $page= $this->data->factory('Page')->find_one($id);
+      if (!$page) {
+        throw new \Slim\Exception\HttpNotFoundException($request);
+      }
+    } else {
+      $page= $this->data->factory('Page')->create();
+    }
+
+    $title= $request->getParam('title');
+    $content= $request->getParam('content');
+    $description= $request->getParam('description');
+    $slug= $request->getParam('slug');
+    $draft= (int)$request->getParam('draft');
+
+    $page->title= $title;
+    $page->content= $content;
+    $page->description= $description;
+    $page->slug= $slug;
+    $page->draft= $draft;
+
+    $page->save();
+
+    $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
+    $routeParser= $routeContext->getRouteParser();
+
+    if ($page->draft) {
+      $url= $routeParser->urlFor('editPage', [ 'id' => $page->id ]);
+    } else {
+      $url= '/' . $page->slug;
+    }
+
+    return $response->withRedirect($url);
   }
 }
