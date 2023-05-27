@@ -51,7 +51,12 @@ class Admin {
     return $view->render($response, 'admin/edit-entry.html', [ 'entry' => $entry ]);
   }
 
-  public function updateEntry(Request $request, Response $response, View $view, $id= null) {
+  public function updateEntry(
+    Request $request, Response $response,
+    View $view,
+    \Talapoin\Service\Mastodon $mastodon,
+    $id= null
+  ) {
     if ($id) {
       $entry= $this->data->factory('Entry')->find_one($id);
       if (!$entry) {
@@ -59,7 +64,10 @@ class Admin {
       }
     } else {
       $entry= $this->data->factory('Entry')->create();
+      $entry->draft= 1;
     }
+
+    $was_draft= $entry->draft;
 
     $title= $request->getParam('title');
     $text= $request->getParam('entry');
@@ -93,13 +101,19 @@ class Admin {
     if ($entry->draft) {
       $url= $routeParser->urlFor('editEntry', [ 'id' => $entry->id ]);
     } else {
+      $uri= $request->getUri();
       $date= new \DateTimeImmutable($entry->created_at);
-      $url= $routeParser->urlFor('entry', [
+      $url= $routeParser->fullUrlFor($uri, 'entry', [
         'year' => $date->format('Y'),
         'month' => $date->format('m'),
         'day' => $date->format('d'),
         'id' => $entry->slug()
       ]);
+
+      // first time and it has a title? post it to mastodon
+      if ($was_draft && $entry->title) {
+        $mastodon->post($entry->title . " " . $url);
+      }
     }
 
     return $response->withRedirect($url);
