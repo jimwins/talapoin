@@ -86,7 +86,7 @@ $container->set('view', function($container) {
 /* Add filters for blog entries */
 $filter= new \Twig\TwigFilter('expand_psuedo_urls', function ($text) {
   $text= preg_replace('/isbn:([0-9x]+)/i',
-                      'http://www.amazon.com/exec/obidos/ASIN/$1/trainedmonkey',
+                      'https://bookshop.org/a/94608/$1',
                       $text);
   $text= preg_replace('/asin:(\w+)/i',
                       'http://www.amazon.com/exec/obidos/ASIN/$1/trainedmonkey',
