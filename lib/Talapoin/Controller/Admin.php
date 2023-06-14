@@ -63,6 +63,7 @@ class Admin {
     Request $request, Response $response,
     View $view,
     \Talapoin\Service\Mastodon $mastodon,
+    \Talapoin\Service\Search $search,
     $id= null
   ) {
     if ($id) {
@@ -102,6 +103,10 @@ class Admin {
 
     // reload to make sure we have created_at
     $entry->reload();
+
+    if (!$entry->draft) {
+      $search->reindex($entry->id);
+    }
 
     $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
     $routeParser= $routeContext->getRouteParser();
