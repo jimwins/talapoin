@@ -49,15 +49,6 @@ $container->set('db', function ($c) {
   return $pdo;
 });
 
-/* Search */
-$container->set('search', function ($c) {
-  $search= $c->get('config')['search'];
-  $pdo= new PDO($search['dsn'], $search['user'], $search['password']);
-  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-  return $pdo;
-});
-
 /* Twig for templating */
 $container->set('view', function($container) {
   /* No cache for now */
@@ -348,29 +339,8 @@ $app->get('/tag/{tag}', function (Request $request, Response $response, $tag) {
   ]);
 })->setName('tag');
 
-$app->get('/search', function (Request $request, Response $response) {
-  $q= $request->getParam('q');
-
-  $query= "SELECT id FROM talapoin WHERE MATCH(?)";
-  $stmt= $GLOBALS['container']->get('search')->prepare($query);
-
-  $stmt->execute([$q]);
-
-  $ids= array_map(function ($e) { return $e['id']; }, $stmt->fetchAll());
-
-  if ($ids) {
-    $entries= get_entries($GLOBALS['container']->get('db'),
-                          'AND id IN (' . join(',', $ids) . ')',
-                          "DESC", "");
-  } else {
-    $entries= [];
-  }
-
-  return $GLOBALS['container']->get('view')->render($response, 'search.html', [
-    'q' => $q,
-    'entries' => $entries,
-  ]);
-});
+$app->get('/search', [ \Talapoin\Controller\Blog::class, 'search' ])
+  ->setName('search');
 
 $app->get('/scratch[/{path:.*}]', function (Request $request, Response $response, $path) {
   $config= $GLOBALS['container']->get('config');
@@ -420,30 +390,8 @@ $app->get('/entry', function (Request $request, Response $response) {
 });
 
 /* Behind the scenes stuff */
-$app->get('/~reindex', function (Request $request, Response $response) {
-  $entries= get_entries($GLOBALS['container']->get('db'), "", "ASC", "");
-
-  $GLOBALS['container']->get('search')->query("DELETE FROM talapoin WHERE id > 0");
-
-  $query= "INSERT INTO talapoin (id, title, content, created_at, tags)
-           VALUES (?, ?, ?, ?, ?)";
-  $stmt= $GLOBALS['container']->get('search')->prepare($query);
-
-  $rows= 0;
-  foreach ($entries as $entry) {
-    $stmt->execute([
-      $entry['id'],
-      $entry['title'],
-      $entry['entry'],
-      $entry['created_at'],
-      $entry['tags'] ? join(' ', $entry['tags']) : ""
-    ]);
-    $rows+= $stmt->rowCount();
-  }
-
-  $response->getBody()->write("Indexed $rows rows.");
-  return $response;
-});
+$app->get('/~reindex', [ \Talapoin\Controller\Blog::class, 'reindex' ])
+  ->setName('reindex');
 
 /* Posting via email2webhook */
 $app->post('/~webhook/post-entry',
