@@ -49,7 +49,7 @@ class Entry extends \Talapoin\Model {
   }
 
   public function comments() {
-    return [];
+    return $this->has_many('Comment')->find_many();
   }
 }
 
