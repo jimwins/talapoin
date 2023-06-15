@@ -8,6 +8,7 @@ use \Slim\Views\Twig as View;
 class Blog {
   public function __construct(
     private \Talapoin\Service\Blog $blog,
+    private \Talapoin\Service\Data $data,
     private View $view
   ) {
   }
@@ -28,6 +29,39 @@ class Blog {
         ->order_by_desc('created_at')
         ->find_many();
     return $this->view->render($response, 'index.html', [ 'tag' => $tag, 'entries' => $entries ]);
+  }
+
+  public function day(Response $response, $year, $month, $day) {
+    $ymd= "$year-$month-$day";
+
+    $entries=
+      $this->blog->getEntries()
+        ->where_raw("created_at BETWEEN ? and ? + INTERVAL 1 DAY", [ $ymd, $ymd ])
+        ->order_by_asc('created_at')
+        ->find_many();
+
+    $query= <<<QUERY
+      SELECT created_at FROM entry
+       WHERE created_at < ?
+         AND NOT draft
+       ORDER BY created_at DESC LIMIT 1
+  QUERY;
+    $prev= $this->data->fetch_single_value($query, [ $ymd ]);
+
+    $query= <<<QUERY
+      SELECT created_at FROM entry
+       WHERE created_at >= ? + INTERVAL 1 DAY
+         AND NOT draft
+       ORDER BY created_at ASC LIMIT 1
+  QUERY;
+    $next= $this->data->fetch_single_value($query, [ $ymd ]);
+
+    return $this->view->render($response, 'day.html', [
+      'ymd' => $ymd,
+      'entries' => $entries,
+      'next' => $next,
+      'prev' => $prev,
+    ]);
   }
 
   public function entry(Request $request, Response $response, $year, $month, $day, $id) {

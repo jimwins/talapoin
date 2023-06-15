@@ -32,16 +32,16 @@
   {# previous and next day links #}
   <div style="text-align: center; border: none">
     {% if prev %}
-      <a href="{{ prev.created_at | date('/Y/n/j') }}">
-        &laquo; {{ prev.created_at | date('l, F j, Y') | lower }}
+      <a href="{{ prev | date('/Y/n/j') }}">
+        &laquo; {{ prev | date('l, F j, Y') | lower }}
       </a>
     {% endif %}
     {% if next and prev %}
       &bull;
     {% endif %}
     {% if next %}
-      <a href="{{ next.created_at | date('/Y/n/j') }}">
-        {{ next.created_at | date('l, F j, Y') | lower }} &raquo;
+      <a href="{{ next | date('/Y/n/j') }}">
+        {{ next | date('l, F j, Y') | lower }} &raquo;
       </a>
     {% endif %}
   </div>

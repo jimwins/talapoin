@@ -215,36 +215,8 @@ QUERY;
 })->setName('month');
 
 /* Day archive */
-$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
-          function (Request $request, Response $response, $year, $month, $day) {
-  $where= "AND created_at BETWEEN '$year-$month-$day' AND
-                                  '$year-$month-$day' + INTERVAL 1 DAY";
-  $entries= get_entries($GLOBALS['container']->get('db'), $where, 'ASC', '');
-
-  $query= <<<QUERY
-    SELECT created_at FROM entry
-     WHERE created_at < '$year-$month-$day'
-       AND NOT draft
-     ORDER BY created_at DESC LIMIT 1
-QUERY;
-  $prev= $GLOBALS['container']->get('db')->query($query)->fetch();
-
-  $query= <<<QUERY
-    SELECT created_at FROM entry
-     WHERE created_at >= '$year-$month-$day' + INTERVAL 1 DAY
-       AND NOT draft
-     ORDER BY created_at ASC LIMIT 1
-QUERY;
-  $next= $GLOBALS['container']->get('db')->query($query)->fetch();
-
-  return $GLOBALS['container']->get('view')->render($response, 'day.html', [
-  'query' => $query,
-    'ymd' => "$year-$month-$day",
-    'entries' => $entries,
-    'next' => $next,
-    'prev' => $prev,
-  ]);
-})->setName('day');
+$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}', [ \Talapoin\Controller\Blog::class, 'day' ])
+  ->setName('day');
 
 $app->get('/', [ \Talapoin\Controller\Blog::class, 'top' ])
   ->setName('top');
@@ -376,31 +348,3 @@ $app->get('/{path:.*}', function (Request $request, Response $response, $path) {
 });
 
 $app->run();
-
-function get_entries($db, $where, $order, $limit) {
-  $query= <<<QUERY
-    SELECT id, title, entry, closed, created_at, updated_at, article,
-           (SELECT JSON_ARRAYAGG(name)
-              FROM entry_to_tag, tag
-             WHERE entry_id = entry.id AND tag_id = tag.id) AS tags,
-           (SELECT COUNT(*)
-              FROM comment
-             WHERE entry_id = entry.id AND NOT tb) AS comments
-      FROM entry
-     WHERE NOT draft $where
-     ORDER BY created_at $order
-     $limit
-QUERY;
-
-  $stmt= $db->query($query);
-
-  $entries= [];
-  while (($entry= $stmt->fetch())) {
-    if ($entry['tags']) {
-      $entry['tags']= json_decode($entry['tags']);
-    }
-    $entries[]= $entry;
-  }
-
-  return $entries;
-}
