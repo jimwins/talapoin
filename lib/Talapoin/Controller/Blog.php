@@ -43,12 +43,7 @@ class Blog {
 
     /* Use slug in canonical URL for items with title */
     if (is_numeric($id) && $entry->title) {
-      return $response->withRedirect(
-        sprintf('/%s/%s',
-          (new \DateTime($entry->created_at))->format("Y/m/d"),
-          $entry['title'] ?
-            preg_replace('/[^-A-Za-z0-9,]/u', '_', $entry->title) :
-            $entry->id));
+      return $response->withRedirect($entry->canonicalUrl());
     }
 
     $next=
@@ -68,6 +63,16 @@ class Blog {
       'next' => $next,
       'previous' => $previous,
     ]);
+  }
+
+  public function entryRedirect(Request $request, Response $response, $id) {
+    $entry= $this->blog->getEntryById($id);
+
+    if (!$entry) {
+      throw new \Slim\Exception\HttpNotFoundException($request, $response);
+    }
+
+    return $response->withRedirect($entry->canonicalUrl());
   }
 
   public function atomFeed(Response $response, $tag= null) {

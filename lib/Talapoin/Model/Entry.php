@@ -11,6 +11,10 @@ class Entry extends \Talapoin\Model {
     }
   }
 
+  public function canonicalUrl() {
+    return sprintf('/%s/%s', (new \DateTime($this->created_at))->format("Y/m/d"), $this->slug());
+  }
+
   public function tags($new_tags= null) {
     if ($new_tags) {
 

@@ -294,19 +294,7 @@ $app->get('/{tag}/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
   ->setName('tag_atom');
 
 /* Handle /entry/123 as redirect to blog entry (tmky.us goes through GLOBALS['container']) */
-$app->get('/entry/{id:[0-9]+}',
-          function (Request $request, Response $response, $id) {
-  $entry= get_entry($GLOBALS['container']->get('db'), "id = $id");
-  if ($entry) {
-    return $response->withRedirect(
-      sprintf('/%s/%s',
-        (new \DateTime($entry['created_at']))->format("Y/m/d"),
-        $entry['title'] ?
-          preg_replace('/[^-A-Za-z0-9,]/u', '_', $entry['title']) :
-          $entry['id']));
-  }
-  throw new \Slim\Exception\HttpNotFoundException($request, $response);
-});
+$app->get('/entry/{id:[0-9]+}', [ \Talapoin\Controller\Blog::class, 'entryRedirect' ]);
 
 $app->get('/entry', function (Request $request, Response $response) {
   return $response->withRedirect('/');
@@ -388,30 +376,6 @@ $app->get('/{path:.*}', function (Request $request, Response $response, $path) {
 });
 
 $app->run();
-
-function get_entry($db, $where, $order= 'ASC') {
-  $query= <<<QUERY
-    SELECT id, title, entry, closed, created_at, updated_at, article,
-           (SELECT JSON_ARRAYAGG(name)
-              FROM entry_to_tag, tag
-             WHERE entry_id = entry.id AND tag_id = tag.id) AS tags,
-           (SELECT COUNT(*)
-              FROM comment
-             WHERE entry_id = entry.id AND NOT tb) AS comments
-      FROM entry
-     WHERE $where AND NOT draft
-     ORDER BY id $order
-QUERY;
-
-  $stmt= $db->query($query);
-
-  $entry= $stmt->fetch();
-  if ($entry && $entry['tags']) {
-    $entry['tags']= json_decode($entry['tags']);
-  }
-
-  return $entry;
-}
 
 function get_entries($db, $where, $order, $limit) {
   $query= <<<QUERY
