@@ -132,56 +132,8 @@ $errorMiddleware->setErrorHandler(
 
 /* A single entry */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{id}',
-          function (Request $request, Response $response, $year, $month, $day, $id) {
-
-if (is_numeric($id)) {
-  $where= "id = $id";
-} else {
-  $where= "(DATE(created_at) = '$year-$month-$day'
-            OR DATE(created_at) = ('$year-$month-$day' + INTERVAL 1 DAY))
-           AND title LIKE '" . addslashes($id) . "'";
-}
-
-$entry= get_entry($GLOBALS['container']->get('db'), $where);
-
-/* Use slug in canonical URL for items with title */
-if (is_numeric($id) && $entry['title']) {
-  return $response->withRedirect(
-    sprintf('/%s/%s',
-      (new \DateTime($entry['created_at']))->format("Y/m/d"),
-      $entry['title'] ?
-        preg_replace('/[^-A-Za-z0-9,]/u', '_', $entry['title']) :
-        $entry['id']));
-}
-
-/* Get next/previous */
-$previous= get_entry($GLOBALS['container']->get('db'), "created_at < '{$entry['created_at']}'", "DESC");
-$next= get_entry($GLOBALS['container']->get('db'), "created_at > '{$entry['created_at']}'", "ASC");
-
-/* Get comments */
-$comments= [];
-if ($entry['comments']) {
-  $query=
-  " SELECT id, name, email, url, title, comment,
-         INET_NTOA(ip) AS ip,
-         UNIX_TIMESTAMP(created_at) AS created_at
-    FROM comment
-   WHERE entry_id = ? AND NOT tb
-   ORDER BY created_at ASC
-  ";
-
-  $sth= $GLOBALS['container']->get('db')->prepare($query);
-  $sth->execute([$entry['id']]);
-
-  $comments= $sth->fetchAll();
-}
-
-return $GLOBALS['container']->get('view')->render($response, 'entry.html', [ 'entry' => $entry,
-                                                 'next' => $next,
-                                                 'previous' => $previous,
-                                                 'comments' => $comments ]);
-
-          })->setName('entry');
+          [ \Talapoin\Controller\Blog::class, 'entry' ])
+  ->setName('entry');
 
 /* Year archive */
 $app->get('/{year:[0-9]+}',

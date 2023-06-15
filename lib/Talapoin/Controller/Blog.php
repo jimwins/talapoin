@@ -30,6 +30,46 @@ class Blog {
     return $this->view->render($response, 'index.html', [ 'tag' => $tag, 'entries' => $entries ]);
   }
 
+  public function entry(Request $request, Response $response, $year, $month, $day, $id) {
+    if (is_numeric($id)) {
+      $entry= $this->blog->getEntryById($id);
+    } else {
+      $entry= $this->blog->getEntryBySlug($year, $month, $day, $id);
+    }
+
+    if (!$entry) {
+      throw new \Slim\Exception\HttpNotFoundException($request);
+    }
+
+    /* Use slug in canonical URL for items with title */
+    if (is_numeric($id) && $entry->title) {
+      return $response->withRedirect(
+        sprintf('/%s/%s',
+          (new \DateTime($entry->created_at))->format("Y/m/d"),
+          $entry['title'] ?
+            preg_replace('/[^-A-Za-z0-9,]/u', '_', $entry->title) :
+            $entry->id));
+    }
+
+    $next=
+      $this->blog->getEntries()
+        ->where_gt('created_at', $entry->created_at)
+        ->order_by_asc('created_at')
+        ->find_one();
+
+    $previous=
+      $this->blog->getEntries()
+        ->where_lt('created_at', $entry->created_at)
+        ->order_by_desc('created_at')
+        ->find_one();
+
+    return $this->view->render($response, 'entry.html', [
+      'entry' => $entry,
+      'next' => $next,
+      'previous' => $previous,
+    ]);
+  }
+
   public function atomFeed(Response $response) {
     $entries=
       $this->blog->getEntries()

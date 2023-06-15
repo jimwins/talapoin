@@ -19,7 +19,22 @@ class Blog
         ->select_expr("
            (SELECT COUNT(*)
               FROM comment
-             WHERE entry_id = entry.id AND NOT tb)", 'comments');
+             WHERE entry_id = entry.id AND NOT tb)", 'comment_count');
     return $include_draft ? $entries : $entries->where_not_equal('draft', 1);
+  }
+
+  public function getEntryById($id) {
+    return
+      $this->getEntries()
+        ->find_one($id);
+  }
+
+  public function getEntryBySlug($year, $month, $day, $slug) {
+    $ymd= "$year-$month-$day";
+    return
+      $this->getEntries()
+        ->where_raw('DATE(created_at) BETWEEN ? AND (? + INTERVAL 1 DAY)', [ $ymd, $ymd ])
+        ->where_like('title', $slug)
+        ->find_one();
   }
 }

@@ -26,10 +26,10 @@
     </div>
   {% endif %}
 
-  {% if entry.comments %}
+  {% if entry.comment_count %}
     <h2>comments</h2>
 
-    {% for comment in comments %}
+    {% for comment in entry.comments %}
       <div class="comment" id="c{{ comment.id }}">
         <p>{{ comment.comment | paragraphs | expand_psuedo_urls | prettify_markup | raw }}</p>
         <div class="details">

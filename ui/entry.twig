@@ -34,10 +34,10 @@
     &raquo;
     <a href="{{ blog.permalink(entry) }}">
       {% if entry.article %}more, {% endif %}
-      {% if not entry.comments %}
+      {% if not entry.comment_count %}
         comment
       {% else %}
-        {{ entry.comments }} comment{{ entry.comment > 1 ? 's' }}, add yours
+        {{ entry.comment_count }} comment{{ entry.comment_count > 1 ? 's' }}, add yours
       {% endif %}
     </a>
   </div>
