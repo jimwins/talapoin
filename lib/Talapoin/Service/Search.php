@@ -62,7 +62,7 @@ class Search
         $entry->title,
         $entry->entry,
         $entry->created_at,
-        $entry->tags ? join(' ', json_decode($entry->tags)) : ""
+        $entry->tags_json ? join(' ', json_decode($entry->tags_json)) : ""
       ]);
       $rows+= $stmt->rowCount();
     }

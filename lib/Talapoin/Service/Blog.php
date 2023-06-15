@@ -15,7 +15,7 @@ class Blog
         ->select_expr("
            (SELECT JSON_ARRAYAGG(name)
               FROM entry_to_tag, tag
-             WHERE entry_id = entry.id AND tag_id = tag.id)", 'tags')
+             WHERE entry_id = entry.id AND tag_id = tag.id)", 'tags_json')
         ->select_expr("
            (SELECT COUNT(*)
               FROM comment

@@ -41,6 +41,10 @@ class Entry extends \Talapoin\Model {
       }
     }
 
+    if ($this->tags_json) {
+      return json_decode($this->tags_json);
+    }
+
     return $this->has_many_through('Tag')->find_many();
   }
 
