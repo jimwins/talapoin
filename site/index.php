@@ -292,11 +292,8 @@ QUERY;
   ]);
 })->setName('day');
 
-$app->get('/', function (Request $request, Response $response) {
-  $view= $GLOBALS['container']->get('view');
-  $entries= get_entries($GLOBALS['container']->get('db'), '', 'DESC', 'LIMIT 12');
-  return $view->render($response, 'index.html', [ 'entries' => $entries ]);
-})->setName('top');
+$app->get('/', [ \Talapoin\Controller\Blog::class, 'top' ])
+  ->setName('top');
 
 $app->get('/archive', function (Request $request, Response $response) {
   $query= "SELECT AVG(total)
@@ -348,13 +345,9 @@ $app->get('/scratch[/{path:.*}]', function (Request $request, Response $response
 });
 
 /* Atom feeds */
-$app->get('/index.atom', function (Request $request, Response $response) {
-  $entries= get_entries($GLOBALS['container']->get('db'), "", 'DESC', "LIMIT 15");
+$app->get('/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
+  ->setName('atom');
 
-  return $GLOBALS['container']->get('view')
-    ->render($response, 'index.atom', [ 'entries' => $entries ])
-    ->withHeader('Content-Type', 'application/atom+xml');
-})->setName('atom');
 $app->get('/{tag}/index.atom',
           function (Request $request, Response $response, $tag) {
   $qtag= $GLOBALS['container']->get('db')->quote($tag);

@@ -6,7 +6,7 @@ class Search
   private $pdo;
 
   public function __construct(
-    private Data $data,
+    private Blog $blog,
     Config $config
   ) {
     $search= $config['search'];
@@ -28,22 +28,15 @@ class Search
     if (!$ids) return [];
 
     return
-      $this->data->factory('Entry')
+      $this->blog->getEntries()
         ->where_in('id', $ids)
-        ->where_not_equal('draft', 1)
         ->order_by_desc('created_at')
         ->find_many();
   }
 
   public function reindex($id= null) {
     $entries=
-      $this->data->factory('Entry')
-        ->select('*')
-        ->select_expr("
-           (SELECT JSON_ARRAYAGG(name)
-              FROM entry_to_tag, tag
-             WHERE entry_id = entry.id AND tag_id = tag.id)", 'tags')
-        ->where_not_equal('draft', 1)
+      $this->blog->getEntries()
         ->order_by_asc('created_at');
 
     if ($id) {
