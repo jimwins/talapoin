@@ -128,6 +128,8 @@ $errorMiddleware->setErrorHandler(
     return $container->get('view')->render($response->withStatus(404), '404.html');
   });
 
+/* ROUTES */
+
 /* A single entry */
 $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{id}',
           function (Request $request, Response $response, $year, $month, $day, $id) {
@@ -321,20 +323,8 @@ $app->get('/archive', function (Request $request, Response $response) {
   ]);
 })->setName('archive');
 
-$app->get('/tag/{tag}', function (Request $request, Response $response, $tag) {
-  $qtag= $GLOBALS['container']->get('db')->quote($tag);
-
-  $where= " AND $qtag IN
-                (SELECT name FROM tag, entry_to_tag ec
-                  WHERE entry_id = entry.id AND tag_id = tag.id)";
-
-  $entries= get_entries($GLOBALS['container']->get('db'), $where, "DESC", "");
-
-  return $GLOBALS['container']->get('view')->render($response, 'index.html', [
-    'tag' => $tag,
-    'entries' => $entries,
-  ]);
-})->setName('tag');
+$app->get('/tag/{tag}', [ \Talapoin\Controller\Blog::class, 'tag' ])
+  ->setName('tag');
 
 $app->get('/search', [ \Talapoin\Controller\Blog::class, 'search' ])
   ->setName('search');

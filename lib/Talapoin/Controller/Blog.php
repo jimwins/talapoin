@@ -21,6 +21,15 @@ class Blog {
     return $this->view->render($response, 'index.html', [ 'entries' => $entries ]);
   }
 
+  public function tag(Response $response, $tag) {
+    $entries=
+      $this->blog->getEntries()
+        ->where_raw("? IN (SELECT name FROM tag, entry_to_tag ec WHERE entry_id = entry.id AND tag_id = tag.id)", $tag)
+        ->order_by_desc('created_at')
+        ->find_many();
+    return $this->view->render($response, 'index.html', [ 'tag' => $tag, 'entries' => $entries ]);
+  }
+
   public function atomFeed(Response $response) {
     $entries=
       $this->blog->getEntries()
