@@ -290,20 +290,8 @@ $app->get('/scratch[/{path:.*}]', function (Request $request, Response $response
 $app->get('/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
   ->setName('atom');
 
-$app->get('/{tag}/index.atom',
-          function (Request $request, Response $response, $tag) {
-  $qtag= $GLOBALS['container']->get('db')->quote($tag);
-
-  $where= " AND $qtag IN
-                (SELECT name FROM tag, entry_to_tag ec
-                  WHERE entry_id = entry.id AND tag_id = tag.id)";
-
-  $entries= get_entries($GLOBALS['container']->get('db'), $where, "DESC", "LIMIT 15");
-
-  return $GLOBALS['container']->get('view')
-    ->render($response, 'index.atom', [ 'entries' => $entries, 'tag' => $tag ])
-    ->withHeader('Content-Type', 'application/atom+xml');
-})->setName('tag_atom');
+$app->get('/{tag}/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
+  ->setName('tag_atom');
 
 /* Handle /entry/123 as redirect to blog entry (tmky.us goes through GLOBALS['container']) */
 $app->get('/entry/{id:[0-9]+}',

@@ -70,15 +70,17 @@ class Blog {
     ]);
   }
 
-  public function atomFeed(Response $response) {
+  public function atomFeed(Response $response, $tag= null) {
     $entries=
       $this->blog->getEntries()
         ->order_by_desc('created_at')
-        ->limit(15)
-        ->find_many();
+        ->limit(15);
+    if ($tag) {
+      $entries= $entries->where_raw("? IN (SELECT name FROM tag, entry_to_tag ec WHERE entry_id = entry.id AND tag_id = tag.id)", $tag);
+    }
 
     return $this->view
-      ->render($response, 'index.atom', [ 'entries' => $entries ])
+      ->render($response, 'index.atom', [ 'entries' => $entries->find_many() ])
       ->withHeader('Content-Type', 'application/atom+xml');
   }
 
