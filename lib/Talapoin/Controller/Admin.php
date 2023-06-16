@@ -7,13 +7,14 @@ use \Slim\Views\Twig as View;
 
 class Admin {
   public function __construct(
+    private \Talapoin\Service\Blog $blog,
     private \Talapoin\Service\Data $data
   ) {
   }
 
   public function top(Request $request, Response $response, View $view) {
     $entries=
-      $this->data->factory('Entry')
+      $this->blog->getEntries(true)
         ->where('draft', 1)
         ->order_by_desc('created_at')
         ->find_many();
@@ -31,7 +32,7 @@ class Admin {
 
   public function editEntry(Request $request, Response $response, View $view, $id= null) {
     if ($id) {
-      $entry= $this->data->factory('Entry')->find_one($id);
+      $entry= $this->blog->getEntryById($id);
       if (!$entry) {
         throw new \Slim\Exception\HttpNotFoundException($request);
       }
@@ -67,7 +68,7 @@ class Admin {
     $id= null
   ) {
     if ($id) {
-      $entry= $this->data->factory('Entry')->find_one($id);
+      $entry= $this->blog->getEntryById($id);
       if (!$entry) {
         throw new \Slim\Exception\HttpNotFoundException($request);
       }
