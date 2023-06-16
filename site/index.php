@@ -149,31 +149,8 @@ $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}', [ \Talapoin\Controller\B
 $app->get('/', [ \Talapoin\Controller\Blog::class, 'top' ])
   ->setName('top');
 
-$app->get('/archive', function (Request $request, Response $response) {
-  $query= "SELECT AVG(total)
-           FROM (SELECT COUNT(*) AS total
-                   FROM entry_to_tag
-                  GROUP BY tag_id) avg";
-  $avg= $GLOBALS['container']->get('db')->query($query)->fetchColumn();
-
-  $query= "SELECT name, COUNT(*) AS total
-             FROM tag
-             JOIN entry_to_tag ON (id = tag_id)
-            GROUP BY id
-            ORDER BY name";
-  $tags= $GLOBALS['container']->get('db')->query($query);
-
-  $query= "SELECT DISTINCT YEAR(created_at) AS year
-             FROM entry
-            ORDER BY year DESC";
-  $years= $GLOBALS['container']->get('db')->query($query);
-
-  return $GLOBALS['container']->get('view')->render($response, 'archive.html', [
-    'avg' => $avg,
-    'tags' => $tags,
-    'years' => $years,
-  ]);
-})->setName('archive');
+$app->get('/archive', [ \Talapoin\Controller\Blog::class, 'archive' ])
+  ->setName('archive');
 
 $app->get('/tag/{tag}', [ \Talapoin\Controller\Blog::class, 'tag' ])
   ->setName('tag');

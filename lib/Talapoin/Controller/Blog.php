@@ -136,6 +136,32 @@ class Blog {
     ]);
   }
 
+  public function archive(Response $response) {
+    $query= "SELECT AVG(total)
+             FROM (SELECT COUNT(*) AS total
+                     FROM entry_to_tag
+                    GROUP BY tag_id) avg";
+    $avg= $this->data->fetch_single_value($query);
+
+    $query= "SELECT name, COUNT(*) AS total
+               FROM tag
+               JOIN entry_to_tag ON (id = tag_id)
+              GROUP BY id
+              ORDER BY name";
+    $tags= $this->data->fetch_all($query);
+
+    $query= "SELECT DISTINCT YEAR(created_at) AS year
+               FROM entry
+              ORDER BY year DESC";
+    $years= $this->data->fetch_all($query);
+
+    return $this->view->render($response, 'archive.html', [
+      'avg' => $avg,
+      'tags' => $tags,
+      'years' => $years,
+    ]);
+  }
+
   public function entry(Request $request, Response $response, $year, $month, $day, $id) {
     if (is_numeric($id)) {
       $entry= $this->blog->getEntryById($id);
