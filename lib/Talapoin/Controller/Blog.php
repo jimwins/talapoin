@@ -31,6 +31,52 @@ class Blog {
     return $this->view->render($response, 'index.html', [ 'tag' => $tag, 'entries' => $entries ]);
   }
 
+  public function month(Response $response, $year, $month) {
+    $query= "SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m-01') AS ym
+               FROM entry
+              WHERE created_at BETWEEN '$year-1-1' AND '$year-12-31'";
+    $months= $this->data->fetch_all($query);
+
+    $query= <<<QUERY
+      SELECT MIN(created_at) AS created_at,
+             DAYOFMONTH(MIN(created_at)) AS day,
+             MONTH(MIN(created_at)) AS month,
+             YEAR(MIN(created_at)) AS year,
+             TO_DAYS(created_at) AS ymd
+        FROM entry
+       WHERE created_at BETWEEN '$year-$month-1'
+                            AND '$year-$month-1' + INTERVAL 1 MONTH
+       GROUP BY ymd
+       ORDER BY month ASC, day ASC
+  QUERY;
+    $entries= $this->data->fetch_all($query);
+
+    $query= <<<QUERY
+      SELECT created_at FROM entry
+       WHERE created_at < '$year-$month-1'
+         AND NOT draft
+       ORDER BY created_at DESC LIMIT 1
+  QUERY;
+    $prev= $this->data->fetch_single_value($query);
+
+    $query= <<<QUERY
+      SELECT created_at FROM entry
+       WHERE created_at >= '$year-$month-1' + INTERVAL 1 MONTH
+         AND NOT draft
+       ORDER BY created_at ASC LIMIT 1
+  QUERY;
+    $next= $this->data->fetch_single_value($query);
+
+    return $this->view->render($response, 'month.html', [
+      'year' => $year,
+      'month' => $month,
+      'entries' => $entries,
+      'months' => $months,
+      'next' => $next,
+      'prev' => $prev,
+    ]);
+  }
+
   public function day(Response $response, $year, $month, $day) {
     $ymd= "$year-$month-$day";
 
