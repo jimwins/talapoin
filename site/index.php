@@ -136,34 +136,8 @@ $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{id}',
   ->setName('entry');
 
 /* Year archive */
-$app->get('/{year:[0-9]+}',
-          function (Request $request, Response $response, $year) {
-  $query= "SELECT DISTINCT YEAR(created_at) AS year
-             FROM entry
-            ORDER BY year DESC";
-  $years= $GLOBALS['container']->get('db')->query($query);
-
-  $query= <<<QUERY
-    SELECT MIN(created_at) AS created_at,
-           DAYOFMONTH(MIN(created_at)) AS day,
-           MONTH(MIN(created_at)) AS month,
-           YEAR(MIN(created_at)) AS year,
-           TO_DAYS(created_at) AS ymd
-      FROM entry
-     WHERE created_at BETWEEN '$year-1-1' AND '$year-1-1' + INTERVAL 1 YEAR
-     GROUP BY ymd
-     ORDER BY month ASC, day ASC
-QUERY;
-
-  $entries= $GLOBALS['container']->get('db')->query($query)->fetchALl();
-
-  return $GLOBALS['container']->get('view')->render($response, 'year.html', [
-  'query' => $query,
-    'year' => $year,
-    'entries' => $entries,
-    'years' => $years,
-  ]);
-})->setName('year');
+$app->get('/{year:[0-9]+}', [ \Talapoin\Controller\Blog::class, 'year' ])
+  ->setName('year');
 
 $app->get('/{year:[0-9]+}/{month:[0-9]+}', [ \Talapoin\Controller\Blog::class, 'month' ])
   ->setName('month');

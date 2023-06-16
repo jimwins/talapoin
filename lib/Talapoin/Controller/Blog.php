@@ -31,6 +31,32 @@ class Blog {
     return $this->view->render($response, 'index.html', [ 'tag' => $tag, 'entries' => $entries ]);
   }
 
+  public function year(Response $response, $year) {
+    $query= "SELECT DISTINCT YEAR(created_at) AS year
+               FROM entry
+              ORDER BY year DESC";
+    $years= $this->data->fetch_all($query);
+
+    $query= <<<QUERY
+      SELECT MIN(created_at) AS created_at,
+             DAYOFMONTH(MIN(created_at)) AS day,
+             MONTH(MIN(created_at)) AS month,
+             YEAR(MIN(created_at)) AS year,
+             TO_DAYS(created_at) AS ymd
+        FROM entry
+       WHERE created_at BETWEEN '$year-1-1' AND '$year-1-1' + INTERVAL 1 YEAR
+       GROUP BY ymd
+       ORDER BY month ASC, day ASC
+  QUERY;
+    $entries= $this->data->fetch_all($query);
+
+    return $this->view->render($response, 'year.html', [
+      'year' => $year,
+      'entries' => $entries,
+      'years' => $years,
+    ]);
+  }
+
   public function month(Response $response, $year, $month) {
     $query= "SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m-01') AS ym
                FROM entry
