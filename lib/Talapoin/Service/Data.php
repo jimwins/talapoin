@@ -83,6 +83,14 @@ class Data
     return false;
   }
 
+  public function fetch_all($query, $params= []) {
+    if (\Titi\ORM::raw_execute($query, $params)) {
+      $stmt= \Titi\ORM::get_last_statement();
+      return $stmt->fetchAll();
+    }
+    return false;
+  }
+
   public function get_lock($name, $timeout= 5) {
     return $this->fetch_single_value(
       "SELECT GET_LOCK(?,?)",
