@@ -68,9 +68,6 @@ $container->set('view', function($container) {
   // Add the HTML extension
   $view->addExtension(new \Twig\Extra\Html\HtmlExtension());
 
-  // Add StringLoader extension
-  $view->addExtension(new \Twig\Extension\StringLoaderExtension());
-
   return $view;
 });
 
