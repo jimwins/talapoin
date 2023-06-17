@@ -18,7 +18,7 @@
         "twig/twig": "^3.3",
         "twig/html-extra": "^3.3",
         "slim/twig-view": "^3.3",
-        "slim/psr7": "^1.0",
+        "slim/psr7": "^1.6",
         "middlewares/trailing-slash": "^2.0",
         "php-di/php-di": "^6.1",
         "slim/http": "^1.0",
@@ -26,6 +26,7 @@
         "robmorgan/phinx": "^0.12.10",
         "symfony/yaml": "^6.1",
         "jimwins/titi": "^0.0",
-        "fundevogel/php-mastodon": "^0.6.0"
+        "fundevogel/php-mastodon": "^0.6.0",
+        "jimwins/akismet-api": "@dev"
     }
 }
