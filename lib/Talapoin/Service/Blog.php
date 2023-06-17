@@ -19,7 +19,7 @@ class Blog
         ->select_expr("
            (SELECT COUNT(*)
               FROM comment
-             WHERE entry_id = entry.id AND NOT tb)", 'comment_count');
+             WHERE entry_id = entry.id AND NOT tb AND NOT spam)", 'comment_count');
     return $include_draft ? $entries : $entries->where_not_equal('draft', 1);
   }
 
