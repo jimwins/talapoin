@@ -28,6 +28,7 @@
         "jimwins/titi": "^0.0",
         "fundevogel/php-mastodon": "^0.6.0",
         "jimwins/akismet-api": "@dev",
-        "wildbit/postmark-php": "^4.0"
+        "wildbit/postmark-php": "^4.0",
+        "ezyang/htmlpurifier": "^4.16"
     }
 }
