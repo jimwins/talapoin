@@ -747,12 +747,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jimwins/akismet-api.git",
-                "reference": "f1a3957e9a329dadcbb4b725080f56fff24e0135"
+                "reference": "9b7c65d32ddd7bbbc1017efa752cd0afd2828a8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jimwins/akismet-api/zipball/f1a3957e9a329dadcbb4b725080f56fff24e0135",
-                "reference": "f1a3957e9a329dadcbb4b725080f56fff24e0135",
+                "url": "https://api.github.com/repos/jimwins/akismet-api/zipball/9b7c65d32ddd7bbbc1017efa752cd0afd2828a8b",
+                "reference": "9b7c65d32ddd7bbbc1017efa752cd0afd2828a8b",
                 "shasum": ""
             },
             "require": {
@@ -784,15 +784,15 @@
             "description": "Library for accessing the Akismet API without any framework dependencies.",
             "support": {
                 "issues": "https://github.com/jimwins/akismet-api/issues",
-                "source": "https://github.com/jimwins/akismet-api/tree/v0.0.2-alpha"
+                "source": "https://github.com/jimwins/akismet-api/tree/main"
             },
             "funding": [
                 {
-                    "url": "https://github.com/jimwins",
+                    "url": "https://github.com/sponsors/jimwins",
                     "type": "github"
                 }
             ],
-            "time": "2023-06-17T20:17:59+00:00"
+            "time": "2023-06-19T18:47:27+00:00"
         },
         {
             "name": "jimwins/titi",
