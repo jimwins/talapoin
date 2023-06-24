@@ -15,6 +15,22 @@ class Entry extends \Talapoin\Model {
     return sprintf('/%s/%s', (new \DateTime($this->created_at))->format("Y/m/d"), $this->slug());
   }
 
+  public function fullCanonicalUrl($request) {
+    $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
+    $routeParser= $routeContext->getRouteParser();
+
+    $uri= $request->getUri();
+    $date= new \DateTimeImmutable($this->created_at);
+
+    return $routeParser->fullUrlFor($uri, 'entry', [
+      'year' => $date->format('Y'),
+      'month' => $date->format('m'),
+      'day' => $date->format('d'),
+      'id' => $this->slug()
+    ]);
+  }
+
+
   public function tags($new_tags= null) {
     if ($new_tags) {
 
@@ -53,7 +69,7 @@ class Entry extends \Talapoin\Model {
   }
 
   public function comments() {
-    return $this->has_many('Comment')->find_many();
+    return $this->has_many('Comment');
   }
 }
 

@@ -29,8 +29,10 @@
   {% if entry.comment_count %}
     <h2>comments</h2>
 
-    {% for comment in entry.comments %}
-      <div class="comment" id="c{{ comment.id }}">
+    {# XXX show spam to admin #}
+    {% set spam = 0 %}
+    {% for comment in entry.comments.where_lte('spam', spam).find_many() %}
+      <div class="comment {{ comment.spam ? 'spam' }}" id="c{{ comment.id }}">
         <p>{{ comment.comment | paragraphs | expand_psuedo_urls | prettify_markup | raw }}</p>
         <div class="details">
           &raquo;
@@ -40,11 +42,67 @@
             <a rel="nofollow" href="{% if not comment.url matches '/^https?:/' %}http://{% endif %}{{ comment.url }}">(link)</a>
           {% endif %}
           &raquo;
-          {# XXX admin link for delete #}
+          {# XXX admin link for delete/spam/ham #}
           {{ blog.date_format(comment.created_at) }}
         </div>
       </div>
     {% endfor %}
   {% endif %}
+
+  <h2>add a comment</h2>
+
+  {% if date(entry.created_at) > date("-7 days") and not entry.closed %}
+    <style>
+      form {
+        margin-top: 2em;
+      }
+      form label {
+        display: block;
+        margin-bottom: 1em;
+      }
+      form input[type="text"], form input[type="email"], form input[type="url"], form textarea {
+        width: 100ch;
+      }
+    </style>
+
+    <form method="POST" action="{{ url_for('add-comment', { id: entry.id }) }}">
+      <label>
+        name
+        <input type="text" name="name" value="" required>
+      </label>
+
+      <label>
+        email
+        <input type="email" name="email" value="" required>
+      </label>
+
+      <label>
+        website (optional)
+        <input type="url" name="url" value="">
+      </label>
+
+      <label>
+        your comment
+        <textarea name="comment" rows="10"></textarea>
+      </label>
+
+      <input type="submit" value="Submit">
+
+      <div>
+        <small>
+          comments may be rejected or hidden if the robots decide that they
+          look like spam.
+        </small>
+      </div>
+    </form>
+  {% else %}
+    <p>sorry, comments on this post are closed.</p>
+  {% endif %}
+
+  <style>
+    .spam {
+      color: rgba(192, 0, 24, 0.5);
+    }
+  </style>
 
 {% endblock %}

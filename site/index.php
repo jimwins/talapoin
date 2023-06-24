@@ -132,6 +132,9 @@ $app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{id}',
           [ \Talapoin\Controller\Blog::class, 'entry' ])
   ->setName('entry');
 
+$app->post('/entry/{id:[0-9]+}/comment', [ \Talapoin\Controller\Blog::class, 'addComment' ])
+  ->setName('add-comment');
+
 /* Year archive */
 $app->get('/{year:[0-9]+}', [ \Talapoin\Controller\Blog::class, 'year' ])
   ->setName('year');

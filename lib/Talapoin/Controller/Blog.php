@@ -207,6 +207,78 @@ class Blog {
     return $response->withRedirect($entry->canonicalUrl());
   }
 
+  public function addComment(
+    Request $request,
+    Response $response,
+    \Talapoin\Service\SpamFilter $spam,
+    \Talapoin\Service\Email $sendmail,
+    $id
+  ) {
+    $entry= $this->blog->getEntryById($id);
+    if (!$entry) {
+      throw new \Slim\Exception\HttpNotFoundException($request, $response);
+    }
+
+    // TODO allow admin to comment on old entries
+    if ((new \Datetime($entry->created_at)) < (new \Datetime('-7 day'))) {
+      throw new \Exception("Sorry, that entry is closed to new comments.");
+    }
+
+    $name= $request->getParam('name');
+    $email= $request->getParam('email');
+    $url= $request->getParam('url');
+    $ip= $request->getServerParams()['REMOTE_ADDR'];
+    $comment_text= $request->getParam('comment');
+
+    /* Sanitize any HTML in the comment */
+    $config= \HTMLPurifier_Config::createDefault();
+    $config->set('Cache.SerializerPath', '/tmp');
+    $purifier= new \HTMLPurifier($config);
+    $comment_text= $purifier->purify($comment_text);
+
+    // XXX validate $name and $email
+
+    // check for spam
+    $entry_url= $entry->fullCanonicalUrl($request);
+    $spam= $spam->isSpam([
+      'permalink' => $entry_url,
+      'comment_type' => 'comment',
+      'comment_author' => $name,
+      'comment_author_email' => $email,
+      'comment_author_url' => $url,
+      'comment_comment' => $comment_text,
+    ], $request);
+
+    // bad spam just gets dropped
+    if ($spam == 2) {
+      throw new \Exception("Spam not accepted here.");
+    }
+
+    $comment= $entry->comments()->create();
+    $comment->entry_id= $entry->id;
+    $comment->name= $name;
+    $comment->email= $email;
+    $comment->url= $url;
+    $comment->ip= $ip;
+    $comment->spam= $spam;
+    $comment->comment= $comment_text;
+    $comment->save();
+
+    $data= [
+      'comment' => $comment,
+      'entry' => $entry,
+      'url' => $entry_url,
+    ];
+
+    $template= $this->view->getEnvironment()->load('email-comment.html');
+    $subject= $template->renderBlock('title', $data);
+    $body= $template->render($data);
+
+    $sendmail->send($sendmail->default_from_address(), $subject, $body);
+
+    return $response->withRedirect($entry->canonicalUrl());
+  }
+
   public function atomFeed(Response $response, $tag= null) {
     $entries=
       $this->blog->getEntries()

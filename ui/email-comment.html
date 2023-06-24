@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>
+      {%- block title -%}
+        {% import 'entry.twig' as blog %}
+        {{ entry.title ?: blog.date_format(entry.created_at) }}
+      {%- endblock -%}
+    </title>
+  </head>
+  <body>
+    <p>
+      <a href="mailto:{{comment.email | e('html_attr') }}">{{ comment.name }}</a>
+      {{ comment.spam ? 'spammed' : 'wrote' }}:
+    </p>
+    <blockquote>
+      {{ comment.comment }}
+    </blockquote>
+    <hr />
+    <small><a href="{{ url }}">{{ url }}</a></small>
+  </body>
+</html>
