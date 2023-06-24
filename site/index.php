@@ -100,6 +100,11 @@ $filter= new \Twig\TwigFilter('slug', function ($text) {
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
+$filter= new \Twig\TwigFilter('get_debug_type', function ($value) {
+  return get_debug_type($value);
+});
+$container->get('view')->getEnvironment()->addFilter($filter);
+
 $func= new \Twig\TwigFunction('current_release', function() {
   $link= @readlink('/app/current');
   if ($link) {
@@ -113,7 +118,13 @@ $app->add(\Slim\Views\TwigMiddleware::createFromContainer($app));
 
 $app->add((new \Middlewares\TrailingSlash(false))->redirect());
 
-$errorMiddleware= $app->addErrorMiddleware($DEBUG, true, true);
+$errorMiddleware= $app->addErrorMiddleware($DEBUG || $config['displayErrorDetails'], true, true);
+
+$errorHandler= $errorMiddleware->getDefaultErrorHandler();
+$errorHandler->registerErrorRenderer(
+  'text/html',
+  new \Talapoin\Handler\ErrorRenderer($container->get('view'))
+);
 
 /* 404 */
 $errorMiddleware->setErrorHandler(

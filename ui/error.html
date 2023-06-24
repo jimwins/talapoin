@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  error @ trainedmonkey.com
+{% endblock %}
+
+{% block content %}
+  <h1>error!</h1>
+
+  <p class="error">{{ exception.getMessage() | lower }}</p>
+
+  {% if detailed %}
+    <ol>
+      {% for trace in exception.getTrace() %}
+        <li>
+          {% if trace.file %}
+            {{ trace.file  -}}
+            {%- if trace.line %}({{ trace.line }}){% endif %}
+            :
+          {% endif %}
+          {{ trace.class }}{{ trace.type }}{{ trace.function -}}
+          (
+            {%- for arg in trace.args -%}
+              {{- arg | get_debug_type -}}{{ not loop.last ? ", " -}}
+            {%- endfor -%}
+          )
+        </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+
+  <p align="center"><b><a href="/">try it again from the top.</a></b></p>
+{% endblock %}
