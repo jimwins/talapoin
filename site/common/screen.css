@@ -1,32 +1,42 @@
 /*! modern-normalize v1.1.0 | MIT License | https://github.com/sindresorhus/modern-normalize */
 *,::after,::before{box-sizing:border-box}html{-moz-tab-size:4;tab-size:4}html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}hr{height:0;color:inherit}abbr[title]{text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}::-moz-focus-inner{border-style:none;padding:0}:-moz-focusring{outline:1px dotted ButtonText}:-moz-ui-invalid{box-shadow:none}legend{padding:0}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}
 
-body {
-  min-height: 100vh;
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
+:root {
+ /* https://modernfontstacks.com: Antique */
+ --serif: 'Bookman Old Style', 'URW Bookman', 'URW Bookman L', 'Georgia Pro', Georgia, serif;
+ /* https://modernfontstacks.com: Neo-Grotesque */
+ --sans-serif: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+}
 
-  color: #333;
-  margin: 0px;
-  margin-bottom: 20px;
-  background-image: url(monkey.png);
-  background-position: bottom left;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: #eee;
+body {
+ min-height: 100vh;
+ font-family: var(--serif);
+ font-size: 16px;
+ line-height: 1.6;
+
+ color: #333;
+ margin: 0px;
+ margin-bottom: 20px;
+ background-image: url(monkey.png);
+ background-position: bottom left;
+ background-repeat: no-repeat;
+ background-attachment: fixed;
+ background-color: #eee;
 }
 
 h1 {
+ font-family: var(--sans-serif);
  font-weight: normal;
  text-align: right;
 }
 
 h2 {
+ font-family: var(--sans-serif);
  clear: both;
 }
 
 h3 {
+ font-family: var(--sans-serif);
  margin-top: 0px;
  margin-bottom: 5px;
 }
@@ -173,6 +183,7 @@ form {
  padding-right: 0.5ch;
  text-decoration: none;
  border-bottom: 1px solid #66c;
+ font-family: var(--sans-serif);
 }
 
 .left-sidebar a:visited {
@@ -229,15 +240,12 @@ form {
  padding-right: 1em;
 }
 
-.main-content .entry > p {
-  font-family: georgia;
-}
-
 .main-content .details {
  text-align: right;
  margin-top: 0.5em;
  margin-right: 1em;
  font-size: smaller;
+ font-family: var(--sans-serif);
 }
 
 .main-content .details a {
@@ -246,6 +254,12 @@ form {
 
 .main-content .details a {
  white-space: nowrap;
+}
+
+.main-content blockquote {
+ font-family: var(--sans-serif);
+ border-left: 2px solid rgba(0,0,0,0.2);
+ padding-left: 1em;
 }
 
 #links {
