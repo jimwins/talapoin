@@ -64,6 +64,7 @@ class Admin {
     Request $request, Response $response,
     View $view,
     \Talapoin\Service\Mastodon $mastodon,
+    \Talapoin\Service\Blodotgs $blogs,
     \Talapoin\Service\Search $search,
     $id= null
   ) {
@@ -124,9 +125,16 @@ class Admin {
         'id' => $entry->slug()
       ]);
 
-      // first time and it has a title? post it to mastodon
+      // first time and it has a title? post it to mastodon and ping blo.gs
       if ($was_draft && $entry->title) {
         $mastodon->post($entry->title . " " . $url);
+
+        $root= $routeParser->fullUrlFor($uri, 'top');
+        $feed= $routeParser->fullUrlFor($uri, 'atom');
+        $template= $view->getEnvironment()->load('index.html');
+        $title= $template->renderBlock('title');
+
+        $blogs->ping($root, $title, $feed);
       }
     }
 
