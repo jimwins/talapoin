@@ -2,7 +2,6 @@
 require '../vendor/autoload.php';
 
 $DEBUG= false;
-$ORM_DEBUG= true;
 
 use \Slim\Http\ServerRequest as Request;
 use \Slim\Http\Response as Response;
