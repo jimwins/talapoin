@@ -10,7 +10,7 @@
   <p class="error">{{ exception.getMessage() | lower }}</p>
 
   {% if exception.code == 401 %}
-    <form method="POST" action="{{ url_for('login' }}">
+    <form method="POST" action="{{ url_for('login') }}">
       <label>
         Token
         <input type="password" name="token">
