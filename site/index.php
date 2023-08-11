@@ -192,6 +192,8 @@ $app->get('/~reindex', [ \Talapoin\Controller\Blog::class, 'reindex' ])
   ->setName('reindex');
 
 /* Admin */
+$app->post('/login', [ \Talapoin\Controller\Admin::class, 'login' ])
+  ->setName('login');
 $app->group('/~admin', function (RouteCollectorProxy $app) {
   $app->get('', [ \Talapoin\Controller\Admin::class, 'top' ])
     ->setName('admin');

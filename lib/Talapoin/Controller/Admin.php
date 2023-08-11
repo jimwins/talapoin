@@ -8,8 +8,28 @@ use \Slim\Views\Twig as View;
 class Admin {
   public function __construct(
     private \Talapoin\Service\Blog $blog,
+    private \Talapoin\Service\Config $config,
     private \Talapoin\Service\Data $data
   ) {
+  }
+
+  public function login(Request $request, Response $response) {
+    $expected= $this->config['auth']['token'];
+
+    $token= $request->getParam('token');
+
+    if ($token == $expected) {
+      $domain= $request->getHeaderLine('Host');
+      $expires= new \Datetime('+1 month');
+
+      SetCookie('token', $token, $expires->format('U'), '/', $domain, true, true);
+
+      $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
+      $routeParser= $routeContext->getRouteParser();
+      return $response->withRedirect($routeParser->urlFor('admin'));
+    } else {
+      throw new HttpUnauthorizedException($request);
+    }
   }
 
   public function top(Request $request, Response $response, View $view) {

@@ -9,6 +9,16 @@
 
   <p class="error">{{ exception.getMessage() | lower }}</p>
 
+  {% if exception.code == 401 %}
+    <form method="POST" action="{{ url_for('login' }}">
+      <label>
+        Token
+        <input type="password" name="token">
+      </label>
+      <input type="submit" value="Log in">
+    </form>
+  {% endif %}
+
   {% if detailed %}
     <ol>
       {% for trace in exception.getTrace() %}
