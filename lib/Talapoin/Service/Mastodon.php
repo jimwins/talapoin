@@ -15,22 +15,20 @@ class Mastodon {
       return;
     }
 
-    $api= new \Fundevogel\Mastodon\Api($this->config['host']);
+    $client= new \Vazaha\Mastodon\ApiClient(new \GuzzleHttp\Client());
+    $client->setBaseUri('https://' . $this->config['host']);
 
     if (array_key_exists('access_token', $this->config)) {
-      $api->accessToken= $this->config['access_token'];
+      $client->setAccessToken($this->config['access_token']);
     } else {
-      $api->accessToken= $api->oauth()->token($this->config['client_key'], $this->config['client_secret'])->accessToken();
+      error_log("Don't know how to generate access token, so not posting");
     }
 
-    $api->logIn();
+    $visibility= 'public';
 
-    $status= [
-      'status' => $content,
-#      'visibility' => 'private',
-    ];
-
-    $endpoint= "statuses";
-    $res= $api->post($endpoint, $status);
+    $res= $client->methods()->statuses()->create(
+      $content,
+      visibility: $visibility
+    );
   }
 }

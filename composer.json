@@ -26,9 +26,9 @@
         "robmorgan/phinx": "^0.12.10",
         "symfony/yaml": "^6.1",
         "jimwins/titi": "^0.0",
-        "fundevogel/php-mastodon": "^0.6.0",
         "jimwins/akismet-api": "@dev",
         "wildbit/postmark-php": "^4.0",
-        "ezyang/htmlpurifier": "^4.16"
+        "ezyang/htmlpurifier": "^4.16",
+        "vazaha-nl/mastodon-api-client": "^1.0"
     }
 }
