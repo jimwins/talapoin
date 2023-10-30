@@ -28,5 +28,9 @@
     {% endif %}
   </h1>
 
+  {% if not tag %}
+    {% include 'bio.twig' %}
+  {% endif %}
+
   {% include 'entries.twig' %}
 {% endblock %}
