@@ -21,7 +21,7 @@
      {% else %}
        <title />
      {% endif %}
-     <link rel="alternate" type="text/html" href="{{ entry.fullCanonicalUrl() }}" />
+     <link rel="alternate" type="text/html" href="https://trainedmonkey.com{{ entry.canonicalUrl() }}" />
      <id>tag:trainedmonkey.com,{{ entry.created_at | date('Y-m-d') }}:{{ entry.id }}</id>
      <updated>{{ entry.updated_at | date('Y-m-d\\TH:i:s\\Z', 'UTC') }}</updated>
      <published>{{ entry.created_at | date('c', 'America/Los_Angeles') }}</published>
