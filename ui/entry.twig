@@ -1,7 +1,3 @@
-{% macro permalink(e) %}
-  {{- e.created_at | date('/Y/n/j/') }}{{ e.title ? e.title | slug : e.id -}}
-{% endmacro %}
-
 {% macro date_format(dt) %}
   {% if dt | date('Y') == "now" | date('Y') %}
     {{ dt | date('F j (l) g:ia') | lower }}
@@ -21,7 +17,7 @@
   <div class="details">
     &raquo; 
     <a class="permalink"
-       href="{{ blog.permalink(entry) }}">
+       href="{{ entry.canonicalUrl() }}">
       {{- blog.date_format(entry.created_at) -}}
     </a>
     {% if entry.tags %}
@@ -32,7 +28,7 @@
       {% endfor %}
     {% endif %}
     &raquo;
-    <a href="{{ blog.permalink(entry) }}">
+    <a href="{{ entry.canonicalUrl() }}">
       {% if entry.article %}more, {% endif %}
       {% if not entry.comment_count %}
         comment
