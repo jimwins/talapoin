@@ -35,6 +35,11 @@
   </label>
 
   <label>
+    Toot
+    <textarea name="toot" rows="3">{{ entry.toot }}</textarea>
+  </label>
+
+  <label>
     Tags
     <input type="text" name="tags" value="{{ entry.tags | join(', ') | e('html_attr') }}">
   </label>

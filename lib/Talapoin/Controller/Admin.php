@@ -60,6 +60,7 @@ class Admin {
       $entry= [
         'title' => '',
         'entry' => '',
+        'toot' => '',
         'tags' => [],
         'draft' => 1
       ];
@@ -102,6 +103,7 @@ class Admin {
 
     $title= $request->getParam('title');
     $text= $request->getParam('entry');
+    $toot= $request->getParam('toot');
     $tags= $request->getParam('tags');
     $draft= (int)$request->getParam('draft');
 
@@ -110,6 +112,7 @@ class Admin {
 
     $entry->title= $title;
     $entry->entry= $text;
+    $entry->toot= $toot;
     $entry->tags($tags);
 
     /* When going from draft -> !draft, we set our created_at date */
@@ -145,9 +148,9 @@ class Admin {
         'id' => $entry->slug()
       ]);
 
-      // first time and it has a title? post it to mastodon and ping blo.gs
+      // first time and it has a title or toot? post it to mastodon and ping blo.gs
       if ($was_draft && $entry->title) {
-        $mastodon->post($entry->title . " " . $url);
+        $mastodon->post(($entry->toot ?? $entry->title) . " " . $url);
 
         $root= $routeParser->fullUrlFor($uri, 'top');
         $feed= $routeParser->fullUrlFor($uri, 'atom');
