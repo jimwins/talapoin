@@ -14,13 +14,13 @@
   {% if previous.id or next.id %}
     <div class="prevnext" style="text-align: center; border: none">
       {% if previous.id %}
-        <a href="{{ blog.permalink(previous) }}">&laquo; {{ previous.title ? previous.title : blog.date_format(previous.created_at) }}</a>
+        <a href="{{ previous.canonicalUrl() }}">&laquo; {{ previous.title ? previous.title : blog.date_format(previous.created_at) }}</a>
       {% endif %}
       {% if previous.id and next.id %}
         &bull;
       {% endif %}
       {% if next.id %}
-        <a href="{{ blog.permalink(next) }}">{{ next.title ? next.title : blog.date_format(next.created_at) }} &raquo;</a>
+        <a href="{{ next.canonicalUrl() }}">{{ next.title ? next.title : blog.date_format(next.created_at) }} &raquo;</a>
       {% endif %}
       <br clear="both">
     </div>
