@@ -5,7 +5,7 @@ class Entry extends \Talapoin\Model {
 
   public function slug() {
     if ($this->title) {
-      return preg_replace('/[^-A-Za-z0-9,]/u', '_', $this->title);
+      return preg_replace('/[^-A-Za-z0-9,]/u', '_', strtolower($this->title));
     } else {
       return $this->id;
     }
