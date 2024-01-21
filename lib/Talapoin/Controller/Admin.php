@@ -148,7 +148,8 @@ class Admin {
         'id' => $entry->slug()
       ]);
 
-      // first time and it has a title or toot? post it to mastodon and ping blo.gs
+      // first time and it has a title or toot? post it to mastodon and ping
+      // blo.gs and send WebMentions
       if ($was_draft && $entry->title) {
         $mastodon->post(($entry->toot ?? $entry->title) . " " . $url);
 
@@ -158,7 +159,13 @@ class Admin {
         $title= $template->renderBlock('title');
 
         $blogs->ping($root, $title, $feed);
+
+        $client= new \IndieWeb\MentionClient();
+        $sent= $client->sendMentions($url, $entry->entry);
+
+        error_log("Sent $sent mentions.");
       }
+      // TODO send WebMention updates?
     }
 
     return $response->withRedirect($url);

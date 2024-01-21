@@ -29,6 +29,7 @@
         "jimwins/akismet-api": "@dev",
         "wildbit/postmark-php": "^4.0",
         "ezyang/htmlpurifier": "^4.16",
-        "vazaha-nl/mastodon-api-client": "^1.0"
+        "vazaha-nl/mastodon-api-client": "^1.0",
+        "indieweb/mention-client": "^1.2"
     }
 }
