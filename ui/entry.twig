@@ -7,18 +7,22 @@
 {% endmacro %}
 
 {% import _self as blog %}
-<div class="entry" id="n {{ entry.id }} {% for tag in entry.tags %}{{ tag }} {% endfor %}">
+<div class="h-entry" id="n {{ entry.id }} {% for tag in entry.tags %}{{ tag }} {% endfor %}">
   {% if entry.title %}
-    <h3>{{ entry.title }}</h3>
+    <h3 class="p-name">{{ entry.title }}</h3>
   {% endif %}
-  <p>
-    {{ entry.entry | paragraphs | expand_psuedo_urls | prettify_markup | raw }}
-  </p>
+  <div class="e-content">
+    <p>
+      {{ entry.entry | paragraphs | expand_psuedo_urls | prettify_markup | raw }}
+    </p>
+  </div>
   <div class="details">
     &raquo; 
-    <a class="permalink"
+    <a class="permalink u-url"
        href="{{ entry.canonicalUrl() }}">
-      {{- blog.date_format(entry.created_at) -}}
+      <time class="dt-published" datetime="{{ entry.created_at | date('c') | e('html_attr') }}">
+        {{- blog.date_format(entry.created_at) -}}
+      </time>
     </a>
     {% if entry.tags %}
       &raquo;
