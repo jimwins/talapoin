@@ -10,8 +10,9 @@ class Blodotgs {
   }
 
   public function ping($url, $name, $feed= null) {
-    if (!array_key_exists('host', $this->config)) {
+    if (empty($this->config) || !array_key_exists('host', $this->config)) {
       error_log("skipping ping, don't have host");
+      return;
     }
 
     $client= new \GuzzleHttp\Client([
