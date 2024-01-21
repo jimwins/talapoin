@@ -27,7 +27,7 @@
     {% if entry.tags %}
       &raquo;
       {% for tag in entry.tags %}
-        <a href="{{ url_for('tag', { 'tag' : tag }) }}"
+        <a class="p-category" href="{{ url_for('tag', { 'tag' : tag }) }}"
            >{{ tag }}</a>{{ not loop.last ? ', ' }}
       {% endfor %}
     {% endif %}
