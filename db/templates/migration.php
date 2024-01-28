@@ -6,8 +6,8 @@ use Phinx\Db\Adapter\MysqlAdapter;
 
 final class $className extends $baseClassName
 {
-    public function change(): void
-    {
+  public function change(): void
+  {
 
-    }
+  }
 }
