@@ -23,7 +23,7 @@
         "php-di/php-di": "^6.1",
         "slim/http": "^1.0",
         "php-di/slim-bridge": "^3.0",
-        "robmorgan/phinx": "^0.12.10",
+        "robmorgan/phinx": "^0.16.0",
         "symfony/yaml": "^6.1",
         "jimwins/titi": "^0.0",
         "jimwins/akismet-api": "@dev",
