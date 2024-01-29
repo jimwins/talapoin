@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e4454330d76af32c823f9cb12a15e77a",
+    "content-hash": "34797954d79b77cd664c31b6e5bfb12d",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2879,6 +2879,54 @@
                 "source": "https://github.com/slimphp/Twig-View/tree/3.3.0"
             },
             "time": "2022-01-02T05:14:45+00:00"
+        },
+        {
+            "name": "srwiez/thumbhash",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SRWieZ/thumbhash.git",
+                "reference": "70a4c48e3fa055ce7010641634ab1ea1b8d7ce81"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SRWieZ/thumbhash/zipball/70a4c48e3fa055ce7010641634ab1ea1b8d7ce81",
+                "reference": "70a4c48e3fa055ce7010641634ab1ea1b8d7ce81",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "ext-gd": "*",
+                "ext-imagick": "*",
+                "pestphp/pest": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Thumbhash\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eser DENIZ",
+                    "email": "srwiez@gmail.com"
+                }
+            ],
+            "description": "A brief description of your package",
+            "support": {
+                "issues": "https://github.com/SRWieZ/thumbhash/issues",
+                "source": "https://github.com/SRWieZ/thumbhash/tree/v1.2.0"
+            },
+            "time": "2023-05-10T15:02:57+00:00"
         },
         {
             "name": "symfony/config",
