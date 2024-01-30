@@ -7,7 +7,7 @@ templates:
 
 environments:
     default_migration_table: phinxlog
-    default_database: db
+    default_environment: db
 
     db:
         adapter: mysql
