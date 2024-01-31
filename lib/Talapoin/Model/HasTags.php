@@ -25,8 +25,10 @@ trait HasTags {
           $tag->save();
         }
 
-        $assoc= $this->factory($tags_model)->create();
-        $assoc->entry_id= $this->id;
+        $field = $this->_get_table_name(self::$auto_prefix_models . get_called_class()) . '_id';
+
+        $assoc= $this->factory($this->tags_model)->create();
+        $assoc->$field= $this->id;
         $assoc->tag_id= $tag->id;
         $assoc->save();
       }
