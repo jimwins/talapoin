@@ -20,6 +20,7 @@ RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
         ${PHPIZE_DEPS} \
       && pecl install decimal \
       && docker-php-ext-enable decimal \
+      && docker-php-ext-configure gd --with-freetype --with-jpeg \
       && docker-php-ext-install \
           bcmath \
           gd \
