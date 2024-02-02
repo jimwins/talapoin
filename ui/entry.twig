@@ -11,7 +11,7 @@
   {% if entry.title %}
     <h3 class="p-name">{{ entry.title }}</h3>
   {% endif %}
-  <div class="e-content">
+  <div class="entry e-content">
     <p>
       {{ entry.entry | paragraphs | expand_psuedo_urls | prettify_markup | raw }}
     </p>

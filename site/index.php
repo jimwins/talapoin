@@ -187,6 +187,11 @@ $app->get('/entry', function (Request $request, Response $response) {
   return $response->withRedirect('/');
 });
 
+/* Photos */
+$app->group('/photo', function (RouteCollectorProxy $app) {
+  \Talapoin\Controller\PhotoLibrary::registerRoutes($app);
+});
+
 /* Behind the scenes stuff */
 $app->get('/~reindex', [ \Talapoin\Controller\Blog::class, 'reindex' ])
   ->setName('reindex');

@@ -2,7 +2,7 @@
 namespace Talapoin\Model;
 
 trait HasTags {
-  public function tags($new_tags= null) {
+  protected function _handle_tags($model_name, $tag_model_name, $new_tags= null) {
     if ($new_tags) {
 
       if (!$this->id) {
@@ -13,23 +13,24 @@ trait HasTags {
         $new_tags= preg_split('/, */', $new_tags);
       }
 
-      $this->has_many($this->tags_model)->delete_many();
+      $this->has_many($tag_model_name)->delete_many();
 
       foreach ($new_tags as $tag_name) {
         $tag_name= trim($tag_name);
 
-        $tag= $this->factory('Tag')->where('name', $tag_name)->find_one();
+        $tag= $this->factory($model_name)->where('name', $tag_name)->find_one();
         if (!$tag) {
-          $tag= $this->factory('Tag')->create();
+          $tag= $this->factory($model_name)->create();
           $tag->name= $tag_name;
           $tag->save();
         }
 
         $field = $this->_get_table_name(self::$auto_prefix_models . get_called_class()) . '_id';
+        $tag_field = $this->_get_table_name(self::$auto_prefix_models . get_class($tag)) . '_id';
 
-        $assoc= $this->factory($this->tags_model)->create();
+        $assoc= $this->factory($tag_model_name)->create();
         $assoc->$field= $this->id;
-        $assoc->tag_id= $tag->id;
+        $assoc->$tag_field= $tag->id;
         $assoc->save();
       }
     }
@@ -38,6 +39,10 @@ trait HasTags {
       return json_decode($this->tags_json);
     }
 
-    return $this->has_many_through('Tag')->find_many();
+    return $this->has_many_through($model_name, $tag_model_name)->find_many();
+  }
+
+  public function tags($new_tags= null) {
+    return $this->_handle_tags('Tag', $this->tags_model, $new_tags);
   }
 }

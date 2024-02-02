@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  {% if title %}
+    {{ title }} @ trainedmonkey
+  {% else %}
+    trainedmonkey: photos from jim winstead jr.
+  {% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+img.responsive {
+  width: 100%;
+  height: auto;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+  <h1>
+    {{ block('title') }}
+  </h1>
+
+  <h2>
+    {{ photo.name }}
+  </h2>
+
+  <figure>
+    <img class="responsive"
+      {# this means image can be sized immediately #}
+      style="aspect-ratio: {{ photo.width }} / {{ photo.height }}"
+      src="{{ photo.imgUrl({ 'width': 1200, 'height': 1200, 'mode': 'fit' }) }}"
+      alt="{{ photo.alt_text ?: photo.name }}">
+    <figcaption>{{ photo.caption }}</figcaption>
+  </figure>
+
+  <dl class="info">
+    <dt>Taken
+    <dd>{{ photo.taken_at | date('F j, Y g:ia') }}
+
+    <dt>Uploaded
+    <dd>{{ photo.created_at | date('F j, Y g:ia') }}
+
+    <dt>Original
+    <dd>
+      <a href="{{ photo.imgUrl() }}">
+        {{ photo.width }} &times; {{ photo.height }}
+      </a>
+  </dl>
+
+{% endblock %}

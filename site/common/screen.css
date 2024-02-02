@@ -55,6 +55,11 @@ a img {
  border: none;
 }
 
+img.responsive {
+ width: 100%;
+ height: auto;
+}
+
 cite {
  font-style: normal;
 }
@@ -221,7 +226,7 @@ form {
 
 .main-content {
  padding-right: 1ch;
- max-width: 80ch;
+ max-width: 100ch;
 }
 
 .main-content > div {
@@ -235,7 +240,7 @@ form {
  margin-top: 1em;
 }
 
-.main-content > div img {
+.main-content > div.entry img {
  float: left;
  padding-right: 1em;
 }
