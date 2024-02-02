@@ -20,6 +20,9 @@ class PhotoLibrary
     $app->get('', [ self::class, 'top' ])->setName('photos');
     $app->post('', [ self::class, 'addPhoto' ])
       ->add($app->getContainer()->get(\Talapoin\Middleware\Auth::class));
+    $app->get('/album', [ self::class, 'showAlbums' ])->setName('photo-albums');
+    $app->get('/album/{album_name}', [ self::class, 'showAlbum' ])->setName('photo-album');
+    $app->get('/tag', [ self::class, 'showTags' ])->setName('photo-tags');
     $app->get('/tag/{tag}', [ self::class, 'showTag' ])->setName('photo-tag');
     $app->get('/{ulid:[^_]*}[_{slug:.*}]', [ self::class, 'showPhoto' ])->setName('photo');
   }
@@ -38,6 +41,70 @@ class PhotoLibrary
       'q' => $q,
       'page' => $page,
       'page_size' => $page_size,
+    ]);
+  }
+
+  public function showAlbums(Request $request, Response $response, View $view)
+  {
+    $page = (int) $request->getParam('page') ?: 0;
+    $page_size = (int) $request->getParam('page_size') ?: 24;
+
+    $albums = $this->library->getAlbums(page: $page, page_size: $page_size)->find_many();
+
+    return $view->render($response, 'photo/albums.html', [
+      'query_params' => $request->getParams(),
+      'albums' => $albums,
+      'page' => $page,
+      'page_size' => $page_size,
+    ]);
+  }
+
+  public function showAlbum(Request $request, Response $response, View $view, $album_name)
+  {
+    $album = $this->library->getAlbum($album_name);
+    if (!$album)
+      throw new \Slim\Exception\HttpNotFoundException($request);
+
+    $page = (int) $request->getParam('page') ?: 0;
+    $page_size = (int) $request->getParam('page_size') ?: 24;
+    $photos=
+      $this->library->getPhotos(page: $page, page_size: $page_size)
+        ->where_raw("? IN (SELECT id FROM album, photo_to_album ec WHERE photo_id = photo.id AND album_id = album.id)", $album->id)
+        ->order_by_desc('taken_at')
+        ->find_many();
+    return $view->render($response, 'photo/index.html', [
+      'query_params' => $request->getParams(),
+      'album' => $album,
+      'photos' => $photos,
+      'page' => $page,
+      'page_size' => $page_size,
+    ]);
+  }
+
+  public function showTags(Request $request, Response $response, View $view)
+  {
+    $query= "SELECT AVG(total)
+             FROM (SELECT COUNT(*) AS total
+                     FROM photo_to_tag
+                    GROUP BY tag_id) avg";
+    $avg= $this->data->fetch_single_value($query);
+
+    $query= "SELECT name, COUNT(*) AS total
+               FROM tag
+               JOIN photo_to_tag ON (id = tag_id)
+              GROUP BY id
+              ORDER BY name";
+    $tags= $this->data->fetch_all($query);
+
+    $query= "SELECT DISTINCT YEAR(taken_at) AS year
+               FROM photo
+              ORDER BY year DESC";
+    $years= $this->data->fetch_all($query);
+
+    return $view->render($response, 'photo/tags.html', [
+      'avg' => $avg,
+      'tags' => $tags,
+      'years' => $years,
     ]);
   }
 

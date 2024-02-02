@@ -38,6 +38,21 @@ class PhotoLibrary {
     return $photos;
   }
 
+  public function getAlbums($privacy = 'public', $page = 0, $page_size = 24) {
+    $albums=
+      $this->data->factory('Album')
+        ->select('*')
+        ->select_expr('COUNT(*) OVER()', 'records')
+        ->where('privacy', $privacy)
+        ->limit($page_size)->offset($page * $page_size);
+    return $albums;
+  }
+
+  public function getAlbum($album_name, $privacy = 'public')
+  {
+    return $this->getAlbums($privacy)->where('name', $album_name)->find_one();
+  }
+
   public function createPhoto() {
     return $this->data->factory('Photo')->create();
   }

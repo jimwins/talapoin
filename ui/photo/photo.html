@@ -54,6 +54,19 @@ img.responsive {
   </div>
 
   <dl class="info">
+    {% set albums = photo.albums() %}
+    {% if albums %}
+      <dt>Albums
+      <dd>
+        <ul>
+          {% for album in albums %}
+            <a href="{{ url_for('photo-album', { album_name: album.name }) }}">
+              {{- album.title -}}
+            </a>
+          {% endfor %}
+        </ul>
+    {% endif %}
+
     <dt>Taken
     <dd>{{ photo.taken_at | date('F j, Y g:ia') }}
 

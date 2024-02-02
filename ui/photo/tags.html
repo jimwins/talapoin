@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block extra_head %}
+<style type="text/css">
+#tags {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+}
+#tags li {
+  margin: 0px 5px;
+  display: inline;
+}
+#tags li a {
+  text-decoration: none;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+#tags li a:hover {
+  text-decoration: underline;
+}
+</style>
+{% endblock %}
+
+{% block title %}
+  photo tags @ trainedmonkey
+{% endblock %}
+
+{% block sidebar %}
+  {{ parent() }}
+  <ul>
+    <li>
+    {#
+      {% for year in years %}
+        <a href="/{{ year.year }}/">{{ year.year }}</a>
+      {% endfor %}
+    #}
+    </li>
+  </ul>
+{% endblock %}
+
+{% block content %}
+  <ul id="tags">
+    {% for tag in tags %}
+      <li>
+        <a style="font-size:{{'%.2f'|format((tag.total/avg) * 20.0 + 80.0)}}%"
+           href="{{ url_for('photo-tag', { tag: tag.name }) }}">
+          {{ tag.name }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
