@@ -24,6 +24,20 @@ class PhotoLibrary {
     return $photos;
   }
 
+  public function getPhotos($privacy = 'public', $page = 0, $page_size = 24) {
+    $photos =
+      $this->data->factory('Photo')
+        ->select('*')
+        ->select_expr('COUNT(*) OVER()', 'records')
+        ->select_expr("
+           (SELECT JSON_ARRAYAGG(name)
+              FROM photo_to_tag, tag
+             WHERE photo_id = photo.id AND tag_id = tag.id)", 'tags_json')
+        ->where('privacy', $privacy)
+        ->limit($page_size)->offset($page * $page_size);
+    return $photos;
+  }
+
   public function createPhoto() {
     return $this->data->factory('Photo')->create();
   }

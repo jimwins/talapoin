@@ -72,7 +72,7 @@
   <div class="pager">
     <div class="previous">
       {% if page > 0 %}
-        <a href="{{ url_for('photos', {}, query_params | merge({ 'page': page - 1 })) }}">
+        <a href="{{ current_url() ~ "?" ~ query_params | merge({ 'page': page - 1 }) | url_encode }}">
           &larr; previous
         </a>
       {% endif %}
@@ -83,7 +83,7 @@
     </div>
     <div class="next">
       {% if (page + 1) * page_size < total %}
-        <a href="{{ url_for('photos', {}, query_params | merge({ 'page': page + 1 })) }}">
+        <a href="{{ current_url() ~ "?" ~ query_params | merge({ 'page': page + 1 }) | url_encode }}">
           next &rarr;
         </a>
       {% endif %}

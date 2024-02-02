@@ -20,6 +20,7 @@ class PhotoLibrary
     $app->get('', [ self::class, 'top' ])->setName('photos');
     $app->post('', [ self::class, 'addPhoto' ])
       ->add($app->getContainer()->get(\Talapoin\Middleware\Auth::class));
+    $app->get('/tag/{tag}', [ self::class, 'showTag' ])->setName('photo-tag');
     $app->get('/{ulid:[^_]*}[_{slug:.*}]', [ self::class, 'showPhoto' ])->setName('photo');
   }
 
@@ -35,6 +36,24 @@ class PhotoLibrary
       'query_params' => $request->getParams(),
       'photos' => $photos,
       'q' => $q,
+      'page' => $page,
+      'page_size' => $page_size,
+    ]);
+  }
+
+  public function showTag(Request $request, Response $response, View $view, $tag)
+  {
+    $page = (int) $request->getParam('page') ?: 0;
+    $page_size = (int) $request->getParam('page_size') ?: 24;
+    $photos=
+      $this->library->getPhotos(page: $page, page_size: $page_size)
+        ->where_raw("? IN (SELECT name FROM tag, photo_to_tag ec WHERE photo_id = photo.id AND tag_id = tag.id)", $tag)
+        ->order_by_desc('taken_at')
+        ->find_many();
+    return $view->render($response, 'photo/index.html', [
+      'query_params' => $request->getParams(),
+      'tag' => $tag,
+      'photos' => $photos,
       'page' => $page,
       'page_size' => $page_size,
     ]);
