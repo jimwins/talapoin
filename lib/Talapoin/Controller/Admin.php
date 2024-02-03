@@ -151,7 +151,14 @@ class Admin {
       // first time and it has a title or toot? post it to mastodon and ping
       // blo.gs and send WebMentions
       if ($was_draft && $entry->title) {
-        $mastodon->post(($entry->toot ?? $entry->title) . " " . $url);
+        try {
+          $status= $mastodon->post(($entry->toot ?? $entry->title) . " " . $url);
+          $entry->mastodon_uri= $status->uri;
+          $entry->save();
+        } catch (\Exception $e) {
+          // XXX better logging
+          error_log((string)$e);
+        }
 
         $root= $routeParser->fullUrlFor($uri, 'top');
         $feed= $routeParser->fullUrlFor($uri, 'atom');

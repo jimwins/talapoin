@@ -30,5 +30,7 @@ class Mastodon {
       $content,
       visibility: $visibility
     );
+
+    return $res;
   }
 }
