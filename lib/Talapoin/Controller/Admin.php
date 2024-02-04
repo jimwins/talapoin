@@ -272,7 +272,7 @@ class Admin {
       $fn = preg_replace('/\s+/', '_', $fn);
       $fn = preg_replace('/[^A-Za-z0-9_.]/', '', $fn);
 
-      $fn = '/test/' . $fn;
+      $fn = '/upload/' . $fn;
 
       $upload = $storage->uploadFile($fn, $file->getStream());
     } else {
