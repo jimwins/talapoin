@@ -30,4 +30,124 @@
     </li>
   {% endfor %}
 </ul>
+
+<style>
+  form {
+    margin-top: 2em;
+  }
+  form label {
+    display: block;
+    margin-bottom: 1em;
+  }
+  form input[type="text"], form textarea {
+    width: 100ch;
+  }
+
+  .drop-container {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px dashed #555;
+    color: #444;
+    cursor: pointer;
+    transition: background .2s ease-in-out, border .2s ease-in-out;
+  }
+
+  .drop-container:hover {
+    background: #eee;
+    border-color: #111;
+  }
+
+  .drop-container:hover .drop-title {
+    color: #222;
+  }
+
+  .drop-title {
+    color: #444;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    transition: color .2s ease-in-out;
+  }
+  input[type=file] {
+    width: 350px;
+    max-width: 100%;
+    color: #444;
+    padding: 5px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #555;
+  }
+
+</style>
+<h2>Photos</h2>
+<form method="post" action="{{ url_for('updatePhoto') }}" enctype="multipart/form-data">
+  <label class="drop-container" id="dropcontainer">
+    <span class="drop-title">Drop photo here</span>
+    or
+    <input type="file" name="file" accept="image/*" required>
+  </label>
+
+  <label for="name">
+    Name
+  </label>
+  <input type="text" class="input" id="name" name="name">
+
+  <label>
+    Alt Text
+    <textarea name="alt_text" class="input" rows="3"></textarea>
+  </label>
+
+  <label>
+    Caption
+    <textarea name="caption" class="input" rows="4"></textarea>
+  </label>
+
+  <label for="tags">
+    Tags
+  </label>
+  <input type="text" class="input" id="tags" name="tags">
+
+  <label>
+    Privacy
+    <select class="select" name="privacy">
+      <option value="public">Public
+      <option value="friends &amp; family">Friends &amp; Family
+      <option value="private">Private
+    </select>
+  </label>
+
+  <button type="submit" class="button">
+    Add Photo
+  </button>
+</form>
+<script>
+  const dropContainer = document.getElementById("dropcontainer")
+  const fileInput = document.getElementById("images")
+
+  dropContainer.addEventListener("dragover", (e) => {
+    // prevent default to allow drop
+    e.preventDefault()
+  }, false)
+
+  dropContainer.addEventListener("dragenter", () => {
+    dropContainer.classList.add("drag-active")
+  })
+
+  dropContainer.addEventListener("dragleave", () => {
+    dropContainer.classList.remove("drag-active")
+  })
+
+  dropContainer.addEventListener("drop", (e) => {
+    e.preventDefault()
+    dropContainer.classList.remove("drag-active")
+    fileInput.files = e.dataTransfer.files
+  })
+</script>
 {% endblock %}

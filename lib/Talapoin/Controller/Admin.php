@@ -25,6 +25,8 @@ class Admin {
     $app->get('/page[/{id}]', [ self::class, 'editPage' ])
       ->setName('editPage');
     $app->post('/page[/{id}]', [ self::class, 'updatePage' ]);
+
+    $app->post('/photo[/{id}]', [ self::class, 'updatePhoto' ])->setName('updatePhoto');
   }
 
   public function login(Request $request, Response $response) {
@@ -241,6 +243,76 @@ class Admin {
     } else {
       $url= '/' . $page->slug;
     }
+
+    return $response->withRedirect($url);
+  }
+
+  public function updatePhoto(
+    Request $request, Response $response,
+    \Talapoin\Service\Gumlet $gumlet,
+    \Talapoin\Service\FileStorage $storage,
+    View $view,
+    $id = null
+  ) {
+    if ($id) {
+      $photo = $this->data->factory('Photo')->find_one($id);
+      if (!$photo) {
+        throw new \Slim\Exception\HttpNotFoundException($request);
+      }
+    } else {
+      $photo = $this->data->factory('Photo')->create();
+    }
+
+    if ($request->getUploadedFiles()) {
+      $file = $request->getUploadedFiles()['file'];
+      $fn = $file->getClientFilename();
+
+      // turn whitespace into _ and non-alphanumeric characters
+      // TODO: validate file type
+      $fn = preg_replace('/\s+/', '_', $fn);
+      $fn = preg_replace('/[^A-Za-z0-9_.]/', '', $fn);
+
+      $fn = '/test/' . $fn;
+
+      $upload = $storage->uploadFile($fn, $file->getStream());
+    } else {
+      throw new \Exception("No photo uploaded.");
+    }
+
+    /* Wrapped in a transaction because tags() also does stuff */
+    $this->data->beginTransaction();
+
+    $details = $gumlet->getImageDetails($fn);
+    $thumbhash = $gumlet->getThumbHash($fn);
+
+    $photo->ulid = \Ulid\Ulid::generate(true);
+    $photo->filename = $fn;
+
+    $photo->name = $request->getParam('name');
+    $photo->alt_text = $request->getParam('alt_text');
+    $photo->caption = $request->getParam('caption');
+    $photo->privacy = $request->getParam('privacy');
+
+    $photo->details = json_encode($details);
+    $photo->thumbhash = $thumbhash;
+
+    $photo->width = $details->width;
+    $photo->height = $details->height;
+
+    if (@$details->exif?->Image?->DateTime) {
+      $photo->taken_at = (new \DateTime($details->exif->Image->DateTime))->format('Y-m-d H:i:s');
+    }
+
+    $photo->tags($request->getParam('tags'));
+
+    $photo->save();
+
+    $this->data->commit();
+
+    $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
+    $routeParser= $routeContext->getRouteParser();
+
+    $url= $routeParser->urlFor('photo', [ 'ulid' => $photo->ulid ]);
 
     return $response->withRedirect($url);
   }
