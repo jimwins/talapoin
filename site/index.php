@@ -200,16 +200,7 @@ $app->get('/~reindex', [ \Talapoin\Controller\Blog::class, 'reindex' ])
 $app->post('/login', [ \Talapoin\Controller\Admin::class, 'login' ])
   ->setName('login');
 $app->group('/~admin', function (RouteCollectorProxy $app) {
-  $app->get('', [ \Talapoin\Controller\Admin::class, 'top' ])
-    ->setName('admin');
-
-  $app->get('/entry[/{id}]', [ \Talapoin\Controller\Admin::class, 'editEntry' ])
-    ->setName('editEntry');
-  $app->post('/entry[/{id}]', [ \Talapoin\Controller\Admin::class, 'updateEntry' ]);
-
-  $app->get('/page[/{id}]', [ \Talapoin\Controller\Admin::class, 'editPage' ])
-    ->setName('editPage');
-  $app->post('/page[/{id}]', [ \Talapoin\Controller\Admin::class, 'updatePage' ]);
+  \Talapoin\Controller\Admin::registerRoutes($app);
 })->add($container->get(\Talapoin\Middleware\Auth::class));
 
 /* DEBUG only */

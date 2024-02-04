@@ -13,6 +13,20 @@ class Admin {
   ) {
   }
 
+  public static function registerRoutes(\Slim\Routing\RouteCollectorProxy $app)
+  {
+    $app->get('', [ \Talapoin\Controller\Admin::class, 'top' ])
+      ->setName('admin');
+
+    $app->get('/entry[/{id}]', [ self::class, 'editEntry' ])
+      ->setName('editEntry');
+    $app->post('/entry[/{id}]', [ self::class, 'updateEntry' ]);
+
+    $app->get('/page[/{id}]', [ self::class, 'editPage' ])
+      ->setName('editPage');
+    $app->post('/page[/{id}]', [ self::class, 'updatePage' ]);
+  }
+
   public function login(Request $request, Response $response) {
     $expected= $this->config['auth']['token'];
 
