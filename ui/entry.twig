@@ -7,7 +7,7 @@
 {% endmacro %}
 
 {% import _self as blog %}
-<div class="h-entry" id="n {{ entry.id }} {% for tag in entry.tags %}{{ tag }} {% endfor %}">
+<div class="h-entry" id="entry_{{ entry.id }}">
   {% if entry.title %}
     <h3 class="p-name">{{ entry.title }}</h3>
   {% endif %}
