@@ -4,6 +4,7 @@ namespace Talapoin\Controller;
 use \Slim\Http\ServerRequest as Request;
 use \Slim\Http\Response as Response;
 use \Slim\Views\Twig as View;
+use Slim\Exception\HttpUnauthorizedException;
 
 class Admin {
   public function __construct(
@@ -39,6 +40,7 @@ class Admin {
       $expires= new \Datetime('+1 month');
 
       SetCookie('token', $token, $expires->format('U'), '/', $domain, true, true);
+      SetCookie('hasToken', '1', $expires->format('U'), '/', $domain, true, false);
 
       $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
       $routeParser= $routeContext->getRouteParser();
