@@ -1,8 +1,8 @@
 {% macro date_format(dt) %}
   {% if dt | date('Y') == "now" | date('Y') %}
-    {{ dt | date('F j (l) g:ia') | lower }}
+    {{ dt | date('F j (l) g:ia') }}
   {% else %}
-    {{ dt | date('F j, Y g:ia') | lower }}
+    {{ dt | date('F j, Y g:ia') }}
   {% endif %}
 {% endmacro %}
 
@@ -40,9 +40,9 @@
     {% endif %}
     &raquo;
     <a href="{{ entry.canonicalUrl() }}">
-      {% if entry.article %}more, {% endif %}
+      {% if entry.article %}More, {% endif %}
       {% if not entry.comment_count %}
-        comment
+        Comment
       {% else %}
         {{ entry.comment_count }} comment{{ entry.comment_count > 1 ? 's' }}, add yours
       {% endif %}

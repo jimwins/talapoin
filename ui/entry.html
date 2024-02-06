@@ -65,7 +65,7 @@
   {% endif %}
 
   {% if entry.comment_count %}
-    <h2>comments</h2>
+    <h2>Comments</h2>
 
     {# XXX show spam to admin #}
     {% set spam = 0 %}
@@ -87,7 +87,7 @@
     {% endfor %}
   {% endif %}
 
-  <h2>add a comment</h2>
+  <h2>Add a comment</h2>
 
   {% if date(entry.created_at) > date("-7 days") and not entry.closed %}
     <style>
@@ -105,22 +105,22 @@
 
     <form method="POST" action="{{ url_for('add-comment', { id: entry.id }) }}">
       <label>
-        name
+        Name
         <input type="text" name="name" value="" required>
       </label>
 
       <label>
-        email
+        Email
         <input type="email" name="email" value="" required>
       </label>
 
       <label>
-        website (optional)
+        Website (optional)
         <input type="url" name="url" value="">
       </label>
 
       <label>
-        your comment
+        Your comment
         <textarea name="comment" rows="10"></textarea>
       </label>
 
@@ -128,13 +128,13 @@
 
       <div>
         <small>
-          comments may be rejected or hidden if the robots decide that they
+          Comments may be rejected or hidden if the robots decide that they
           look like spam.
         </small>
       </div>
     </form>
   {% else %}
-    <p>sorry, comments on this post are closed.</p>
+    <p>Sorry, comments on this post are closed.</p>
   {% endif %}
 
   <style>

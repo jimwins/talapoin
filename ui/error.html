@@ -7,7 +7,7 @@
 {% block content %}
   <h1>error!</h1>
 
-  <p class="error">{{ exception.getMessage() | lower }}</p>
+  <p class="error">{{ exception.getMessage() }}</p>
 
   {% if exception.code == 401 %}
     <form method="POST" action="{{ url_for('login') }}">

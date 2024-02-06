@@ -27,7 +27,7 @@ table.calendar a:hover {
 {% endblock %}
 
 {% block title %}
-  {{ (year ~ '-' ~ month ~ '-1')|date("F Y")|lower }} archives @ trainedmonkey
+  {{ (year ~ '-' ~ month ~ '-1')|date("F Y") }} archives @ trainedmonkey
 {% endblock %}
 
 {% block sidebar %}
@@ -37,7 +37,7 @@ table.calendar a:hover {
     <li>
       {% for m in months %}
         {% if month != m.ym|date('m') %}
-          <a href="/{{ m.ym|date('Y/n') }}/">{{ m.ym|date('F')|lower }}</a>
+          <a href="/{{ m.ym|date('Y/n') }}/">{{ m.ym|date('F') }}</a>
         {% endif %}
       {% endfor %}
     </li>
@@ -46,7 +46,7 @@ table.calendar a:hover {
 
 {% block content %}
   <h1>
-    {{ (year ~ '-' ~ month ~ '-1')|date("F Y")|lower }} archives
+    {{ (year ~ '-' ~ month ~ '-1')|date("F Y") }} archives
   </h1>
   {% set i= 0 %}
   {% set first= entries[i].created_at %}
@@ -84,7 +84,7 @@ table.calendar a:hover {
   <div style="text-align: center">
     {% if prev %}
       <a href="{{ prev | date('/Y/n') }}">
-        &laquo; {{ prev | date('F Y') | lower }}
+        &laquo; {{ prev | date('F Y') }}
       </a>
     {% endif %}
     {% if next and prev %}
@@ -92,7 +92,7 @@ table.calendar a:hover {
     {% endif %}
     {% if next %}
       <a href="{{ next | date('/Y/n') }}">
-        {{ next | date('F Y') | lower }} &raquo;
+        {{ next | date('F Y') }} &raquo;
       </a>
     {% endif %}
   </div>

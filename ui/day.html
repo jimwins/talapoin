@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-  {{ ymd | date('F, j, Y') | lower }} archives
+  {{ ymd | date('F, j, Y') }} archives
     @ trainedmonkey
 {% endblock %}
 
@@ -24,7 +24,7 @@
 
 {% block content %}
   <h1>
-    {{ ymd | date('F, j, Y') | lower }} archives
+    {{ ymd | date('F, j, Y') }} archives
   </h1>
 
   {% include 'entries.twig' %}
@@ -33,7 +33,7 @@
   <div style="text-align: center; border: none">
     {% if prev %}
       <a href="{{ prev | date('/Y/n/j') }}">
-        &laquo; {{ prev | date('l, F j, Y') | lower }}
+        &laquo; {{ prev | date('l, F j, Y') }}
       </a>
     {% endif %}
     {% if next and prev %}
@@ -41,7 +41,7 @@
     {% endif %}
     {% if next %}
       <a href="{{ next | date('/Y/n/j') }}">
-        {{ next | date('l, F j, Y') | lower }} &raquo;
+        {{ next | date('l, F j, Y') }} &raquo;
       </a>
     {% endif %}
   </div>
