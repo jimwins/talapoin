@@ -34,24 +34,26 @@
 
   <div class="left-sidebar">
     {% block sidebar %}
+      <h2 style="font-weight: normal">
+        trained<b>monkey</b>
+      </h2>
+
       <ul id="navigation">
-        <li><a rel="home" href="/">home</a></li>
-        <li><a rel="about" href="/about/">about</a></li>
-        <li><a rel="toc" href="/archive/">archive</a></li>
-        <li><a href="/projects/">projects</a></li>
-        <li><a href="{{ url_for('photos') }}">photos</a></li>
-        <li><a href="http://www.5thandspring.com/">celia</a></li>
-        <li><a href="http://213dog.blogspot.com/">wonton</a></li>
+        <li><a rel="home" href="/">Home</a></li>
+        <li><a rel="about" href="/about">About</a></li>
+        <li><a rel="toc" href="/archive">Archive</a></li>
+        <li><a href="/projects">Projects</a></li>
+        <li><a href="{{ url_for('photos') }}">Photos</a></li>
         <li><a rel="me" href="https://mefi.social/@jimw">@jimw@mefi.social</a></li>
       </ul>
 
       <form id="search" method="get" action="/search">
         <fieldset>
-          <legend>search</legend>
-          <input type="search" accesskey="4" id="livesearch" name="q"
+          <legend>Search</legend>
+          <input class="input" type="search" accesskey="4" name="q"
                  value="{{ q }}" size="10"
                  style="width:100%"
-                 placeholder="search"
+                 placeholder="Search"
                  autosave="tm_search"
                  results="10">
         </fieldset>

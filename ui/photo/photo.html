@@ -20,12 +20,8 @@ img.responsive {
 
 {% block content %}
   <h1>
-    {{ block('title') }}
+    {{ photo.name ?: '(untitled)' }}
   </h1>
-
-  <h2>
-    {{ photo.name }}
-  </h2>
 
   <figure>
     <img class="responsive"

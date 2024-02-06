@@ -110,11 +110,11 @@
 {% block content %}
   <h1>
     {% if tag %}
-      photos with '{{ tag }}' tag
+      Photos tagged '{{ tag }}'
     {% elseif album %}
       {{ album.title }}
     {% else %}
-      trained<b>monkey</b> photos
+      Photos
     {% endif %}
   </h1>
 
