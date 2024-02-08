@@ -163,7 +163,7 @@ class Admin {
         'year' => $date->format('Y'),
         'month' => $date->format('m'),
         'day' => $date->format('d'),
-        'id' => $entry->slug()
+        'slug' => $entry->slug()
       ]);
 
       // first time and it has a title or toot? post it to mastodon and ping
@@ -171,8 +171,10 @@ class Admin {
       if ($was_draft && $entry->title) {
         try {
           $status= $mastodon->post(($entry->toot ?? $entry->title) . " " . $url);
-          $entry->mastodon_uri= $status->uri;
-          $entry->save();
+          if ($status) {
+            $entry->mastodon_uri= $status->uri;
+            $entry->save();
+          }
         } catch (\Exception $e) {
           // XXX better logging
           error_log((string)$e);

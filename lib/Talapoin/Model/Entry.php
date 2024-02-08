@@ -28,7 +28,7 @@ class Entry extends \Talapoin\Model {
       'year' => $date->format('Y'),
       'month' => $date->format('m'),
       'day' => $date->format('d'),
-      'id' => $this->slug()
+      'slug' => $this->slug()
     ]);
   }
 
