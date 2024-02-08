@@ -378,6 +378,6 @@ class Blog {
 
     /* XXX this is actually where the magic happens */
 
-    return $response->withJson();
+    return $response->withJson([]);
   }
 }
