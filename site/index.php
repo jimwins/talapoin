@@ -138,7 +138,7 @@ $errorMiddleware->setErrorHandler(
 /* ROUTES */
 
 /* A single entry */
-$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{id}',
+$app->get('/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}/{slug}',
           [ \Talapoin\Controller\Blog::class, 'entry' ])
   ->setName('entry');
 
@@ -195,6 +195,9 @@ $app->group('/photo', function (RouteCollectorProxy $app) {
 /* Behind the scenes stuff */
 $app->get('/~reindex', [ \Talapoin\Controller\Blog::class, 'reindex' ])
   ->setName('reindex');
+
+$app->post('/~webmention', [ \Talapoin\Controller\Blog::class, 'handleWebmention' ])
+  ->setName('webmention');
 
 /* Admin */
 $app->post('/login', [ \Talapoin\Controller\Admin::class, 'login' ])

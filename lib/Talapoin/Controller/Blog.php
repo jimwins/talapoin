@@ -1,6 +1,7 @@
 <?php
 namespace Talapoin\Controller;
 
+use Slim\Interfaces\RouteCollectorProxyInterface;
 use \Slim\Http\ServerRequest as Request;
 use \Slim\Http\Response as Response;
 use \Slim\Views\Twig as View;
@@ -162,11 +163,11 @@ class Blog {
     ]);
   }
 
-  public function entry(Request $request, Response $response, $year, $month, $day, $id) {
-    if (is_numeric($id)) {
-      $entry= $this->blog->getEntryById($id);
+  public function entry(Request $request, Response $response, $year, $month, $day, $slug) {
+    if (is_numeric($slug)) {
+      $entry= $this->blog->getEntryById($slug);
     } else {
-      $entry= $this->blog->getEntryBySlug($year, $month, $day, $id);
+      $entry= $this->blog->getEntryBySlug($year, $month, $day, $slug);
     }
 
     if (!$entry) {
@@ -174,7 +175,7 @@ class Blog {
     }
 
     /* Use slug in canonical URL for items with title */
-    if (is_numeric($id) && $entry->title) {
+    if (is_numeric($slug) && $entry->title) {
       return $response->withRedirect($entry->canonicalUrl());
     }
 
@@ -308,5 +309,75 @@ class Blog {
     $count= $search->reindex();
     $response->getBody()->write("Indexed $count rows.");
     return $response;
+  }
+
+  public function handleWebmention(Response $response, Request $request, \Slim\App $app)
+  {
+    $target = $request->getParam('target');
+    $target_url = parse_url($target);
+    $source = $request->getParam('source');
+    $source_url = parse_url($source);
+
+    // Verify that URLs are in schemes that we recognize
+    if ($target_url['scheme'] != 'https') {
+      throw new \Slim\Exception\HttpBadRequestException(
+        "The scheme of the target is obviously wrong."
+      );
+    }
+
+    if (!in_array($source_url['scheme'], [ 'https', 'http' ])) {
+      throw new \Slim\Exception\HttpBadRequestException(
+        "Unable to handle source with that URL scheme."
+      );
+    }
+
+    // Verify that $source != $target
+    if ($source == $target) {
+      throw new \Slim\Exception\HttpBadRequestException(
+        "The source and target cannot be the same."
+      );
+    }
+
+    // Verify that $target is us by looking up the route
+    $routeContext = \Slim\Routing\RouteContext::fromRequest($request);
+    $routingResults = $routeContext->getRoutingResults();
+    $dispatcher = $routingResults->getDispatcher();
+
+    try {
+      $routingResults = $dispatcher->dispatch('HEAD', $target_url['path']);
+      $identifier = $routingResults->getRouteIdentifier();
+      $routeResolver = $app->getRouteResolver();
+      $route = $routeResolver->resolveRoute($identifier);
+      $routeName = $route->getName();
+      $arguments = $routingResults->getRouteArguments();
+    } catch (\Exception $e) {
+      throw new \Slim\Exception\HttpBadRequestException(
+        "Unable to find the specified target"
+      );
+    }
+
+    if ($routeName != 'entry') {
+      throw new \Slim\Exception\HttpBadRequestException(
+        "That's not a target that we accept a Webmention about"
+      );
+    }
+
+    $entry = $this->blog->getEntryBySlug(...$arguments);
+
+    if (!$entry) {
+      throw new \Slim\Exception\HttpBadRequestException(
+        "The target does not exist"
+      );
+    }
+
+    /* XXX if we had a task queue of some sort, we'd bail here and handle it
+     * asynchronously */
+
+    /* Now check the source */
+    $mf = \Mf2\fetch($source);
+
+    /* XXX this is actually where the magic happens */
+
+    return $response->withJson();
   }
 }
