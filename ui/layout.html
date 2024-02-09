@@ -9,7 +9,7 @@
       @ trainedmonkey
     {% endif %}
   </title>
-  <link rel="author" href="https://trainedmonkey.com/" />
+  <link rel="author" href="{{ full_url_for('page', { path : '' }) }}" />
   <link rel="authorization_endpoint" href="https://indieauth.com/auth">
   <link rel="shortcut icon" href="/common/fav.ico" />
   <link rel="stylesheet" type="text/css" media="screen"
@@ -64,7 +64,7 @@
   </div>
 
   <ul id="links" class="footer">
-    <li><a rel="copyright" href="https://creativecommons.org/publicdomain/zero/1.0/">Dedicated to the public domain</a> by <a class="h-card" href="https://trainedmonkey.com/">Jim Winstead Jr.</a></li>
+    <li><a rel="copyright" href="https://creativecommons.org/publicdomain/zero/1.0/">Dedicated to the public domain</a> by <a class="h-card" href="{{ full_url_for('page', { path : '' }) }}">Jim Winstead Jr.</a></li>
   </ul>
 
 </div>

@@ -13,6 +13,16 @@ class Entry extends \Talapoin\Model {
     }
   }
 
+  public function routeComponents() {
+    $created_at = new \DateTime($this->created_at);
+    return [
+      'year' => $created_at->format('Y'),
+      'month' => $created_at->format('m'),
+      'day' => $created_at->format('d'),
+      'slug' => $this->slug(),
+    ];
+  }
+
   public function canonicalUrl() {
     return sprintf('/%s/%s', (new \DateTime($this->created_at))->format("Y/m/d"), $this->slug());
   }

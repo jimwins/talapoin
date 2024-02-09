@@ -270,6 +270,6 @@ $app->get('/{path:.*}', function (Request $request, Response $response, $path) {
   }
 
   throw new \Slim\Exception\HttpNotFoundException($request, $response);
-});
+})->setName('page');
 
 $app->run();
