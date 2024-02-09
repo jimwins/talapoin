@@ -177,8 +177,16 @@ $app->get('/scratch[/{path:.*}]', function (Request $request, Response $response
 $app->get('/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
   ->setName('atom');
 
-$app->get('/{tag}/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
+$app->get('/tag/{tag}/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
   ->setName('tag_atom');
+
+$app->get('/{tag}/index.atom', function (Request $request, Response $response, $tag) {
+  $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
+  $routeParser= $routeContext->getRouteParser();
+  return $response->withRedirect(
+    $routeParser->fullUrlFor($request->getUri(), 'tag_atom', [ 'tag' => $tag ])
+  );
+});
 
 /* Handle /entry/123 as redirect to blog entry (tmky.us goes through GLOBALS['container']) */
 $app->get('/entry/{id:[0-9]+}', [ \Talapoin\Controller\Blog::class, 'entryRedirect' ]);
