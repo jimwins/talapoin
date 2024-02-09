@@ -37,7 +37,8 @@
         "aws/aws-sdk-php": "^3.298",
         "elasticsearch/elasticsearch": "^8.12",
         "mf2/mf2": "^0.5.0",
-        "masterminds/html5": "^2.8"
+        "masterminds/html5": "^2.8",
+        "cjrasmussen/bluesky-api": "^2.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.8"

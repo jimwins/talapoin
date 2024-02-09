@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a36268db5f70d4ec76eccff5a70cd8a",
+    "content-hash": "6712f2f383f0d3e1f2f226fefca460bc",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -445,6 +445,54 @@
                 "source": "https://github.com/cakephp/utility"
             },
             "time": "2023-11-24T13:25:13+00:00"
+        },
+        {
+            "name": "cjrasmussen/bluesky-api",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cjrasmussen/BlueskyApi.git",
+                "reference": "dfecddaabd2fe74e4a7f549758b2313799d65f7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cjrasmussen/BlueskyApi/zipball/dfecddaabd2fe74e4a7f549758b2313799d65f7a",
+                "reference": "dfecddaabd2fe74e4a7f549758b2313799d65f7a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=7.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "cjrasmussen\\BlueskyApi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Clark Rasmussen",
+                    "homepage": "https://cjr.dev",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Simple helper for interacting with the Bluesky API/AT protocol",
+            "homepage": "https://cjr.dev",
+            "keywords": [
+                "at protocol",
+                "bluesky"
+            ],
+            "support": {
+                "issues": "https://github.com/cjrasmussen/BlueskyApi/issues",
+                "source": "https://github.com/cjrasmussen/BlueskyApi"
+            },
+            "time": "2024-01-06T03:48:13+00:00"
         },
         {
             "name": "doctrine/inflector",
