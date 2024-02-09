@@ -184,7 +184,8 @@ $app->get('/{tag}/index.atom', function (Request $request, Response $response, $
   $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
   $routeParser= $routeContext->getRouteParser();
   return $response->withRedirect(
-    $routeParser->fullUrlFor($request->getUri(), 'tag_atom', [ 'tag' => $tag ])
+    $routeParser->fullUrlFor($request->getUri(), 'tag_atom', [ 'tag' => $tag ]),
+    301 /* Permanently */
   );
 });
 
