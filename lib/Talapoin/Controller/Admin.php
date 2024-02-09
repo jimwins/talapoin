@@ -102,6 +102,7 @@ class Admin {
   public function updateEntry(
     Request $request, Response $response,
     View $view,
+    \Talapoin\Service\Bluesky $bluesky,
     \Talapoin\Service\Mastodon $mastodon,
     \Talapoin\Service\Blodotgs $blogs,
     \Talapoin\Service\Search $search,
@@ -166,7 +167,7 @@ class Admin {
         'slug' => $entry->slug()
       ]);
 
-      // first time and it has a title or toot? post it to mastodon and ping
+      // first time and it has a title or toot? syndicate it and ping
       // blo.gs and send WebMentions
       if ($was_draft && $entry->title) {
         try {
@@ -174,6 +175,19 @@ class Admin {
           if ($status) {
             $entry->mastodon_uri= $status->uri;
             $entry->save();
+          }
+        } catch (\Exception $e) {
+          // XXX better logging
+          error_log((string)$e);
+        }
+
+        try {
+          $status= $bluesky->post(($entry->toot ?? $entry->title), $url);
+          if ($status) {
+            if (property_exists($status, 'uri')) {
+              $entry->bluesky_uri= $status->uri;
+              $entry->save();
+            }
           }
         } catch (\Exception $e) {
           // XXX better logging
