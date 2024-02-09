@@ -23,7 +23,7 @@
        <title />
      {% endif %}
      <link rel="alternate" type="text/html" href="{{ full_url_for('entry', entry.routeComponents()) }}" />
-     <id>tag:trainedmonkey.com,{{ entry.created_at | date('Y-m-d') }}:{{ entry.id }}</id>
+     <id>tag:{{ hostname }},{{ entry.created_at | date('Y-m-d') }}:{{ entry.id }}</id>
      <updated>{{ entry.updated_at | date('Y-m-d\\TH:i:s\\Z', 'UTC') }}</updated>
      <published>{{ entry.created_at | date('c', 'America/Los_Angeles') }}</published>
      {% for tag in entry.tags %}

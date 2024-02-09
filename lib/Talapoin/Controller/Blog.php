@@ -280,7 +280,7 @@ class Blog {
     return $response->withRedirect($entry->canonicalUrl());
   }
 
-  public function atomFeed(Response $response, $tag= null) {
+  public function atomFeed(Request $request, Response $response, $tag= null) {
     $entries=
       $this->blog->getEntries()
         ->order_by_desc('created_at')
@@ -289,8 +289,14 @@ class Blog {
       $entries= $entries->where_raw("? IN (SELECT name FROM tag, entry_to_tag ec WHERE entry_id = entry.id AND tag_id = tag.id)", $tag);
     }
 
+    $hostname = $request->getUri()->getHost();
+
     return $this->view
-      ->render($response, 'index.atom', [ 'entries' => $entries->find_many(), 'tag' => $tag ])
+      ->render($response, 'index.atom', [
+        'entries' => $entries->find_many(),
+        'tag' => $tag,
+        'hostname' => $hostname,
+      ])
       ->withHeader('Content-Type', 'application/atom+xml');
   }
 
