@@ -290,7 +290,7 @@ class Blog {
     }
 
     return $this->view
-      ->render($response, 'index.atom', [ 'entries' => $entries->find_many() ])
+      ->render($response, 'index.atom', [ 'entries' => $entries->find_many(), 'tag' => $tag ])
       ->withHeader('Content-Type', 'application/atom+xml');
   }
 
