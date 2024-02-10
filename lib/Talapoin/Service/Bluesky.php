@@ -4,9 +4,19 @@ namespace Talapoin\Service;
 
 class Bluesky {
   private $config;
+  private $client;
 
   public function __construct(Config $config) {
     $this->config= @$config['bluesky'];
+  }
+
+  protected function getClient() {
+    if (!isset($this->client)) {
+      $this->client = new \cjrasmussen\BlueskyApi\BlueskyApi();
+      $this->client->auth($this->config['handle'], $this->config['password']);
+    }
+
+    return $this->client;
   }
 
   public function post(string $content, string $url) {
@@ -15,9 +25,7 @@ class Bluesky {
       return;
     }
 
-    $client = new \cjrasmussen\BlueskyApi\BlueskyApi();
-
-    $client->auth($this->config['handle'], $this->config['password']);
+    $client = $this->getClient();
 
     $args = [
       'collection' => 'app.bsky.feed.post',
@@ -55,8 +63,7 @@ class Bluesky {
       return [];
     }
 
-    $client = new \cjrasmussen\BlueskyApi\BlueskyApi();
-    $client->auth($this->config['handle'], $this->config['password']);
+    $client = $this->getClient();
 
     return $client->request('GET', 'app.bsky.feed.getPostThread', [ 'uri' => $uri, 'depth' => 0 ]);
   }
