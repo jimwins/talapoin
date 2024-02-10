@@ -372,6 +372,7 @@ class Blog {
 
     if (!$entry) {
       throw new \Slim\Exception\HttpBadRequestException(
+        $request,
         "The target does not exist"
       );
     }
