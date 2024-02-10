@@ -107,22 +107,6 @@ $filter= new \Twig\TwigFilter('get_debug_type', function ($value) {
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
-$filter= new \Twig\TwigFilter('expand_bluesky_uri', function ($value) use ($container) {
-  $bluesky= $container->get(\Talapoin\Service\Bluesky::class);
-  $record = $bluesky->getRecord($value);
-  error_log("record = " . json_encode($record));
-  if ($record) {
-    return
-      'https://bsky.app/profile/' .
-      $record->thread->post->author->handle . '/post/' .
-      // this identifier isn't available except by pulling apart the uri?
-      preg_replace('!^.+/!', '', $record->thread->post->uri)
-      ;
-  }
-  return "";
-});
-$container->get('view')->getEnvironment()->addFilter($filter);
-
 $func= new \Twig\TwigFunction('current_release', function() {
   $link= @readlink('/app/current');
   if ($link) {

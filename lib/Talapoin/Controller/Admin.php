@@ -172,7 +172,7 @@ class Admin {
       // blo.gs and send WebMentions
       if ($was_draft && $entry->title) {
         try {
-          $status= $mastodon->post(($entry->toot ?? $entry->title) . " " . $url);
+          $status= $mastodon->post(($entry->toot ?: $entry->title) . " " . $url);
           if ($status) {
             $entry->mastodon_uri= $status->uri;
             $entry->save();
@@ -183,11 +183,18 @@ class Admin {
         }
 
         try {
-          $status= $bluesky->post(($entry->toot ?? $entry->title), $url);
+          $status= $bluesky->post(($entry->toot ?: $entry->title), $url);
           if ($status) {
             if (property_exists($status, 'uri')) {
-              $entry->bluesky_uri= $status->uri;
-              $entry->save();
+              $record = $bluesky->getRecord($status->uri);
+              if ($record) {
+                $entry->bluesky_uri=
+                  'https://bsky.app/profile/' .
+                  $record->thread->post->author->handle . '/post/' .
+                  // this identifier isn't available except by pulling apart the uri?
+                  preg_replace('!^.+/!', '', $record->thread->post->uri);
+                $entry->save();
+              }
             }
           }
         } catch (\Exception $e) {
