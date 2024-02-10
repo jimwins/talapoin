@@ -134,7 +134,7 @@ $errorHandler->registerErrorRenderer(
   new \Talapoin\Handler\ErrorRenderer($container->get('view'))
 );
 
-/* 404 */
+/* 404 & 410 */
 $errorMiddleware->setErrorHandler(
   \Slim\Exception\HttpNotFoundException::class,
   function (Request $request, Throwable $exception,
@@ -142,6 +142,14 @@ $errorMiddleware->setErrorHandler(
   {
     $response= new \Slim\Psr7\Response();
     return $container->get('view')->render($response->withStatus(404), '404.html');
+  });
+$errorMiddleware->setErrorHandler(
+  \Slim\Exception\HttpGoneException::class,
+  function (Request $request, Throwable $exception,
+            bool $displayErrorDetails) use ($container)
+  {
+    $response= new \Slim\Psr7\Response();
+    return $container->get('view')->render($response->withStatus(410), '404.html');
   });
 
 /* ROUTES */
