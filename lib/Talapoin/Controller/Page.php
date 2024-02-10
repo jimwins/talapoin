@@ -35,7 +35,7 @@ class Page {
 
     // check for redirects
     $query = "SELECT source, dest FROM redirect WHERE ? LIKE source";
-    if (($redir = $this->data->fetch_single_row($query, [ $path ])) {
+    if (($redir = $this->data->fetch_single_row($query, [ $path ]))) {
       if (($pos = strpos($redir['source'], '%'))) {
         $dest = $redir['dest'] . substr($path, $pos);
       } else {
