@@ -78,7 +78,7 @@
           {# XXX expose email to admin #}
           {{ comment.name | escape }}
           {% if comment.url %}
-            <a rel="nofollow" href="{% if not comment.url matches '/^https?:/' %}http://{% endif %}{{ comment.url }}">(link)</a>
+            <a rel="nofollow" href="{% if not (comment.url matches '/^https?:/') %}http://{% endif %}{{ comment.url }}">(link)</a>
           {% endif %}
           &raquo;
           {# XXX admin link for delete/spam/ham #}
