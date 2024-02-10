@@ -67,6 +67,9 @@ $container->set('view', function($container) {
   // Add the HTML extension
   $view->addExtension(new \Twig\Extra\Html\HtmlExtension());
 
+  // Add StringLoader extension
+  $view->addExtension(new \Twig\Extension\StringLoaderExtension());
+
   return $view;
 });
 
@@ -126,6 +129,12 @@ $func= new \Twig\TwigFunction('current_release', function() {
     return basename($link);
   }
   return 'dev';
+});
+$container->get('view')->getEnvironment()->addFunction($func);
+
+$func= new \Twig\TwigFunction('includeFragment', function($slug) use ($container) {
+  $pages= $container->get(\Talapoin\Service\Page::class);
+  return $pages->getPageBySlug($slug);
 });
 $container->get('view')->getEnvironment()->addFunction($func);
 
@@ -256,36 +265,6 @@ if ($DEBUG) {
 }
 
 /* Default for everything else (pages, redirects) */
-$app->get('/{path:.*}', function (Request $request, Response $response, $path) {
-  // check for redirects
-  $query= "SELECT source, dest FROM redirect WHERE ? LIKE source";
-  $stmt= $GLOBALS['container']->get('db')->prepare($query);
-  if ($stmt->execute([$path]) && ($redir= $stmt->fetch())) {
-    if (($pos= strpos($redir['source'], '%'))) {
-      $dest= $redir['dest'] . substr($path, $pos);
-    } else {
-      $dest= $redir['dest'];
-    }
-    return $response->withRedirect($dest);
-  }
-
-  /* Trailing slash? Might need to redirect to page */
-  if (substr($path, -1) == '/') {
-    $path= substr($path, 0, -1);
-    $query= "SELECT * FROM page WHERE slug = ?";
-    $stmt= $GLOBALS['container']->get('db')->prepare($query);
-    if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
-      return $response->withRedirect($path);
-    }
-  } else {
-    $query= "SELECT * FROM page WHERE slug = ?";
-    $stmt= $GLOBALS['container']->get('db')->prepare($query);
-    if ($stmt->execute([$path]) && ($page= $stmt->fetch(\PDO::FETCH_ASSOC))) {
-      return $GLOBALS['container']->get('view')->render($response, 'page.html', [ 'page' => $page ]);
-    }
-  }
-
-  throw new \Slim\Exception\HttpNotFoundException($request, $response);
-})->setName('page');
+$app->get('/{path:.*}', [ \Talapoin\Controller\Page::class, 'showPage' ])->setName('page');
 
 $app->run();

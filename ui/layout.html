@@ -39,15 +39,7 @@
         trained<b>monkey</b>
       </h2>
 
-      <ul id="navigation">
-        <li><a rel="home" href="/">Home</a></li>
-        <li><a rel="about" href="/about">About</a></li>
-        <li><a rel="toc" href="/archive">Archive</a></li>
-        <li><a href="/projects">Projects</a></li>
-        <li><a href="https://github.com/jimwins" rel="me">GitHub</a></li>
-        <li><a href="{{ url_for('photos') }}">Photos</a></li>
-        <li><a rel="me" href="https://mefi.social/@jimw">@jimw@mefi.social</a></li>
-      </ul>
+      {{ include(template_from_string(includeFragment('@navigation').content)) }}
 
       <form id="search" method="get" action="/search">
         <fieldset>

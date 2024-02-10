@@ -9,6 +9,7 @@ use Slim\Exception\HttpUnauthorizedException;
 class Admin {
   public function __construct(
     private \Talapoin\Service\Blog $blog,
+    private \Talapoin\Service\Page $page,
     private \Talapoin\Service\Config $config,
     private \Talapoin\Service\Data $data
   ) {
@@ -58,7 +59,7 @@ class Admin {
         ->find_many();
 
     $pages=
-      $this->data->factory('Page')
+      $this->page->getPages(true)
         ->order_by_asc('slug')
         ->find_many();
 
@@ -214,12 +215,18 @@ class Admin {
 
   public function editPage(Request $request, Response $response, View $view, $id= null) {
     if ($id) {
-      $page= $this->data->factory('Page')->find_one($id);
+      $page= $this->page->getPageById($id);
       if (!$page) {
         throw new \Slim\Exception\HttpNotFoundException($request);
       }
     } else {
-      $page= $this->data->factory('Page')->create();
+      $page= [
+        'title' => '',
+        'slug' => '',
+        'content' => '',
+        'description' => '',
+        'draft' => 1
+      ];
     }
 
     return $view->render($response, 'admin/edit-page.html', [ 'page' => $page ]);
@@ -231,7 +238,7 @@ class Admin {
     $id= null
   ) {
     if ($id) {
-      $page= $this->data->factory('Page')->find_one($id);
+      $page= $this->page->getPageById($id);
       if (!$page) {
         throw new \Slim\Exception\HttpNotFoundException($request);
       }
@@ -256,7 +263,7 @@ class Admin {
     $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
     $routeParser= $routeContext->getRouteParser();
 
-    if ($page->draft) {
+    if ($page->draft || str_starts_with($page->slug, '@')) {
       $url= $routeParser->urlFor('editPage', [ 'id' => $page->id ]);
     } else {
       $url= '/' . $page->slug;
