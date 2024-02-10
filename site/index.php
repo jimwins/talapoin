@@ -248,6 +248,10 @@ if ($DEBUG) {
             });
 }
 
+$app->get('/news/rss.php', function (Request $request, Response $response) {
+  throw new \Slim\Exception\HttpGoneException($request);
+});
+
 /* Default for everything else (pages, redirects) */
 $app->get('/{path:.*}', [ \Talapoin\Controller\Page::class, 'showPage' ])->setName('page');
 
