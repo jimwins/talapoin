@@ -131,7 +131,7 @@
                 {# x-dims="{{ photo.thumbHashDimensions() | json_encode }}" #}
                 {# x-src="{{ photo.thumbHashDataUrl() }}" #}
                 src="{{ photo.imgUrl({ 'width': 240, 'height': 240, 'mode': 'fit' }) }}"
-                alt="{{ photo.alt_text ?? photo.name }}">
+                alt="{{ photo.alt_text ?: photo.name }}">
             </a>
             <figcaption>{{ photo.name }}</figcaption>
           </figure>
