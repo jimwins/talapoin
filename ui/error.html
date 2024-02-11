@@ -10,12 +10,14 @@
   <p class="error">{{ exception.getMessage() }}</p>
 
   {% if exception.code == 401 %}
-    <form method="POST" action="{{ url_for('login') }}">
+    <form class="stacked" method="POST" action="{{ url_for('login') }}">
       <label>
         Token
         <input type="password" name="token">
       </label>
-      <input type="submit" value="Log in">
+      <button type="submit">
+        Log in
+      </button>
     </form>
   {% endif %}
 

@@ -104,7 +104,7 @@
       }
     </style>
 
-    <form method="POST" action="{{ url_for('add-comment', { id: entry.id }) }}">
+    <form class="stacked" method="POST" action="{{ url_for('add-comment', { id: entry.id }) }}">
       <label>
         Name
         <input type="text" name="name" value="" required>
@@ -125,7 +125,9 @@
         <textarea name="comment" rows="10"></textarea>
       </label>
 
-      <input type="submit" value="Submit">
+      <button type="submit">
+        Submit
+      </button>
 
       <div>
         <small>

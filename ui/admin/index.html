@@ -6,6 +6,8 @@
 
 {% block content %}
 
+<h1>Admin</h1>
+
 <h2>Entries</h2>
 
 <ul>
@@ -32,87 +34,57 @@
 </ul>
 
 <style>
-  form {
-    margin-top: 2em;
-  }
-  form label {
-    display: block;
-    margin-bottom: 1em;
-  }
-  form input[type="text"], form textarea {
-    width: 100ch;
-  }
-
-  .drop-container {
-    position: relative;
-    display: flex;
-    gap: 10px;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 200px;
+  label.drop-container {
     padding: 20px;
-    border-radius: 10px;
-    border: 2px dashed #555;
-    color: #444;
+    border-radius: var(--border-radius);
+    border: 2px dashed var(--input-border-color);
+    color: var(--input-color);
     cursor: pointer;
-    transition: background .2s ease-in-out, border .2s ease-in-out;
   }
 
-  .drop-container:hover {
-    background: #eee;
-    border-color: #111;
+  label.drop-container.drag-active {
+    background: var(--input-background-color);
+    border-color: var(--input-border-color);
   }
 
-  .drop-container:hover .drop-title {
+  label.drop-container:hover .drop-title {
     color: #222;
   }
 
-  .drop-title {
-    color: #444;
+  label .drop-title {
     font-size: 20px;
     font-weight: bold;
     text-align: center;
     transition: color .2s ease-in-out;
   }
-  input[type=file] {
-    width: 350px;
-    max-width: 100%;
-    color: #444;
-    padding: 5px;
-    background: #fff;
-    border-radius: 10px;
-    border: 1px solid #555;
-  }
-
 </style>
 <h2>Photos</h2>
-<form method="post" action="{{ url_for('updatePhoto') }}" enctype="multipart/form-data">
-  <label class="drop-container" id="dropcontainer">
+<form class="stacked" method="post" action="{{ url_for('updatePhoto') }}" enctype="multipart/form-data">
+  <label class="drop-container" id="drop-container">
     <span class="drop-title">Drop photo here</span>
     or
-    <input type="file" name="file" accept="image/*" required>
+    <input type="file" id="images" name="file" accept="image/*" required>
   </label>
 
-  <label for="name">
+  <label>
     Name
+    <input type="text" id="name" name="name">
   </label>
-  <input type="text" class="input" id="name" name="name">
 
   <label>
     Alt Text
-    <textarea name="alt_text" class="input" rows="3"></textarea>
+    <textarea name="alt_text" rows="3"></textarea>
   </label>
 
   <label>
     Caption
-    <textarea name="caption" class="input" rows="4"></textarea>
+    <textarea name="caption" rows="4"></textarea>
   </label>
 
-  <label for="tags">
+  <label>
     Tags
+    <input type="text" id="tags" name="tags">
   </label>
-  <input type="text" class="input" id="tags" name="tags">
 
   <label>
     Privacy
@@ -128,26 +100,43 @@
   </button>
 </form>
 <script>
-  const dropContainer = document.getElementById("dropcontainer")
-  const fileInput = document.getElementById("images")
+  (function() {
+      const dropContainer = document.getElementById("drop-container");
+      const fileInput = dropContainer.querySelector('input[type="file"]');
 
-  dropContainer.addEventListener("dragover", (e) => {
-    // prevent default to allow drop
-    e.preventDefault()
-  }, false)
+      let enterTarget = null;
 
-  dropContainer.addEventListener("dragenter", () => {
-    dropContainer.classList.add("drag-active")
-  })
+      dropContainer.addEventListener("dragover", (event) => {
+          event.stopPropagation();
+      });
 
-  dropContainer.addEventListener("dragleave", () => {
-    dropContainer.classList.remove("drag-active")
-  })
+      dropContainer.addEventListener("dragenter", (event) => {
+          console.log('on drag enter: ' + event.target.id);
+          enterTarget = event.target;
+          event.stopPropagation();
+          event.preventDefault();
+          dropContainer.classList.add("drag-active")
+          return false;
+      });
 
-  dropContainer.addEventListener("drop", (e) => {
-    e.preventDefault()
-    dropContainer.classList.remove("drag-active")
-    fileInput.files = e.dataTransfer.files
-  })
+      dropContainer.addEventListener("dragleave", (event) => {
+          console.log('on drag leave: currentTarget: ' + event.target.id + ', old target: ' + enterTarget.id);
+          //Only if the two target are equal it means the drag has left
+          if (enterTarget == event.target){
+              event.stopPropagation();
+              event.preventDefault();
+              dropContainer.classList.remove("drag-active")
+          }
+      });
+
+      dropContainer.addEventListener("drop", (event) => {
+          console.log('on drop: ' + event.target.id);
+          event.stopPropagation();
+          event.preventDefault();
+          dropContainer.classList.remove("drag-active")
+          fileInput.files = event.dataTransfer.files
+          return false;
+      });
+  })();
 </script>
 {% endblock %}

@@ -23,41 +23,44 @@
 
 <body onload="sh_highlightDocument();">
 
-<ul class="hide">
+<ul class="visually-hidden">
   <li><a href="#sidebar">skip to sidebar</a></li>
   <li><a href="#search">skip to search box</a></li>
 </ul>
 
 <div class="left-sidebar-grid">
-  <div class="main-content">
+  <header>
+    <h1>
+      <a href="/">trained<b>monkey</b></a>
+    </h1>
+  </header>
+
+  <div role="main" class="main-content">
     {% block content %}{% endblock %}
   </div>
 
-  <div class="left-sidebar">
+  <div role="nav" id="sidebar" class="left-sidebar">
     {% block sidebar %}
-      <h2 style="font-weight: normal">
-        trained<b>monkey</b>
-      </h2>
 
       {{ include(template_from_string(includeFragment('@navigation').content)) }}
 
-      <form id="search" method="get" action="/search">
-        <fieldset>
-          <legend>Search</legend>
-          <input class="input" type="search" accesskey="4" name="q"
-                 value="{{ q }}" size="10"
-                 style="width:100%"
+      <form id="search" class="stacked" method="get" action="/search">
+        <label>
+          <span class="visually-hidden">Search</span>
+          <input type="search"
+                 name="q" value="{{ q }}"
+                 size="10"
                  placeholder="Search"
                  autosave="tm_search"
                  results="10">
-        </fieldset>
+        </label>
       </form>
     {% endblock %}
   </div>
 
-  <ul id="links" class="footer">
-    <li><a rel="copyright" href="https://creativecommons.org/publicdomain/zero/1.0/">Dedicated to the public domain</a> by <a class="h-card" href="{{ full_url_for('page', { path : '' }) }}">Jim Winstead Jr.</a></li>
-  </ul>
+  <footer>
+    <p><a rel="copyright" href="https://creativecommons.org/publicdomain/zero/1.0/">Dedicated to the public domain</a> by <a class="h-card" href="{{ full_url_for('page', { path : '' }) }}">Jim Winstead Jr.</a></p>
+  </footer>
 
 </div>
 

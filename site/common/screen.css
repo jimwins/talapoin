@@ -1,5 +1,5 @@
-/*! modern-normalize v1.1.0 | MIT License | https://github.com/sindresorhus/modern-normalize */
-*,::after,::before{box-sizing:border-box}html{-moz-tab-size:4;tab-size:4}html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}hr{height:0;color:inherit}abbr[title]{text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}::-moz-focus-inner{border-style:none;padding:0}:-moz-focusring{outline:1px dotted ButtonText}:-moz-ui-invalid{box-shadow:none}legend{padding:0}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}
+/*! modern-normalize v2.0.0 | MIT License | https://github.com/sindresorhus/modern-normalize */
+*,::after,::before{box-sizing:border-box}html{font-family:system-ui,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji';line-height:1.15;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4}body{margin:0}hr{height:0;color:inherit}abbr[title]{text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}::-moz-focus-inner{border-style:none;padding:0}:-moz-focusring{outline:1px dotted ButtonText}:-moz-ui-invalid{box-shadow:none}legend{padding:0}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}
 
 :root {
   /* https://modernfontstacks.com: Antique but just Georgia */
@@ -7,39 +7,49 @@
   /* https://modernfontstacks.com: Neo-Grotesque */
   --sans-serif: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
 
-  --text-color: #333;
-  --background-color: #eee;
-
-  --primary-color: #666;
-  --primary-color-r: 230;
-  --primary-color-g: 106;
-  --primary-color-b: 37;
-  --link-color: #2c679b;
-
-  --light-primary-color: rgba(var(--primary-color-r), var(--primary-color-g), var(--primary-color-b), 0.2);
-
-  --input-border: var(--primary-color);
-  --input-focus-h: 21;
-  --input-focus-s: 79%;
-  --input-focus-l: 52%;
+  --base-font-size: 16px;
 
   --border-width: 1px;
   --border-radius: 8px;
 
-  --select-border: #777;
-  --select-focus: blue;
-  --select-arrow: var(--select-border);
+  --text-color: #3d3d3d;
+  --background-color: #eee8e9;
+
+  --primary-color: #ab4f00;
+
+  --link-color: #1f437e;
+  --link-visited-color: #1f437e;
+  --link-hover-color: #3368bd;
+
+  --error-color: #8b2844;
+  --ins-color: #8b2844;
+  --del-color: #626262;
+
+  --button-color: #eee8e9;
+  --button-background-color: #7a3900;
+  --button-border-color: #663000;
+  --button-hover-color: #ab4f00;
+
+  --input-color: inherit;
+  --input-background-color: #fff7f9;
+  --input-border-color: #663000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Not yet. */
+  }
 }
 
 body {
  min-height: 100vh;
  font-family: var(--serif);
- font-size: 16px;
+ font-size: var(--base-font-size);
  line-height: 1.6;
 
  color: var(--text-color);
- margin: 0px;
- margin-bottom: 20px;
+ margin: 0;
+ margin-bottom: 1em;
  background-image: url(monkey.png);
  background-position: bottom left;
  background-repeat: no-repeat;
@@ -53,19 +63,24 @@ h1 {
  text-align: right;
 }
 
-h2 {
- font-family: var(--sans-serif);
- clear: both;
+header h1 {
+  font-size: 1.8em;
+  color: var(--primary-color);
+  text-align: inherit;
+}
+header h1 a:link, header h1 a:visited {
+  color: var(--primary-color);
+  text-decoration: none;
 }
 
-h3 {
+h2 {
  font-family: var(--sans-serif);
- margin-top: 0px;
- margin-bottom: 5px;
+ margin-top: 0;
+ margin-bottom: 0.25em;
 }
 
 p, blockquote {
- margin: 4px 0px;
+ margin: 0.25em 0;
  text-indent: 1em;
  line-height: 150%;
 }
@@ -88,25 +103,26 @@ cite {
 }
 
 ins {
- color: #600;
+ color: var(--ins-color);
  text-decoration: none;
 }
 del {
- color: #666;
+ color: var(--del-color);
  text-decoration: line-through;
 }
 
 a:link {
- color: #66c;
- background-color: inherit;
+  color: var(--link-color);
 }
 a:visited {
- color: #c6c;
- background-color: inherit;
+  color: var(--link-visited-color);
 }
-a:hover {
- text-decoration: underline;
- color: #6c6;
+a:link, a:visited {
+  text-decoration: underline;
+}
+a:hover, a:focus {
+  color: var(--link-hover-color);
+  text-decoration-style: double;
 }
 
 a.tag:link, a.tag:visited {
@@ -123,22 +139,132 @@ span[title] {
  cursor: help;
 }
 
-input[type="submit"] {
- cursor: pointer;
-}
-
 form {
- margin: 0px;
- padding: 0px;
+ margin: 0;
+ padding: 0;
 }
 
-.hide {
- display: none;
+.visually-hidden:not(:focus):not(:active) {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 .error {
- color: #c66;
+ color: var(--error-color);
  background-color: inherit;
+}
+
+form.stacked {
+  margin-top: 2em;
+
+  label {
+    display: block;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  & button, label > input, label > select, label > textarea {
+    margin-top: 0.5rem;
+  }
+
+  button, input[type="file"]::file-selector-button {
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: start;
+    background-color: var(--button-background-color);
+    color: var(--button-color);
+    font-family: var(--sans-serif);
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    padding: 0.25em 0.75em;
+    min-width: 10ch;
+    min-height: 2em;
+    text-align: center;
+    line-height: 1.1;
+
+    border: var(--border-width) solid var(--button-border-color);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  }
+  button:hover, input[type="file"]::file-selector-button:hover {
+    background-color: var(--button-hover-color);
+  }
+
+  input, textarea, select, button {
+    margin-bottom: 0.5rem;
+  }
+
+  input, textarea {
+    width: 100ch;
+    max-width: 100%;
+    padding: 0.25em 0.5em;
+    border: var(--border-width) solid var(--input-border-color);
+    background: inherit;
+    border-radius: var(--border-radius);
+    box-sizing: border-box;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  }
+
+  input {
+    line-height: 1;
+    height: 2.25rem;
+  }
+
+  input[type="file"] {
+    border: none;
+    box-shadow: none;
+    height: auto; /* Firefox clips the bottom of the button without this. */
+  }
+
+  input[type="radio"], input[type="checkbox"] {
+    display: inline-block;
+    margin-bottom: 0.5em;
+    width: auto;
+    height: inherit;
+
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+  }
+
+  select {
+    display: grid;
+    grid-template-areas: "select";
+    align-items: center;
+    position: relative;
+    min-width: 15ch;
+    max-width: 30ch;
+    border: var(--border-width) solid var(--input-border-color);
+    border-radius: var(--border-radius);
+    padding: 0.25em 0.5em;
+    font-size: 1.25rem;
+    line-height: 1.1;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+    background-color: inherit;
+  }
+  select, select::after {
+    grid-area: select;
+  }
+  select:not(.select--multiple)::after {
+    content: "";
+    justify-self: end;
+    width: 0.8em;
+    height: 0.5em;
+    background-color: var(--input-color);
+    -webkit-clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+            clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  }
 }
 
 .left-sidebar-grid {
@@ -152,11 +278,11 @@ form {
 
 /* general column padding */
 .left-sidebar-grid > * {
-  padding: 1rem;
+  padding: 0 1rem;
 }
 
 /* assign columns to grid areas */
-.left-sidebar-grid > .header {
+.left-sidebar-grid > header {
   grid-area:header;
 }
 .left-sidebar-grid > .main-content {
@@ -165,10 +291,7 @@ form {
 .left-sidebar-grid > .left-sidebar {
   grid-area:left-sidebar;
 }
-.left-sidebar-grid > .right-sidebar {
-  grid-area:right-sidebar;
-}
-.left-sidebar-grid > .footer {
+.left-sidebar-grid > footer {
   grid-area:footer;
 }
 
@@ -177,9 +300,9 @@ form {
   .left-sidebar-grid {
     grid-template-columns: max-content 1fr;
     grid-template-areas:
-      'header header'
+      'header main-content'
       'left-sidebar main-content'
-      'footer footer';
+      'left-sidebar footer';
   }
 }
 
@@ -187,22 +310,22 @@ form {
 }
 
 .left-sidebar {
- max-height: 100vh;
+ max-height: 110vh;
  text-align: right;
  position: sticky;
  top: 0;
 }
 
 .left-sidebar div, .left-sidebar form {
- margin-bottom: 20px;
+ margin-bottom: 1.25em;
 }
 
 .left-sidebar ul {
  list-style: none;
- margin: 0px;
- padding: 0px;
+ margin: 0;
+ padding: 0;
 
- margin-bottom: 20px;
+ margin-bottom: 1.25em;
 }
 
 .left-sidebar a {
@@ -210,36 +333,25 @@ form {
  margin-bottom: 0.1em;
  padding-right: 0.5ch;
  text-decoration: none;
- border-bottom: 1px solid #66c;
+ border-bottom: 1px solid var(--link-color);
  font-family: var(--sans-serif);
 }
 
 .left-sidebar a:visited {
- border-bottom: 1px solid #c6c;
+ border-bottom: 1px solid var(--link-visited-color);
 }
 
 .left-sidebar a:hover {
- color: #6c6;
- border-bottom: 1px solid #6c6;
+ border-bottom: 1px solid var(--link-hover-color);
 }
 
 #search {
- padding: 4px;
+ padding: 0.25em;
 }
 
-#search fieldset {
- border: none;
- margin: 0px;
- padding: 0px;
-}
-
-#search legend {
- display: none;
- font-weight: bold;
-}
-
-#search input[type="text"] {
+#search input[type="text"], #search input[type="search"] {
   width: 100%;
+  max-width: 100%;
 }
 
 /* suppress bottom border triggered by title="" attribute */
@@ -255,7 +367,7 @@ form {
 .main-content > div {
  padding: 1em;
  margin-top: 1em;
- border-bottom: 2px solid #bbb;
+ border-bottom: 1px solid var(--input-border-color);
  margin-bottom: 1em;
 }
 
@@ -290,237 +402,14 @@ form {
  padding-left: 1em;
 }
 
-#links {
- list-style: none;
- text-align: right;
- padding-right: 10px;
- max-width: 80ch;
-}
-#links li {
- display: inline;
- margin-bottom: 2px;
-}
-
-/* Button styling */
-.button {
-  border: none;
-  background-color: transparent;
-  font-family: inherit;
-  padding: 0;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-@media screen and (-ms-high-contrast: active) {
-  .button {
-    border: 2px solid currentcolor;
-  }
-}
-
-.button, input[type="file"]::file-selector-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: start;
-  background-color: var(--primary-color);
-  color: #fff;
-  border-radius: var(--border-radius);
-  padding: 0.25em 0.75em;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-  min-width: 10ch;
-  min-height: 36px;
-  text-align: center;
-  line-height: 1.1;
-  transition: 220ms all ease-in-out;
-}
-.button.min {
-  min-width: inherit;
-}
-.button.min:hover, .button:active, input[type="file"]::file-selector-button:hover {
-  text-decoration: underline;
-  background-color: #c05316;
-}
-a.button:link, a.button:visited {
-  color: #fff;
-}
-.button.small {
-  font-size: 0.85em;
-}
-.button.large {
-  font-size: 1.15em;
-}
-
-.button.outline {
-  background-color: #fff;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
-}
-a.button.outline:link, a.button.outline:visited {
-  color: var(--primary-color);
-}
-.button[disabled] {
-  --primary-color: #ccc;
-
-  background-color: #eee;
-  color: #999;
-  cursor: not-allowed;
-}
-
-
-
-/* Form styling */
-.input, .fake-input {
-  font-size: 16px;
-  font-size: max(16px, 1em);
-  font-family: inherit;
-  padding: 0.25em 0.5em;
-  background-color: #fff;
-  border: var(--border-width) solid var(--input-border);
-  border-radius: var(--border-radius);
-  box-sizing: border-box;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-}
-
-.input:focus, .button:focus {
-  border-color: hsl(
-    var(--input-focus-h),
-    var(--input-focus-s),
-    var(--input-focus-l)
-  );
-  box-shadow: 0 0 0 3px
-    hsla(
-      var(--input-focus-h),
-      var(--input-focus-s),
-      calc(var(--input-focus-l) + 40%),
-      0.8
-    );
-  outline: 3px solid transparent;
-}
-
-.input:not(textarea) {
-  line-height: 1;
-  height: 2.25rem;
-}
-
-input[type="file"] {
-  font-size: 0.9em;
-  padding-top: 0.35rem;
-}
-
-textarea.input {
-  resize: vertical;
-}
-
-.input[readonly] {
-  border-style: dotted;
-  cursor: not-allowed;
-  color: #777;
-}
-
-.input[disabled] {
-  --input-border: #ccc;
-
-  background-color: #eee;
-  cursor: not-allowed;
-}
-
-label {
-  font-size: 1.125rem;
-  font-weight: 500;
-  line-height: 1;
-}
-
-label + .input, label + .select {
-  margin-bottom: 1rem;
-}
-
-select {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  background-color: transparent;
-  border: none;
-  padding: 0 1em 0 0;
-  margin: 0;
-  width: 100%;
-  font-family: inherit;
-  font-size: inherit;
-  cursor: inherit;
-  line-height: inherit;
-  z-index: 1;
-  outline: none;
-}
-select::-ms-expand {
-  display: none;
-}
-
-.select {
-  display: grid;
-  grid-template-areas: "select";
-  align-items: center;
-  position: relative;
-  min-width: 15ch;
-  max-width: 30ch;
-  border: 1px solid var(--select-border);
-  border-radius: 0.25em;
-  padding: 0.25em 0.5em;
-  font-size: 1.25rem;
-  cursor: pointer;
-  line-height: 1.1;
-  background-color: #fff;
-  background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
-}
-.select select, .select::after {
-  grid-area: select;
-}
-.select:not(.select--multiple)::after {
-  content: "";
-  justify-self: end;
-  width: 0.8em;
-  height: 0.5em;
-  background-color: var(--select-arrow);
-  -webkit-clip-path: polygon(100% 0%, 0 0%, 50% 100%);
-          clip-path: polygon(100% 0%, 0 0%, 50% 100%);
-}
-
-select:focus + .focus {
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  right: -1px;
-  bottom: -1px;
-  border: 2px solid var(--select-focus);
-  border-radius: inherit;
-}
-
-select[multiple] {
-  padding-right: 0;
-  /*
-   * Safari will not reveal an option
-   * unless the select height has room to
-   * show all of it
-   * Firefox and Chrome allow showing
-   * a partial option
-   */
-  height: 6rem;
-  /*
-   * Experimental - styling of selected options
-   * in the multiselect
-   * Not supported crossbrowser
-   */
-}
-select[multiple] option {
-  white-space: normal;
-  outline-color: var(--select-focus);
-}
-
-.select--disabled {
-  cursor: not-allowed;
-  background-color: #eee;
-  background-image: linear-gradient(to top, #ddd, #eee 33%);
+footer {
+  text-align: right;
+  padding-right: 0.5em;
+  max-width: 80ch;
 }
 
 @media print {
-  .hide, #sidebar, #comment, #links, .prevnext, .admin {
+  .hide, #sidebar, #comment, #links, .prevnext, .admin, footer {
    display: none;
   }
 
