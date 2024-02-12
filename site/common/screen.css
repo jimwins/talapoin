@@ -238,6 +238,10 @@ form.stacked {
     line-height: inherit;
   }
 
+  input:focus, textarea:focus {
+    background: var(--input-background-color);
+  }
+
   select {
     display: grid;
     grid-template-areas: "select";
