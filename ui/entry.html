@@ -72,7 +72,7 @@
     {% set spam = 0 %}
     {% for comment in entry.comments.where_lte('spam', spam).find_many() %}
       <div class="comment {{ comment.spam ? 'spam' }}" id="c{{ comment.id }}">
-        <p>{{ comment.comment | paragraphs | expand_psuedo_urls | prettify_markup | raw }}</p>
+        <p>{{ comment.comment | paragraphs | expand_psuedo_urls | raw }}</p>
         <div class="details">
           &raquo;
           {# XXX expose email to admin #}

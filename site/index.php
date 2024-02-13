@@ -90,13 +90,6 @@ $filter= new \Twig\TwigFilter('paragraphs', function ($text) {
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
-$filter= new \Twig\TwigFilter('prettify_markup', function ($text) {
-  $text= preg_replace('!<q>!', '&ldquo;', $text);
-  $text= preg_replace('!</q>!', '&rdquo;', $text);
-  return $text;
-});
-$container->get('view')->getEnvironment()->addFilter($filter);
-
 $filter= new \Twig\TwigFilter('slug', function ($text) {
   return preg_replace('/[^-A-Za-z0-9,]/u', '_', $text);
 });

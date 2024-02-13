@@ -13,7 +13,7 @@
   {% endif %}
   <div class="entry e-content">
     <p>
-      {{ entry.entry | paragraphs | expand_psuedo_urls | prettify_markup | raw }}
+      {{ entry.entry | paragraphs | expand_psuedo_urls | raw }}
     </p>
   </div>
   <div class="details">

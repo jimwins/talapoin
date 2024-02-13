@@ -29,7 +29,7 @@
      {% for tag in entry.tags %}
        <category term="{{ tag }}" scheme="{{ full_url_for('archive') }}" />
      {% endfor %}
-     <content type="html">{{ entry.entry | paragraphs | expand_psuedo_urls | prettify_markup | escape }}</content>
+     <content type="html">{{ entry.entry | paragraphs | expand_psuedo_urls | escape }}</content>
    </entry>
  {% endfor %}
 </feed>
