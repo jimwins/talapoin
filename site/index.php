@@ -90,11 +90,6 @@ $filter= new \Twig\TwigFilter('paragraphs', function ($text) {
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 
-$filter= new \Twig\TwigFilter('slug', function ($text) {
-  return preg_replace('/[^-A-Za-z0-9,]/u', '_', $text);
-});
-$container->get('view')->getEnvironment()->addFilter($filter);
-
 $filter= new \Twig\TwigFilter('get_debug_type', function ($value) {
   return get_debug_type($value);
 });
