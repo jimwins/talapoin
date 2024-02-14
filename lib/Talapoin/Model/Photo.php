@@ -37,6 +37,15 @@ class Photo extends \Talapoin\Model {
       $this->filename, $options
     );
   }
+
+  public function dimensionsToFit($width, $height) {
+    $aspect_ratio = $this->width / $this->height;
+    $ratio = $width / $height;
+    if ($ratio < $aspect_ratio) {
+      return [ 'width' => $width, 'height' => floor($width / $aspect_ratio) ];
+    }
+    return [ 'width' => floor($height / $aspect_ratio), 'height' => $height ];
+  }
 }
 
 class PhotoTag extends \Talapoin\Model {

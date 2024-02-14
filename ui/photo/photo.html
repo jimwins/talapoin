@@ -69,6 +69,14 @@ img.responsive {
     <dt>Uploaded
     <dd>{{ photo.created_at | date('F j, Y g:ia') }}
 
+    <dt>Embed
+    <dd>
+      {# kind of gross, but all I need for now #}
+      {% set dims= photo.dimensionsToFit(800, 800) %}
+      <form class="stacked" style="margin-top: 0px">
+        <textarea><img id="photo_{{photo.ulid}}" src="{{ photo.imgUrl({ width: 800, height: 800, mode: 'fit'}) }}" width="{{ dims.width }}" height="{{ dims.height }}" alt="{{ photo.alt_text ?: photo.name }}"></textarea>
+      </form>
+
     <dt>Original
     <dd>
       <a href="{{ photo.imgUrl() }}">
