@@ -157,6 +157,13 @@ form {
   width: 1px;
 }
 
+/* Want the hand for form controls and other button-y things */
+button,
+[type="button"], [type="reset"], [type="submit"], [type="image"], [type="checkbox"], [type="radio"],
+summary {
+  cursor: pointer;
+}
+
 .error {
  color: var(--error-color);
  background-color: inherit;
