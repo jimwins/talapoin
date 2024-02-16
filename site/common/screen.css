@@ -180,7 +180,7 @@ form.stacked {
     margin-bottom: 0.5rem;
   }
 
-  & button, label > input, label > select, label > textarea {
+  & button, label input, label select, label textarea {
     margin-top: 0.5rem;
   }
 
