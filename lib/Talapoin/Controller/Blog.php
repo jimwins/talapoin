@@ -300,7 +300,7 @@ class Blog {
       ->withHeader('Content-Type', 'application/atom+xml');
   }
 
-  public function search(Request $request, Response $response, \Talapoin\Service\Search $search) {
+  public function search(Request $request, Response $response, \Talapoin\Service\Meilisearch $search) {
     $q= $request->getParam('q');
 
     $entries= $search->findEntries($q);
@@ -311,7 +311,7 @@ class Blog {
     ]);
   }
 
-  public function reindex(Response $response, \Talapoin\Service\Search $search) {
+  public function reindex(Response $response, \Talapoin\Service\Meilisearch $search) {
     $count= $search->reindex();
     $response->getBody()->write("Indexed $count rows.");
     return $response;

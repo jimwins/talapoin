@@ -106,7 +106,7 @@ class Admin {
     \Talapoin\Service\Bluesky $bluesky,
     \Talapoin\Service\Mastodon $mastodon,
     \Talapoin\Service\Blodotgs $blogs,
-    \Talapoin\Service\Search $search,
+    \Talapoin\Service\Meiliearch $search,
     $id= null
   ) {
     if ($id) {
