@@ -1622,16 +1622,16 @@
         },
         {
             "name": "jimwins/titi",
-            "version": "v0.0.6",
+            "version": "v0.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jimwins/titi.git",
-                "reference": "ae6cdfd50ce8017dd1157133f2eaafda6ca37dbd"
+                "reference": "12fbb6d66c872f0e0116b77d3ee1672d1d28bf63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jimwins/titi/zipball/ae6cdfd50ce8017dd1157133f2eaafda6ca37dbd",
-                "reference": "ae6cdfd50ce8017dd1157133f2eaafda6ca37dbd",
+                "url": "https://api.github.com/repos/jimwins/titi/zipball/12fbb6d66c872f0e0116b77d3ee1672d1d28bf63",
+                "reference": "12fbb6d66c872f0e0116b77d3ee1672d1d28bf63",
                 "shasum": ""
             },
             "require": {
@@ -1681,7 +1681,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-28T22:32:22+00:00"
+            "time": "2024-02-20T20:58:22+00:00"
         },
         {
             "name": "laravel/serializable-closure",
