@@ -327,12 +327,14 @@ class Blog {
     // Verify that URLs are in schemes that we recognize
     if ($target_url['scheme'] != 'https') {
       throw new \Slim\Exception\HttpBadRequestException(
+        $request,
         "The scheme of the target is obviously wrong."
       );
     }
 
     if (!in_array($source_url['scheme'], [ 'https', 'http' ])) {
       throw new \Slim\Exception\HttpBadRequestException(
+        $request,
         "Unable to handle source with that URL scheme."
       );
     }
@@ -340,6 +342,7 @@ class Blog {
     // Verify that $source != $target
     if ($source == $target) {
       throw new \Slim\Exception\HttpBadRequestException(
+        $request,
         "The source and target cannot be the same."
       );
     }
@@ -358,12 +361,14 @@ class Blog {
       $arguments = $routingResults->getRouteArguments();
     } catch (\Exception $e) {
       throw new \Slim\Exception\HttpBadRequestException(
+        $request,
         "Unable to find the specified target"
       );
     }
 
     if ($routeName != 'entry') {
       throw new \Slim\Exception\HttpBadRequestException(
+        $request,
         "That's not a target that we accept a Webmention about"
       );
     }
