@@ -40,8 +40,8 @@ class Admin {
       $domain= $request->getHeaderLine('Host');
       $expires= new \Datetime('+1 month');
 
-      SetCookie('token', $token, $expires->format('U'), '/', $domain, true, true);
-      SetCookie('hasToken', '1', $expires->format('U'), '/', $domain, true, false);
+      SetCookie('token', $token, $expires->getTimeStamp(), '/', $domain, true, true);
+      SetCookie('hasToken', '1', $expires->getTimeStamp(), '/', $domain, true, false);
 
       $routeContext= \Slim\Routing\RouteContext::fromRequest($request);
       $routeParser= $routeContext->getRouteParser();
@@ -106,7 +106,7 @@ class Admin {
     \Talapoin\Service\Bluesky $bluesky,
     \Talapoin\Service\Mastodon $mastodon,
     \Talapoin\Service\Blodotgs $blogs,
-    \Talapoin\Service\Meiliearch $search,
+    \Talapoin\Service\Meilisearch $search,
     $id= null
   ) {
     if ($id) {
