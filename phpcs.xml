@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="Standard">
+    <rule ref="PSR12">
+    </rule>
+
+    <arg name="extensions" value="php"/>
+
+    <file>lib</file>
+    <file>db</file>
+    <file>site</file>
+</ruleset>
