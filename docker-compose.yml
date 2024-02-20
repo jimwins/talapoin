@@ -21,7 +21,7 @@ services:
     image: caddy:2.7.6
     volumes:
       - ./config:/etc/caddy
-      - ./:/srv
+      - ./:/app
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped

@@ -3,12 +3,10 @@
 	encode zstd gzip
 
 	# our root is in /srv
-	root * /srv/site
+	root * /app/site
 
 	# pass everything else to php
-	php_fastcgi talapoin:9000 {
-		root /app/site
-	}
+	php_fastcgi talapoin:9000
 
 	file_server
 }
