@@ -46,7 +46,3 @@ class Entry extends \Talapoin\Model {
     return $this->has_many('Comment');
   }
 }
-
-class EntryTag extends \Talapoin\Model {
-  public static $_table= 'entry_to_tag';
-}
