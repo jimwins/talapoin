@@ -24,7 +24,7 @@ class Config implements \ArrayAccess, \JsonSerializable {
     unset($this->config[$offset]);
   }
 
-  public function jsonSerialize() {
+  public function jsonSerialize() : mixed {
     return $this->config;
   }
 }

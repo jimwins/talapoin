@@ -15,8 +15,6 @@ class Elasticsearch
       ->setHosts(['http://elasticsearch:9200'])
       ->setBasicAuthentication($search['user'], $search['password'])
       ->build();
-
-    return $this;
   }
 
   public function findEntries($q) {

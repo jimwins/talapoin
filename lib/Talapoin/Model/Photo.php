@@ -39,7 +39,7 @@ class Photo extends \Talapoin\Model {
   }
 
   public function dimensionsToFit($width, $height) {
-    $aspect_ratio = $this->width / $this->height;
+    $aspect_ratio = (int)$this->width / (int)$this->height;
     $ratio = $width / $height;
     if ($ratio < $aspect_ratio) {
       return [ 'width' => $width, 'height' => floor($width / $aspect_ratio) ];

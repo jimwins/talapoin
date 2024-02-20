@@ -24,7 +24,7 @@ class Model extends \Titi\Model implements \JsonSerializable {
     }
   }
 
-  public function jsonSerialize() {
+  public function jsonSerialize() : mixed {
     return $this->asArray();
   }
 
@@ -32,15 +32,14 @@ class Model extends \Titi\Model implements \JsonSerializable {
     // punt if we don't have an id
     if (!$this->id) return $this;
 
-    $this->orm->where_id_is($this->id);
-    $this->orm->limit(1);
-    $rows= $this->orm->_run();
+    $new = $this->orm->find_one($this->id);
 
-    if (empty($rows)) {
+    if ($new === false) {
       return false;
     }
 
-    $this->orm->hydrate($rows[0]);
+    $this->orm->hydrate($new->as_array());
+
     return $this;
   }
 

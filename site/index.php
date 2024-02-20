@@ -2,6 +2,9 @@
 require '../vendor/autoload.php';
 
 $DEBUG= false;
+if (array_key_exists('TALAPOIN_DEBUG', $_ENV)) {
+  $DEBUG= $_ENV['TALAPOIN_DEBUG'];
+}
 
 use \Slim\Http\ServerRequest as Request;
 use \Slim\Http\Response as Response;
@@ -116,6 +119,9 @@ $app->add((new \Middlewares\TrailingSlash(false))->redirect());
 
 $errorMiddleware= $app->addErrorMiddleware($DEBUG || $config['displayErrorDetails'], true, true);
 
+/* Technically this can return a callable but Slim says that has to implement
+ * ErrorHandlerInterface, so we should be fine. */
+/** @var \Slim\Handlers\ErrorHandler $errorHandler */
 $errorHandler= $errorMiddleware->getDefaultErrorHandler();
 $errorHandler->registerErrorRenderer(
   'text/html',

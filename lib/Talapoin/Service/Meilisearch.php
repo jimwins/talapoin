@@ -14,8 +14,6 @@ class Meilisearch
       'http://meilisearch:7700',
       $search['search_key']
     );
-
-    return $this;
   }
 
   public function findEntries($q) {
@@ -71,6 +69,6 @@ class Meilisearch
 
     // TODO figure out how many were queued?
 
-    return $rows;
+    return 0;
   }
 }

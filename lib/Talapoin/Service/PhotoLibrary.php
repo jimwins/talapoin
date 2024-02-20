@@ -4,7 +4,6 @@ namespace Talapoin\Service;
 
 class PhotoLibrary {
   public function __construct(
-    private Gumlet $gumlet,
     private Data $data,
   ) {
   }

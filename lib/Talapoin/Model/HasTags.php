@@ -20,6 +20,7 @@ trait HasTags {
 
         $tag= $this->factory($model_name)->where('name', $tag_name)->find_one();
         if (!$tag) {
+          /** @var \Talapoin\Model $tag */
           $tag= $this->factory($model_name)->create();
           $tag->name= $tag_name;
           $tag->save();

@@ -17,7 +17,7 @@ class SpamFilter {
 
     $api= new \Akismet\API($this->config['akismet_key'], $this->config['akismet_blog']);
 
-    if (@$config['akismet_debug']) {
+    if (@$this->config['akismet_debug']) {
       $comment['is_test']= true;
     }
 
