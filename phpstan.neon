@@ -1,7 +1,7 @@
 parameters:
 	universalObjectCratesClasses:
 		- Talapoin\Model
-	level: 6
+	level: 5
 	paths:
 		- site
 		- lib
