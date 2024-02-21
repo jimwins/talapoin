@@ -73,8 +73,8 @@ class InitialSetup extends AbstractMigration
                        'primary_key' => [ 'entry_id', 'tag_id' ]
                      ]);
       $entry_to_tag
-        ->addColumn('entry_id', 'integer', [ 'signed' => false ])
-        ->addColumn('tag_id', 'integer', [ 'signed' => false ])
+        ->addColumn('entry_id', 'integer', [ 'signed' => false, 'null' => false ])
+        ->addColumn('tag_id', 'integer', [ 'signed' => false, 'null' => false ])
         ->addIndex(['tag_id'])
         ->create();
 
