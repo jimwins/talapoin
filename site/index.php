@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 require '../vendor/autoload.php';
 
-$DEBUG = false;
-if (array_key_exists('TALAPOIN_DEBUG', $_ENV)) {
-    $DEBUG = $_ENV['TALAPOIN_DEBUG'];
-}
+$DEBUG = getenv('TALAPOIN_DEBUG');
 
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response as Response;
@@ -17,12 +14,12 @@ use Slim\Routing\RouteCollectorProxy as RouteCollectorProxy;
 
 /* Some defaults */
 error_reporting(E_ALL ^ E_DEPRECATED);
-$tz = @$_ENV['PHP_TIMEZONE'] ?: @$_ENV['TZ'];
+$tz = getenv('PHP_TIMEZONE') ?: getenv('TZ');
 if ($tz) {
     date_default_timezone_set($tz);
 }
 
-$config_file = @$_ENV['TALAPOIN_CONFIG'] ?: dirname(__FILE__) . '/../config.ini';
+$config_file = getenv('TALAPOIN_CONFIG') ?: dirname(__FILE__) . '/../config.ini';
 
 if (file_exists($config_file)) {
     $config = parse_ini_file($config_file, true, INI_SCANNER_TYPED);
@@ -57,7 +54,7 @@ $container->set('db', function ($c) {
 });
 
 /* Twig for templating */
-$container->set('view', function ($container) {
+$container->set('view', function ($container) use($tz) {
     /* No cache for now */
     $view = \Slim\Views\Twig::create(
         [ '../ui' ],
@@ -65,7 +62,6 @@ $container->set('view', function ($container) {
     );
 
     /* Set timezone for date functions */
-    $tz = @$_ENV['PHP_TIMEZONE'] ?: @$_ENV['TZ'];
     if ($tz) {
         $view->getEnvironment()
             ->getExtension(\Twig\Extension\CoreExtension::class)
