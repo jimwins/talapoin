@@ -248,12 +248,12 @@ if ($DEBUG) {
 
     $app->get(
         '/info/db',
-        function (Request $request, Response $response) use ($app) {
-            $db = $app->get('db');
+        function (Request $request, Response $response) use ($container) {
+            $db = $container->get('db');
             $stmt = $db->prepare("SHOW VARIABLES");
             $stmt->execute();
             $vars = $stmt->fetchAll();
-            return $app->get('view')->render($response, 'info-db.html', [ 'vars' => $vars ]);
+            return $container->get('view')->render($response, 'info-db.html', [ 'vars' => $vars ]);
         }
     );
 }
