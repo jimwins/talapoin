@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Talapoin\Model;
 
-class PhotoAlbum extends \Talapoin\Model
+class PhotoTag extends \Talapoin\Model
 {
     // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
-    public static $_table = 'photo_to_album';
+    public static $_table = 'photo_to_tag';
 }

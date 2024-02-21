@@ -109,7 +109,7 @@
 
     <ul class="image-gallery">
       {% for album in albums %}
-        {% set photo = album.cover_photo() %}
+        {% set photo = album.coverPhoto() %}
         <li>
           <figure>
             <a href="{{ url_for('photo-album', { album_name: album.name }) }}">
