@@ -220,7 +220,7 @@ class Blog
         $entry = $this->blog->getEntryById($id);
 
         if (!$entry) {
-            throw new \Slim\Exception\HttpNotFoundException($request, $response);
+            throw new \Slim\Exception\HttpNotFoundException($request);
         }
 
         return $response->withRedirect($entry->canonicalUrl());
@@ -235,7 +235,7 @@ class Blog
     ) {
         $entry = $this->blog->getEntryById($id);
         if (!$entry) {
-            throw new \Slim\Exception\HttpNotFoundException($request, $response);
+            throw new \Slim\Exception\HttpNotFoundException($request);
         }
 
         // TODO allow admin to comment on old entries
