@@ -355,7 +355,7 @@ class Admin
         $routeContext = \Slim\Routing\RouteContext::fromRequest($request);
         $routeParser = $routeContext->getRouteParser();
 
-        $url = $routeParser->urlFor('photo', [ 'ulid' => $photo->ulid ]);
+        $url = $routeParser->urlFor('photo', [ 'ulid' => (string)$photo->ulid ]);
 
         return $response->withRedirect($url);
     }
