@@ -122,7 +122,7 @@ $app->add(\Slim\Views\TwigMiddleware::createFromContainer($app));
 
 $app->add((new \Middlewares\TrailingSlash(false))->redirect());
 
-$errorMiddleware = $app->addErrorMiddleware($DEBUG || $config['displayErrorDetails'], true, true);
+$errorMiddleware = $app->addErrorMiddleware($DEBUG || @$config['displayErrorDetails'], true, true);
 
 /* Technically this can return a callable but Slim says that has to implement
  * ErrorHandlerInterface, so we should be fine. */
