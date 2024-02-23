@@ -25,18 +25,24 @@ RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
           bcmath \
           gd \
           mysqli \
+          opcache \
           pdo \
           pdo_mysql \
           zip \
       && apk del -dev ${PHPIZE_DEPS}
 
+# These defaults are for production usage, other defaults are in
+# conf/php/opcache.ini
+ENV PHP_OPCACHE_ENABLE=1 \
+    PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
+
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY config/php/* "$PHP_INI_DIR/conf.d"
+COPY config/php-fpm/* /usr/local/etc/php-fpm.d
 
 WORKDIR /app
 
 COPY . /app
-
-COPY config/log.conf /usr/local/etc/php-fpm.d/
 
 RUN curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/ \
