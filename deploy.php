@@ -13,6 +13,10 @@ set('repository', 'https://github.com/jimwins/talapoin.git');
 // Host(s)
 import('hosts.yml');
 
+// Copy previous vendor directory
+set('copy_dirs', [ 'vendor' ]);
+before('deploy:vendors', 'deploy:copy_dirs');
+
 // Tasks
 after('deploy:cleanup', 'phinx:migrate');
 
