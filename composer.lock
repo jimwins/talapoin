@@ -448,16 +448,16 @@
         },
         {
             "name": "cjrasmussen/bluesky-api",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cjrasmussen/BlueskyApi.git",
-                "reference": "dfecddaabd2fe74e4a7f549758b2313799d65f7a"
+                "reference": "ed8faf16139503a60f3960aa940760b49e89788c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cjrasmussen/BlueskyApi/zipball/dfecddaabd2fe74e4a7f549758b2313799d65f7a",
-                "reference": "dfecddaabd2fe74e4a7f549758b2313799d65f7a",
+                "url": "https://api.github.com/repos/cjrasmussen/BlueskyApi/zipball/ed8faf16139503a60f3960aa940760b49e89788c",
+                "reference": "ed8faf16139503a60f3960aa940760b49e89788c",
                 "shasum": ""
             },
             "require": {
@@ -492,7 +492,7 @@
                 "issues": "https://github.com/cjrasmussen/BlueskyApi/issues",
                 "source": "https://github.com/cjrasmussen/BlueskyApi"
             },
-            "time": "2024-01-06T03:48:13+00:00"
+            "time": "2024-02-11T20:33:13+00:00"
         },
         {
             "name": "clue/stream-filter",
