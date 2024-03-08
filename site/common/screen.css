@@ -93,7 +93,7 @@ a img {
  border: none;
 }
 
-img.responsive {
+img.responsive, .entry img {
  width: 100%;
  height: auto;
 }
