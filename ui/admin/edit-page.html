@@ -6,24 +6,11 @@
 
 {% block content %}
 
-<style>
-  form {
-    margin-top: 2em;
-  }
-  form label {
-    display: block;
-    margin-bottom: 1em;
-  }
-  form input[type="text"], form textarea {
-    width: 100ch;
-  }
-</style>
-
 <p>
   <a href="{{ url_for('admin') }}">&larr; Back to admin</a>
 </p>
 
-<form method="POST" action="{{ url_for('editPage', page.id ? { id: page.id } : {}) }}">
+<form class="stacked" method="POST" action="{{ url_for('editPage', page.id ? { id: page.id } : {}) }}">
   <label>
     Title
     <input type="text" name="title" value="{{ page.title | e('html_attr') }}">
