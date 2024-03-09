@@ -94,7 +94,35 @@ $filter = new \Twig\TwigFilter('expand_psuedo_urls', function ($text) {
 $container->get('view')->getEnvironment()->addFilter($filter);
 
 $filter = new \Twig\TwigFilter('paragraphs', function ($text) {
-    return preg_replace('!\r?\n\r?\n!', '</p><p>', $text);
+    /*
+     * Probably should just be using Markdown to leverage a smarter parser.
+     * But this just turns blank lines outside of <pre></pre> blocks into
+     * </p><p> so when the entry/comment is wrapped in <p>{{ comment }}</p> it
+     * "just" works.
+     */
+    $pres = [];
+
+    /* Extract the <pre> blocks */
+    $without_pre = preg_replace_callback(
+        '!<pre.+?>.+?</pre>!s', # parsing HTML with regex, what could go wrong?
+        function ($m) use (&$pres) {
+            $pres[] = $m[0];
+            return "{PRE}" . (count($pres) - 1) . "{/PRE}";
+        },
+        $text
+    );
+
+    /* Do our thing on blank lines. */
+    $nl_to_p = preg_replace('!(\r?\n){2,}!m', '</p><p>', $without_pre);
+
+    /* Put the <pre> blocks back. */
+    return preg_replace_callback(
+        '!{PRE}(\d+){/PRE}!s',
+        function ($m) use (&$pres) {
+            return $pres[$m[1]];
+        },
+        $nl_to_p
+    );
 });
 $container->get('view')->getEnvironment()->addFilter($filter);
 

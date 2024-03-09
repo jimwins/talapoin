@@ -304,7 +304,7 @@ form.stacked {
   grid-area:footer;
 }
 
-/* smaller than tablet */
+/* smaller than tablet, like a mobile */
 @media (max-width:767.99px) {
     h1 {
         margin: 0;
@@ -404,6 +404,11 @@ form.stacked {
     img {
         width: 100%;
         height: auto;
+    }
+
+    /* Let <pre> blocks break so the don't blow out layout */
+    pre {
+        white-space: break-spaces;
     }
 
     .details {
