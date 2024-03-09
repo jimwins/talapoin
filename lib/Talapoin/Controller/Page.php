@@ -46,6 +46,10 @@ class Page
             } else {
                 $dest = $redir['dest'];
             }
+            /* Treat an empty $dest as a 404 */
+            if (!$dest) {
+                throw new \Slim\Exception\HttpNotFoundException($request);
+            }
             return $response->withRedirect($dest);
         }
 
