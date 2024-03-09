@@ -104,9 +104,12 @@ $filter = new \Twig\TwigFilter('get_debug_type', function ($value) {
 $container->get('view')->getEnvironment()->addFilter($filter);
 
 $func = new \Twig\TwigFunction('current_release', function () {
-    $link = @readlink('/app/current');
-    if ($link) {
-        return basename($link);
+    $path = getenv("DEPLOY_PATH");
+    if ($path) {
+        $link = @readlink($path . '/current');
+        if ($link) {
+            return basename($link);
+        }
     }
     return 'dev';
 });
