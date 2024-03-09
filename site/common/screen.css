@@ -395,30 +395,32 @@ form.stacked {
  margin-top: 1em;
 }
 
-.h-entry .e-content {
-    max-width: 80ch;
-}
+.h-entry, .comment {
+    .e-content, .p-content {
+        max-width: 80ch;
+    }
 
-.h-entry .details {
- text-align: right;
- margin-top: 0.5em;
- margin-right: 1em;
- font-size: smaller;
- font-family: var(--sans-serif);
-}
+    /* Images in entries are always responsive */
+    img {
+        width: 100%;
+        height: auto;
+    }
 
-.h-entry .details a {
- text-decoration: none;
-}
+    .details {
+        text-align: right;
+        margin-top: 0.5em;
+        margin-right: 1em;
+        font-size: smaller;
+        font-family: var(--sans-serif);
+    }
 
-.h-entry .details a {
- white-space: nowrap;
-}
+    .details a {
+        text-decoration: none;
+    }
 
-/* Images in entries are always responsive */
-.h-entry img {
-    width: 100%;
-    height: auto;
+    .details a {
+        white-space: nowrap;
+    }
 }
 
 .main-content blockquote {
