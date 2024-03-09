@@ -93,7 +93,7 @@ a img {
  border: none;
 }
 
-img.responsive, .entry img {
+img.responsive {
  width: 100%;
  height: auto;
 }
@@ -173,15 +173,21 @@ form.stacked {
   margin-top: 2em;
 
   label {
-    display: block;
     font-size: 1.125rem;
     font-weight: 500;
     line-height: 1;
     margin-bottom: 0.5rem;
   }
+  label.block {
+    margin-top: 1rem;
+    display: block;
+  }
 
-  & button, label input, label select, label textarea {
+  & button, label input, label textarea {
+    display: block;
     margin-top: 0.5rem;
+    width: 100%;
+    max-width: 80ch;
   }
 
   button, input[type="file"]::file-selector-button {
@@ -213,7 +219,6 @@ form.stacked {
   }
 
   input, textarea {
-    width: 100ch;
     max-width: 100%;
     padding: 0.25em 0.5em;
     border: var(--border-width) solid var(--input-border-color);
@@ -229,6 +234,8 @@ form.stacked {
   }
 
   input[type="file"] {
+    display: inline-block;
+    width: auto;
     border: none;
     box-shadow: none;
     height: auto; /* Firefox clips the bottom of the button without this. */
@@ -267,15 +274,6 @@ form.stacked {
   select, select::after {
     grid-area: select;
   }
-  select:not(.select--multiple)::after {
-    content: "";
-    justify-self: end;
-    width: 0.8em;
-    height: 0.5em;
-    background-color: var(--input-color);
-    -webkit-clip-path: polygon(100% 0%, 0 0%, 50% 100%);
-            clip-path: polygon(100% 0%, 0 0%, 50% 100%);
-  }
 }
 
 .left-sidebar-grid {
@@ -304,6 +302,17 @@ form.stacked {
 }
 .left-sidebar-grid > footer {
   grid-area:footer;
+}
+
+/* smaller than tablet */
+@media (max-width:767.99px) {
+    h1 {
+        margin: 0;
+    }
+    footer {
+        /* clear the monkey from background */
+        margin-bottom: 100px;
+    }
 }
 
 /* tablet breakpoint */
@@ -386,12 +395,11 @@ form.stacked {
  margin-top: 1em;
 }
 
-.main-content > div.entry img {
- float: left;
- padding-right: 1em;
+.h-entry .e-content {
+    max-width: 80ch;
 }
 
-.main-content .details {
+.h-entry .details {
  text-align: right;
  margin-top: 0.5em;
  margin-right: 1em;
@@ -399,12 +407,18 @@ form.stacked {
  font-family: var(--sans-serif);
 }
 
-.main-content .details a {
+.h-entry .details a {
  text-decoration: none;
 }
 
-.main-content .details a {
+.h-entry .details a {
  white-space: nowrap;
+}
+
+/* Images in entries are always responsive */
+.h-entry img {
+    width: 100%;
+    height: auto;
 }
 
 .main-content blockquote {
@@ -416,16 +430,12 @@ form.stacked {
 footer {
   text-align: right;
   padding-right: 0.5em;
+  width: 100%;
   max-width: 80ch;
 }
 
 @media print {
   .hide, #sidebar, #comment, #links, .prevnext, .admin, footer {
    display: none;
-  }
-
-  .main-content > div img {
-   float: left;
-   padding-right: 1em;
   }
 }

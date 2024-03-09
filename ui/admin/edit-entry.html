@@ -31,7 +31,7 @@
     <input type="text" name="tags" value="{{ entry.tags | join(', ') | e('html_attr') }}">
   </label>
 
-  <label>
+  <label class="block">
     <input type="checkbox" name="draft" value="1" {{ entry.draft ? 'checked' }}> draft
   </label>
 
