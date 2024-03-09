@@ -91,19 +91,6 @@
   <h2>Add a comment</h2>
 
   {% if date(entry.created_at) > date("-7 days") and not entry.closed %}
-    <style>
-      form {
-        margin-top: 2em;
-      }
-      form label {
-        display: block;
-        margin-bottom: 1em;
-      }
-      form input[type="text"], form input[type="email"], form input[type="url"], form textarea {
-        width: 100ch;
-      }
-    </style>
-
     <form class="stacked" method="POST" action="{{ url_for('add-comment', { id: entry.id }) }}">
       <label>
         Name
