@@ -6,7 +6,10 @@
 	root * /app/site
 
 	# pass everything else to php
-	php_fastcgi talapoin:9000
+	php_fastcgi talapoin:9000 {
+		env HTTPS on
+		env SERVER_PORT 443
+	}
 
 	file_server
 }
