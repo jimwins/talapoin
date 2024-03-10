@@ -157,6 +157,11 @@ form {
   width: 1px;
 }
 
+/* This makes monospace look better on my system. YMMV. */
+code, kbd, pre, samp {
+    font-size-adjust: 0.5;
+}
+
 /* Want the hand for form controls and other button-y things */
 button,
 [type="button"], [type="reset"], [type="submit"], [type="image"], [type="checkbox"], [type="radio"],
