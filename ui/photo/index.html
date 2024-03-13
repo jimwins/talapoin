@@ -113,33 +113,41 @@
       Photos tagged '{{ tag }}'
     {% elseif album %}
       {{ album.title }}
+    {% elseif q %}
+      search results for '{{ q }}'
     {% else %}
       Photos
     {% endif %}
   </h1>
 
-  <div class="">
-    {{ block('prevnext') }}
+  {% if q and not photos|length %}
+    <div class="error">
+        <strong>No results</strong> were found for '{{ q }}'.
+    </div>
+  {% else %}
+      <div class="">
+        {{ block('prevnext') }}
 
-    <ul class="image-gallery">
-      {% for photo in photos %}
-        <li>
-          <figure>
-            <a href="{{ url_for('photo', { ulid: photo.ulid }) }}">
-              <img lazy
-                style="aspect-ratio: {{ photo.width }} / {{ photo.height }}"
-                {# x-dims="{{ photo.thumbHashDimensions() | json_encode }}" #}
-                {# x-src="{{ photo.thumbHashDataUrl() }}" #}
-                src="{{ photo.imgUrl({ 'width': 240, 'height': 240, 'mode': 'fit' }) }}"
-                alt="{{ photo.alt_text ?: photo.name }}">
-            </a>
-            <figcaption>{{ photo.name }}</figcaption>
-          </figure>
-        </li>
-      {% endfor %}
-    </ul>
+        <ul class="image-gallery">
+          {% for photo in photos %}
+            <li>
+              <figure>
+                <a href="{{ url_for('photo', { ulid: photo.ulid }) }}">
+                  <img lazy
+                    style="aspect-ratio: {{ photo.width }} / {{ photo.height }}"
+                    {# x-dims="{{ photo.thumbHashDimensions() | json_encode }}" #}
+                    {# x-src="{{ photo.thumbHashDataUrl() }}" #}
+                    src="{{ photo.imgUrl({ 'width': 240, 'height': 240, 'mode': 'fit' }) }}"
+                    alt="{{ photo.alt_text ?: photo.name }}">
+                </a>
+                <figcaption>{{ photo.name }}</figcaption>
+              </figure>
+            </li>
+          {% endfor %}
+        </ul>
 
-    {{ block('prevnext') }}
-  </div>
+        {{ block('prevnext') }}
+      </div>
+  {% endif %}
 
 {% endblock %}
