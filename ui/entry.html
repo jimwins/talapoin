@@ -10,6 +10,11 @@
 
 {% block extra_head %}
   <link rel="webmention" href="/~webmention">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ entry.canonicalUrl() | e('html_attr') }}">
+  <meta property="og:title" content="{{ entry.title | e('html_attr') }}">
+  {# <meta property="og:image" content=""> #}
+
   <script>
     function getCookie(name) {
       var match= document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
