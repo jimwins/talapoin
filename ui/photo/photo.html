@@ -2,86 +2,82 @@
 {% import 'entry.twig' as blog %}
 
 {% block title %}
-  {% if title %}
-    {{ title }} @ trainedmonkey
-  {% else %}
-    trainedmonkey: photos from jim winstead jr.
-  {% endif %}
-{% endblock %}
-
-{% block extra_head %}
-<style>
-img.responsive {
-  width: 100%;
-  height: auto;
-}
-</style>
+    {% if title %}
+        {{ title }} @ trainedmonkey
+    {% else %}
+        trainedmonkey: Photos from Jim Winstead Jr.
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-  <h1>
-    {{ photo.name ?: '(untitled)' }}
-  </h1>
+    <div class="h-entry">
+        <h1 class="p-name">
+            {{ photo.name ?: '(untitled)' }}
+        </h1>
 
-  <figure>
-    <img class="responsive"
-      {# this means image can be sized immediately #}
-      style="aspect-ratio: {{ photo.width }} / {{ photo.height }}"
-      src="{{ photo.imgUrl({ 'width': 1200, 'height': 1200, 'mode': 'fit' }) }}"
-      alt="{{ photo.alt_text ?: photo.name }}">
-    <figcaption>{{ photo.caption }}</figcaption>
-  </figure>
+        <figure>
+            <img
+                class="u-photo responsive"
+                {# this means image can be sized immediately #}
+                style="aspect-ratio: {{ photo.width }} / {{ photo.height }}"
+                src="{{ photo.imgUrl({ 'width': 1200, 'height': 1200, 'mode': 'fit' }) }}"
+                alt="{{ photo.alt_text ?: photo.name }}"
+            >
+            <figcaption class="e-content">{{ photo.caption }}</figcaption>
+        </figure>
 
-  <div class="details">
-    &raquo;
-    <a class="permalink u-url"
-       href="{{ photo.canonicalUrl() }}">
-      <time class="dt-published" datetime="{{ photo.created_at | date('c') | e('html_attr') }}">
-        {{- blog.date_format(photo.created_at) -}}
-      </time>
-    </a>
-    {% if photo.tags %}
-      &raquo;
-      {% for tag in photo.tags %}
-        <a class="p-category" href="{{ url_for('photo-tag', { 'tag' : tag }) }}"
-           >{{ tag }}</a>{{ not loop.last ? ', ' }}
-      {% endfor %}
-    {% endif %}
-  </div>
-
-  <dl class="info">
-    {% set albums = photo.albums() %}
-    {% if albums %}
-      <dt>Albums
-      <dd>
-        <ul>
-          {% for album in albums %}
-            <a href="{{ url_for('photo-album', { album_name: album.name }) }}">
-              {{- album.title -}}
+        <div class="details">
+            &raquo;
+            <a class="permalink u-url" href="{{ photo.canonicalUrl() }}">
+                <time class="dt-published"
+                    datetime="{{ photo.created_at | date('c') | e('html_attr') }}">
+                    {{- blog.date_format(photo.created_at) -}}
+                </time>
             </a>
-          {% endfor %}
-        </ul>
-    {% endif %}
+            {% if photo.tags %}
+                &raquo;
+                {% for tag in photo.tags %}
+                    <a class="p-category" href="{{ url_for('photo-tag', { 'tag' : tag }) }}">
+                        {{- tag -}}
+                    </a>{{ not loop.last ? ', ' }}
+                {% endfor %}
+            {% endif %}
+        </div>
 
-    <dt>Taken
-    <dd>{{ photo.taken_at | date('F j, Y g:ia') }}
+        <dl class="info">
+            {% set albums = photo.albums() %}
+            {% if albums %}
+                <dt>Albums
+                <dd>
+                    <ul>
+                        {% for album in albums %}
+                            <a href="{{ url_for('photo-album', { album_name: album.name }) }}">
+                                {{- album.title -}}
+                            </a>
+                        {% endfor %}
+                    </ul>
+            {% endif %}
 
-    <dt>Uploaded
-    <dd>{{ photo.created_at | date('F j, Y g:ia') }}
+            <dt>Taken
+            <dd>{{ photo.taken_at | date('F j, Y g:ia') }}
 
-    <dt>Embed
-    <dd>
-      {# kind of gross, but all I need for now #}
-      {% set dims= photo.dimensionsToFit(800, 800) %}
-      <form class="stacked" style="margin-top: 0px">
-        <textarea><img id="photo_{{photo.ulid}}" src="{{ photo.imgUrl({ width: 800, height: 800, mode: 'fit'}) }}" width="{{ dims.width }}" height="{{ dims.height }}" alt="{{ photo.alt_text ?: photo.name }}"></textarea>
-      </form>
+            <dt>Uploaded
+            <dd>{{ photo.created_at | date('F j, Y g:ia') }}
 
-    <dt>Original
-    <dd>
-      <a href="{{ photo.imgUrl() }}">
-        {{ photo.width }} &times; {{ photo.height }}
-      </a>
-  </dl>
+            <dt>Embed
+            <dd>
+                {# kind of gross, but all I need for now #}
+                {% set dims= photo.dimensionsToFit(800, 800) %}
+                <form class="stacked" style="margin-top: 0px">
+                    <textarea><img id="photo_{{photo.ulid}}" src="{{ photo.imgUrl({ width: 800, height: 800, mode: 'fit'}) }}" width="{{ dims.width }}" height="{{ dims.height }}" alt="{{ photo.alt_text ?: photo.name }}"></textarea>
+                </form>
 
+            <dt>Original
+            <dd>
+                <a href="{{ photo.imgUrl() }}">
+                    {{- photo.width }} &times; {{ photo.height }}
+                </a>
+        </dl>
+
+    </div>
 {% endblock %}
