@@ -5,11 +5,11 @@
 {% endif %}
 
 {% block title %}
-  {% if title %}
+  {%- if title -%}
     {{ title }} @ trainedmonkey
-  {% else %}
-    trainedmonkey: keyboard bangings about living, working, and playing
-  {% endif %}
+  {%- else -%}
+    trainedmonkey: aka Jim Winstead Jr.
+  {%- endif -%}
 {% endblock %}
 
 {% block extra_head %}
@@ -20,6 +20,9 @@
   {% endif %}
   <meta name="ICBM" content="34.0480,-118.2473" />
   <meta name="geo.position" content="34.0480;-118.2473" />
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ full_url_for('top') | e('html_attr') }}">
+  <meta property="og:title" content="{{ block('title') | e('html_attr') }}">
 {% endblock %}
 
 {% block content %}
