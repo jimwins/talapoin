@@ -27,13 +27,21 @@ class PhotoLibrary
         $app->get('/{ulid:[^_]*}[_{slug:.*}]', [ self::class, 'showPhoto' ])->setName('photo');
     }
 
-    public function top(Request $request, Response $response, View $view)
-    {
+    public function top(
+        Request $request,
+        Response $response,
+        View $view,
+        \Talapoin\Service\Meilisearch $search,
+    ) {
         $q = $request->getParam('q');
         $page = (int) $request->getParam('page') ?: 0;
         $page_size = (int) $request->getParam('page_size') ?: 24;
 
-        $photos = $this->library->findPhotos(q: $q, page: $page, page_size: $page_size);
+        if ($q) {
+            $photos = $search->findPhotos($q);
+        } else {
+            $photos = $this->library->getPhotos(page: $page, page_size: $page_size)->find_many();
+        }
 
         return $view->render($response, 'photo/index.html', [
             'query_params' => $request->getParams(),

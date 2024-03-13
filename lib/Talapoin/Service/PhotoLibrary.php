@@ -11,22 +11,6 @@ class PhotoLibrary
     ) {
     }
 
-    public function findPhotos($q, $page, $page_size)
-    {
-        /* TODO use $q */
-
-        $photos = $this->data
-            ->factory('Photo')
-            ->select('*')
-            ->select_expr('COUNT(*) OVER()', 'records')
-            ->where('privacy', 'public')
-            ->order_by_desc('taken_at')
-            ->limit($page_size)->offset($page * $page_size)
-            ->find_many();
-
-        return $photos;
-    }
-
     public function getPhotos($privacy = 'public', $page = 0, $page_size = 24)
     {
         $photos =
@@ -37,8 +21,11 @@ class PhotoLibrary
                      (SELECT JSON_ARRAYAGG(name)
                         FROM photo_to_tag, tag
                        WHERE photo_id = photo.id AND tag_id = tag.id)", 'tags_json')
-                ->where('privacy', $privacy)
-                ->limit($page_size)->offset($page * $page_size);
+                ->where('privacy', $privacy);
+
+        if ($page_size)
+            $photos= $photos->limit($page_size)->offset($page * $page_size);
+
         return $photos;
     }
 
