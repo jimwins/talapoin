@@ -7,10 +7,8 @@
   /* https://modernfontstacks.com: Neo-Grotesque */
   --sans-serif: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
 
-  --base-font-size: 16px;
-
   --border-width: 1px;
-  --border-radius: 8px;
+  --border-radius: 0.5rem;
 
   --text-color: #3d3d3d;
   --background-color: #eee8e9;
@@ -44,7 +42,6 @@
 body {
  min-height: 100vh;
  font-family: var(--serif);
- font-size: var(--base-font-size);
  line-height: 1.6;
 
  color: var(--text-color);
@@ -213,7 +210,7 @@ form.stacked {
     line-height: 1.1;
 
     border: var(--border-width) solid var(--button-border-color);
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.18);
   }
   button:hover, input[type="file"]::file-selector-button:hover {
     background-color: var(--button-hover-color);
@@ -230,7 +227,7 @@ form.stacked {
     background: inherit;
     border-radius: var(--border-radius);
     box-sizing: border-box;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.18);
   }
 
   input {
@@ -273,7 +270,7 @@ form.stacked {
     padding: 0.25em 0.5em;
     font-size: 1.25rem;
     line-height: 1.1;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.18);
     background-color: inherit;
   }
   select, select::after {
@@ -447,7 +444,7 @@ footer {
 }
 
 @media print {
-  .hide, #sidebar, #comment, #links, .prevnext, .admin, footer {
+  .visually-hidden, #sidebar, #comment, #links, .prevnext, .admin, footer {
    display: none;
   }
 }
