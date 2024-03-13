@@ -31,6 +31,8 @@
   --input-color: inherit;
   --input-background-color: #fff7f9;
   --input-border-color: #663000;
+
+  accent-color: var(--button-background-color);
 }
 
 @media (prefers-color-scheme: dark) {
