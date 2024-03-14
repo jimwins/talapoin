@@ -10,10 +10,18 @@
 
 {% block extra_head %}
   <link rel="webmention" href="/~webmention">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="article">
   <meta property="og:url" content="{{ entry.canonicalUrl() | e('html_attr') }}">
   <meta property="og:title" content="{{ entry.title | e('html_attr') }}">
   {# <meta property="og:image" content=""> #}
+  <meta property="article:author" content="Jim Winstead">
+  <meta property="article:published_time"
+        content="{{ entry.created_at | date('c') | e('html_attr') }}">
+  <meta property="article:modified_time"
+        content="{{ entry.updated_at | date('c') | e('html_attr') }}">
+  {% for tag in entry.tags %}
+    <meta property="article:tag" content="{{ tag | e('html_attr') }}">
+  {% endfor %}
 
   <script>
     function getCookie(name) {
