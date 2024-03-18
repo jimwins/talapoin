@@ -413,6 +413,8 @@ form.stacked {
     /* Let <pre> blocks break so the don't blow out layout */
     pre {
         white-space: break-spaces;
+        background: rgba(0,0,0,0.1);
+        padding: 1em;
     }
 
     .details {
