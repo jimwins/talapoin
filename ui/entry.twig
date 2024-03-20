@@ -12,9 +12,7 @@
     <h2 class="p-name">{{ entry.title }}</h2>
   {% endif %}
   <div class="e-content">
-    <p>
-      {{ entry.entry | paragraphs | expand_psuedo_urls | raw }}
-    </p>
+      {{ entry.entry | markdown_to_html | expand_psuedo_urls | raw }}
   </div>
   <div class="details">
     &raquo; 

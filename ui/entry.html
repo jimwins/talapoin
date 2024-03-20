@@ -86,7 +86,7 @@
     {% for comment in entry.comments.where_lte('spam', spam).find_many() %}
       <div class="comment {{ comment.spam ? 'spam' }}" id="c{{ comment.id }}">
         <div class="p-content">
-          <p>{{ comment.comment | paragraphs | expand_psuedo_urls | raw }}</p>
+          {{ comment.comment | markdown_to_html | expand_psuedo_urls | raw }}
         </div>
         <div class="details">
           &raquo;
