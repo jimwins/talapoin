@@ -85,6 +85,7 @@ $container->set('view', function ($container) use($tz) {
                     new \Twig\Extra\Markdown\DefaultMarkdown()
                 );
             }
+            return null;
         }
     });
 
