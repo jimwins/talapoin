@@ -1,4 +1,4 @@
-FROM php:8.3.3-fpm-alpine
+FROM php:8.3.4-fpm-alpine
 
 LABEL maintainer="Jim Winstead <jimw@trainedmonkey.com>"
 
@@ -10,6 +10,7 @@ RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
         libjpeg-turbo-dev \
         libpng-dev \
         libzip-dev \
+        linux-headers \
         optipng \
         mpdecimal-dev \
         pngquant \
@@ -20,6 +21,8 @@ RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
         ${PHPIZE_DEPS} \
       && pecl install decimal \
       && docker-php-ext-enable decimal \
+      && pecl install xdebug \
+      && docker-php-ext-enable xdebug \
       && docker-php-ext-configure gd --with-freetype --with-jpeg \
       && docker-php-ext-install \
           bcmath \
