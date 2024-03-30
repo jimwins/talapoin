@@ -5,5 +5,5 @@
 {% endblock %}
 
 {% block content %}
-  {{- page.content | raw -}}
+  {{- page.content | markdown_to_html | raw -}}
 {% endblock %}
