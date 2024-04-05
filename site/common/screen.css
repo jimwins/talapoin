@@ -417,6 +417,25 @@ form.stacked {
         padding: 1em;
     }
 
+    /* Have some fun with tables */
+    table {
+        width: 100%;
+        background: rgb(0,0,0,0.1);
+        border-collapse: collapse;
+    }
+    table th, table td {
+        padding: 0.25em 1em;
+    }
+    table tbody tr:nth-child(even) {
+        background: rgb(0,0,0,0.05);
+    }
+    table thead {
+        border-bottom: 1px solid rgb(0,0,0,0.1);
+    }
+    table tfoot {
+        border-top: 1px solid rgb(0,0,0,0.1);
+    }
+
     .details {
         text-align: right;
         margin-top: 0.5em;
