@@ -59,4 +59,22 @@ class Entry extends \Talapoin\Model
     {
         return $this->has_many('Comment');
     }
+
+    /*
+     * This is kind of heavy-handed, just grabbing the first <img src=""> from
+     * the entry, but will do until we get more clever.
+     */
+    public function featuredImage()
+    {
+        $html = new \Masterminds\HTML5();
+        $dom = $html->loadHTML($this->entry);
+
+        $imgs = $dom->getElementsByTagName('img');
+
+        if ($imgs) {
+            return $imgs[0]->getAttribute('src');
+        }
+
+        return "";
+    }
 }
