@@ -71,7 +71,7 @@ class Entry extends \Talapoin\Model
 
         $imgs = $dom->getElementsByTagName('img');
 
-        if ($imgs) {
+        if (count($imgs)) {
             return $imgs[0]->getAttribute('src');
         }
 
