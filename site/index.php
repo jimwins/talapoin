@@ -268,7 +268,7 @@ if ($DEBUG) {
 
     $app->get(
         '/info/xdebug',
-        function (Request $request, Response $response) use ($container) {
+        function (Request $request, Response $response) {
             ob_start();
             xdebug_info();
             $response->getBody()->write(ob_get_clean());
