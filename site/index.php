@@ -265,6 +265,16 @@ if ($DEBUG) {
             return $container->get('view')->render($response, 'info-db.html', [ 'vars' => $vars ]);
         }
     );
+
+    $app->get(
+        '/info/xdebug',
+        function (Request $request, Response $response) use ($container) {
+            ob_start();
+            xdebug_info();
+            $response->getBody()->write(ob_get_clean());
+            return $response;
+        }
+    );
 }
 
 $app->get('/news/rss.php', function (Request $request, Response $response) {
