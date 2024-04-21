@@ -21,7 +21,8 @@ class PhotoLibrary
                      (SELECT JSON_ARRAYAGG(name)
                         FROM photo_to_tag, tag
                        WHERE photo_id = photo.id AND tag_id = tag.id)", 'tags_json')
-                ->where('privacy', $privacy);
+                ->where('privacy', $privacy)
+                ->order_by_desc('created_at');
 
         if ($page_size)
             $photos= $photos->limit($page_size)->offset($page * $page_size);
