@@ -308,6 +308,16 @@ class Admin
 
         if ($request->getUploadedFiles()) {
             $file = $request->getUploadedFiles()['file'];
+
+            if ($file === null) {
+                throw new \Exception("There was no file uploaded.");
+            }
+
+            if ($file->getError() !== UPLOAD_ERR_OK) {
+                $errno = $file->getError();
+                throw new \Exception("Got error $errno instead of uploaded file");
+            }
+
             $fn = $file->getClientFilename();
 
             // turn whitespace into _ and non-alphanumeric characters
