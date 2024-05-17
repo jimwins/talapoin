@@ -48,7 +48,9 @@
 
       {{ include(template_from_string(includeFragment('@navigation').content)) }}
 
-      <form id="search" class="stacked" method="get" action="/search">
+      {% set url = current_url() starts with '/photo' ? '/photo' : '/search' %}
+
+      <form id="search" class="stacked" method="get" action="{{ url }}">
         <label>
           <span class="visually-hidden">Search</span>
           <input type="search"
