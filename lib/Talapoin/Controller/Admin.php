@@ -158,7 +158,7 @@ class Admin
         $entry->reload();
 
         if (!$entry->draft) {
-            $search->reindex($entry->id);
+            $search->reindexEntries($entry->id);
         }
 
         $routeContext = \Slim\Routing\RouteContext::fromRequest($request);
@@ -294,6 +294,7 @@ class Admin
         Response $response,
         \Talapoin\Service\Gumlet $gumlet,
         \Talapoin\Service\FileStorage $storage,
+        \Talapoin\Service\Meilisearch $search,
         View $view,
         $id = null
     ) {
@@ -361,6 +362,8 @@ class Admin
         $photo->save();
 
         $this->data->commit();
+
+        $search->reindexEntries($photo->id);
 
         $routeContext = \Slim\Routing\RouteContext::fromRequest($request);
         $routeParser = $routeContext->getRouteParser();
