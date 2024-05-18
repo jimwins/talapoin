@@ -43,7 +43,7 @@
     {% block content %}{% endblock %}
   </div>
 
-  <div role="nav" id="sidebar" class="left-sidebar">
+  <div role="navigation" id="sidebar" class="left-sidebar">
     {% block sidebar %}
 
       {{ include(template_from_string(includeFragment('@navigation').content)) }}
