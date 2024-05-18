@@ -50,17 +50,19 @@
 
       {% set url = current_url() starts with '/photo' ? '/photo' : '/search' %}
 
-      <form id="search" class="stacked" method="get" action="{{ url }}">
-        <label>
-          <span class="visually-hidden">Search</span>
-          <input type="search"
-                 name="q" value="{{ q }}"
-                 size="10"
-                 placeholder="Search"
-                 autosave="tm_search"
-                 results="10">
-        </label>
-      </form>
+      <search>
+        <form id="search" class="stacked" method="get" action="{{ url }}">
+          <label>
+            <span class="visually-hidden">Search</span>
+            <input type="search"
+                   name="q" value="{{ q }}"
+                   size="10"
+                   placeholder="Search"
+                   autosave="tm_search"
+                   results="10">
+          </label>
+        </form>
+      </search>
     {% endblock %}
   </div>
 
