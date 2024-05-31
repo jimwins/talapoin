@@ -10,14 +10,16 @@
   --border-width: 1px;
   --border-radius: 0.5rem;
 
-  --text-color: #3d3d3d;
-  --background-color: #eee8e9;
+  color-scheme: light dark;
 
-  --primary-color: #ab4f00;
+  --text-color: light-dark(#3d3d3d, #eee8e9);
+  --background-color: light-dark(#eee8e9, #3d3d3d);
 
-  --link-color: #1f437e;
-  --link-visited-color: #1f437e;
-  --link-hover-color: #3368bd;
+  --primary-color: light-dark(#ab4f00, #d96500);
+
+  --link-color: light-dark(#1f437e, #8bb2f0);
+  --link-visited-color: light-dark(#1f437e, #8bb2f0);
+  --link-hover-color: light-dark(#3368bd, #8eaffc);
 
   --error-color: #8b2844;
   --ins-color: #8b2844;
@@ -29,15 +31,21 @@
   --button-hover-color: #ab4f00;
 
   --input-color: inherit;
-  --input-background-color: #fff7f9;
-  --input-border-color: #663000;
+  --input-background-color: light-dark(#fff7f9, #1d1d1d1d);
+  --input-border-color: light-dark(#663000, #79502c);
 
   accent-color: var(--button-background-color);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Not yet. */
+:root {
+  &:has(input[name="color-scheme"][value="light dark"]:checked) {
+    color-scheme: light dark;
+  }
+  &:has(input[name="color-scheme"][value="light"]:checked) {
+    color-scheme: light;
+  }
+  &:has(input[name="color-scheme"][value="dark"]:checked) {
+    color-scheme: dark;
   }
 }
 
@@ -413,7 +421,7 @@ form.stacked {
     /* Let <pre> blocks break so the don't blow out layout */
     pre {
         white-space: break-spaces;
-        background: rgba(0,0,0,0.1);
+        background: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.4));
         padding: 1em;
     }
 
