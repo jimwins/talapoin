@@ -421,7 +421,7 @@ form.stacked {
     /* Let <pre> blocks break so the don't blow out layout */
     pre {
         white-space: break-spaces;
-        background: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.4));
+        background: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.2));
         padding: 1em;
     }
 
