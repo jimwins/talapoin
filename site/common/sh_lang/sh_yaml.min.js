@@ -1,0 +1,88 @@
+if (! this.sh_languages) {
+  this.sh_languages = {};
+}
+sh_languages['yaml'] = [
+  [
+    [
+      /#/g,
+      'sh_comment',
+      1
+    ],
+    [
+      /\b[+-]?(?:(?:0x[A-Fa-f0-9]+)|(?:(?:[\d]*\.)?[\d]+(?:[eE][+-]?[\d]+)?))u?(?:(?:int(?:8|16|32|64))|L)?\b/g,
+      'sh_number',
+      -1
+    ],
+    [
+      /\b(?:true|false|null)\b/g,
+      'sh_keyword',
+      -1
+    ],
+    [
+      /^---/g,
+      'sh_section',
+      1
+    ],
+    [
+      /(^[ \t-]*)([A-Za-z0-9_]+)(:)/g,
+      ['sh_symbol', 'sh_name', 'sh_symbol'],
+      -1
+    ],
+    [
+      /^[ \t]*-/g,
+      'sh_symbol',
+      -1
+    ],
+    [
+      /"/g,
+      'sh_string',
+      2
+    ],
+    [
+      /'/g,
+      'sh_string',
+      3
+    ]
+  ],
+  [
+    [
+      /$/g,
+      null,
+      -2
+    ]
+  ],
+  [
+    [
+      /$/g,
+      null,
+      -2
+    ],
+    [
+      /\\(?:\\|")/g,
+      null,
+      -1
+    ],
+    [
+      /"/g,
+      'sh_string',
+      -2
+    ]
+  ],
+  [
+    [
+      /$/g,
+      null,
+      -2
+    ],
+    [
+      /\\(?:\\|')/g,
+      null,
+      -1
+    ],
+    [
+      /'/g,
+      'sh_string',
+      -2
+    ]
+  ]
+];
