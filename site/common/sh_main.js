@@ -397,6 +397,21 @@ function sh_highlightElement(element, language) {
     element.replaceChildren(documentFragment);
 }
 
+/**
+ * Loads a JavaScript file and returns a Promise for when it is loaded
+ * from: https://aaronsmith.online/articles/easily-load-an-external-script-using-javascript/
+ */
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.type = 'text/javascript'
+        script.onload = resolve
+        script.onerror = reject
+        script.src = src
+        document.head.append(script)
+    })
+}
+
 function sh_loadLanguage(language, element, prefix, suffix) {
     /* Already loading? Just queue element for processing. */
     if (language in sh_requests) {
@@ -407,18 +422,14 @@ function sh_loadLanguage(language, element, prefix, suffix) {
 
     let url = prefix + 'sh_' + language + suffix;
 
-    fetch(url)
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-            return res.text();
-        })
-        .then((text) => {
-            eval(text)
+    loadScript(url)
+        .then(() => {
             sh_requests[language].forEach((element) => {
                 sh_highlightElement(element, sh_languages[language]);
             })
+        })
+        .catch(() => {
+            console.log(`Unable to load syntax for ${language}`);
         })
 }
 
