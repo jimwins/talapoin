@@ -441,7 +441,7 @@ language identifier; e.g., "sh_java" or "language-java" identifies the element
 as containing "java" language source code.
 */
 function sh_highlightDocument(prefix, suffix) {
-    const classMatch = /^(?:sh_|language-)(.+)$/;
+    const classMatch = /^(?:sh_|language-)([a-z]+)$/;
 
     document.querySelectorAll('pre,code').forEach((element) => {
         element.classList.forEach((name) => {
