@@ -9,6 +9,14 @@ if (! this.sh_languages) {
 }
 var sh_requests = {};
 
+/*
+ * We only turn references that use a protocol we allow into links, all others
+ * will just be styled.
+ */
+function sh_isValidHref(url) {
+    return /^(mailto|https?|ftp|gopher):/.test(url);
+}
+
 function sh_isEmailAddress(url) {
   if (/^mailto:/.test(url)) {
     return false;
@@ -17,14 +25,16 @@ function sh_isEmailAddress(url) {
 }
 
 function sh_setHref(tags, numTags, inputString) {
-  var url = inputString.substring(tags[numTags - 2].pos, tags[numTags - 1].pos);
-  if (url.length >= 2 && url.charAt(0) === '<' && url.charAt(url.length - 1) === '>') {
-    url = url.substr(1, url.length - 2);
-  }
-  if (sh_isEmailAddress(url)) {
-    url = 'mailto:' + url;
-  }
-  tags[numTags - 2].node.href = url;
+    var url = inputString.substring(tags[numTags - 2].pos, tags[numTags - 1].pos);
+    if (url.length >= 2 && url.charAt(0) === '<' && url.charAt(url.length - 1) === '>') {
+        url = url.substr(1, url.length - 2);
+    }
+    if (sh_isEmailAddress(url)) {
+        url = 'mailto:' + url;
+    }
+    if (sh_isValidHref(url)) {
+        tags[numTags - 2].node.href = url;
+    }
 }
 
 /**
