@@ -77,15 +77,16 @@
         color: blue;
         text-decoration: underline;
     }
+    /* Variable name */
+    .sh_variable {
+        color: light-dark(darkgreen, darkseagreen);
+    }
 }
 
 /* for ChangeLog and Log files */
 .sh_sourceCode .sh_date { color: blue; font-weight: bold; }
-.sh_sourceCode .sh_time, pre.sh_sourceCode .sh_file { color: darkblue; font-weight: bold; }
-.sh_sourceCode .sh_ip, pre.sh_sourceCode .sh_name { color: darkgreen; }
-
-/* for Prolog, Perl... */
-.sh_sourceCode .sh_variable { color: light-dark(darkgreen, darkseagreen); }
+.sh_sourceCode .sh_time, .sh_sourceCode .sh_file { color: darkblue; font-weight: bold; }
+.sh_sourceCode .sh_ip, .sh_sourceCode .sh_name { color: darkgreen; }
 
 /* for LaTeX */
 .sh_sourceCode .sh_italics { color: darkgreen; font-style: italic; }
