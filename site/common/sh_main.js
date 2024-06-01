@@ -27,28 +27,6 @@ function sh_setHref(tags, numTags, inputString) {
   tags[numTags - 2].node.href = url;
 }
 
-/*
-Konqueror has a bug where the regular expression /$/g will not match at the end
-of a line more than once:
-
-  var regex = /$/g;
-  var match;
-
-  var line = '1234567890';
-  regex.lastIndex = 10;
-  match = regex.exec(line);
-
-  var line2 = 'abcde';
-  regex.lastIndex = 5;
-  match = regex.exec(line2);  // fails
-*/
-function sh_konquerorExec(s) {
-  var result = [''];
-  result.index = s.length;
-  result.input = s;
-  return result;
-}
-
 /**
 Highlights all elements containing source code in a text string.  The return
 value is an array of objects, each representing an HTML start or end tag.  Each
@@ -60,20 +38,6 @@ DOM element started by the tag. End tags do not have this property.
 @return  an array of tag objects
 */
 function sh_highlightString(inputString, language) {
-  if (/Konqueror/.test(navigator.userAgent)) {
-    if (! language.konquered) {
-      for (var s = 0; s < language.length; s++) {
-        for (var p = 0; p < language[s].length; p++) {
-          var r = language[s][p][0];
-          if (r.source === '$') {
-            r.exec = sh_konquerorExec;
-          }
-        }
-      }
-      language.konquered = true;
-    }
-  }
-
   var a = document.createElement('a');
   var span = document.createElement('span');
 
