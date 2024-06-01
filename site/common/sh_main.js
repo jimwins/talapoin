@@ -214,34 +214,6 @@ function sh_highlightString(inputString, language) {
   return tags;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// DOM-dependent functions
-
-function sh_getClasses(element) {
-  var result = [];
-  var htmlClass = element.className;
-  if (htmlClass && htmlClass.length > 0) {
-    var htmlClasses = htmlClass.split(' ');
-    for (var i = 0; i < htmlClasses.length; i++) {
-      if (htmlClasses[i].length > 0) {
-        result.push(htmlClasses[i]);
-      }
-    }
-  }
-  return result;
-}
-
-function sh_addClass(element, name) {
-  var htmlClasses = sh_getClasses(element);
-  for (var i = 0; i < htmlClasses.length; i++) {
-    if (name.toLowerCase() === htmlClasses[i].toLowerCase()) {
-      return;
-    }
-  }
-  htmlClasses.push(name);
-  element.className = htmlClasses.join(' ');
-}
-
 /**
 Extracts the tags from an HTML DOM NodeList.
 @param  nodeList  a DOM NodeList
@@ -415,91 +387,70 @@ the element will have been placed in the "sh_sourceCode" class.
 @param  language  a language definition object
 */
 function sh_highlightElement(element, language) {
-  sh_addClass(element, 'sh_sourceCode');
-  var originalTags = [];
-  var inputString = sh_extractTags(element, originalTags);
-  var highlightTags = sh_highlightString(inputString, language);
-  var tags = sh_mergeTags(originalTags, highlightTags);
-  var documentFragment = sh_insertTags(tags, inputString);
-  while (element.hasChildNodes()) {
-    element.removeChild(element.firstChild);
-  }
-  element.appendChild(documentFragment);
+    element.classList.add('sh_sourceCode');
+    var originalTags = [];
+    var inputString = sh_extractTags(element, originalTags);
+    var highlightTags = sh_highlightString(inputString, language);
+    var tags = sh_mergeTags(originalTags, highlightTags);
+    var documentFragment = sh_insertTags(tags, inputString);
+
+    element.replaceChildren(documentFragment);
 }
 
-function sh_getXMLHttpRequest() {
-  if (window.ActiveXObject) {
-    return new ActiveXObject('Msxml2.XMLHTTP');
-  }
-  else if (window.XMLHttpRequest) {
-    return new XMLHttpRequest();
-  }
-  throw 'No XMLHttpRequest implementation available';
-}
-
-function sh_load(language, element, prefix, suffix) {
-  if (language in sh_requests) {
-    sh_requests[language].push(element);
-    return;
-  }
-  sh_requests[language] = [element];
-  var request = sh_getXMLHttpRequest();
-  var url = prefix + 'sh_' + language + suffix;
-  request.open('GET', url, true);
-  request.onreadystatechange = function () {
-    if (request.readyState === 4) {
-      try {
-        if (! request.status || request.status === 200) {
-          eval(request.responseText);
-          var elements = sh_requests[language];
-          for (var i = 0; i < elements.length; i++) {
-            sh_highlightElement(elements[i], sh_languages[language]);
-          }
-        }
-        else {
-          throw 'HTTP error: status ' + request.status;
-        }
-      }
-      finally {
-        request = null;
-      }
+function sh_loadLanguage(language, element, prefix, suffix) {
+    /* Already loading? Just queue element for processing. */
+    if (language in sh_requests) {
+        sh_requests[language].push(element);
+        return;
     }
-  };
-  request.send(null);
+    sh_requests[language] = [element];
+
+    let url = prefix + 'sh_' + language + suffix;
+
+    fetch(url)
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+            return res.text();
+        })
+        .then((text) => {
+            eval(text)
+            sh_requests[language].forEach((element) => {
+                sh_highlightElement(element, sh_languages[language]);
+            })
+        })
 }
 
 /**
 Highlights all elements containing source code on the current page. Elements
-containing source code must be "pre" elements with a "class" attribute of
-"sh_LANGUAGE", or "language-LANGUAGE" where LANGUAGE is a valid language
-identifier; e.g., "sh_java" or "language-java" identifies the element as
-containing "java" language source code.
+containing source code must be "pre" or "code" elements with a "class"
+attribute of "sh_LANGUAGE", or "language-LANGUAGE" where LANGUAGE is a valid
+language identifier; e.g., "sh_java" or "language-java" identifies the element
+as containing "java" language source code.
 */
 function sh_highlightDocument(prefix, suffix) {
-  const classMatch = /^(?:sh_|language-)(?<lang>.+)$/;
-  var nodeList = document.querySelectorAll('pre,code');
-  for (var i = 0; i < nodeList.length; i++) {
-    var element = nodeList.item(i);
-    var htmlClasses = sh_getClasses(element);
-    for (var j = 0; j < htmlClasses.length; j++) {
-      var htmlClass = htmlClasses[j].toLowerCase();
-      if (htmlClass === 'sh_sourcecode') {
-        continue;
-      }
-      var match = htmlClass.match(classMatch);
-      if (match) {
-        var language = match[1];
-        if (language in sh_languages) {
-          sh_highlightElement(element, sh_languages[language]);
-        }
-        else if (typeof(prefix) === 'string' && typeof(suffix) === 'string') {
-          sh_load(language, element, prefix, suffix);
-        }
-        else {
-          throw 'Found <pre> element with class="' + htmlClass + '", but no such language exists';
-        }
-        break;
-      }
-    }
-  }
+    const classMatch = /^(?:sh_|language-)(.+)$/;
+
+    document.querySelectorAll('pre,code').forEach((element) => {
+        element.classList.forEach((name) => {
+            if (name === 'sh_sourcecode') {
+                return;
+            }
+            let match = name.match(classMatch);
+            if (match) {
+                let language = match[1];
+                if (language in sh_languages) {
+                    sh_highlightElement(element, sh_languages[language]);
+                }
+                else if (typeof(prefix) === 'string' && typeof(suffix) === 'string') {
+                    sh_loadLanguage(language, element, prefix, suffix);
+                }
+                else {
+                    throw 'Found <pre> element with class="' + htmlClass + '", but no such language exists';
+                }
+                return;
+            }
+        })
+    })
 }
