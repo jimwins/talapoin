@@ -21,7 +21,7 @@
   --link-visited-color: light-dark(#1f437e, #8bb2f0);
   --link-hover-color: light-dark(#3368bd, #8eaffc);
 
-  --error-color: #8b2844;
+  --error-color: light-dark(#8b2844,#ff6c96);
   --ins-color: #8b2844;
   --del-color: #626262;
 
