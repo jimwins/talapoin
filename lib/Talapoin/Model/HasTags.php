@@ -21,6 +21,9 @@ trait HasTags
 
             foreach ($new_tags as $tag_name) {
                 $tag_name = trim($tag_name);
+                if ($tag_name === '') {
+                    continue;
+                }
 
                 $tag = $this->factory($model_name)->where('name', $tag_name)->find_one();
                 if (!$tag) {
