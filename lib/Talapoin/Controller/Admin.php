@@ -69,9 +69,12 @@ class Admin
                 ->order_by_asc('slug')
                 ->find_many();
 
+        $tagList = $this->blog->getTags();
+
         return $view->render($response, 'admin/index.html', [
             'entries' => $entries,
             'pages' => $pages,
+            'tag_list' => $tagList,
         ]);
     }
 
@@ -104,7 +107,12 @@ class Admin
             }
         }
 
-        return $view->render($response, 'admin/edit-entry.html', [ 'entry' => $entry ]);
+        $tagList = $this->blog->getTags();
+
+        return $view->render($response, 'admin/edit-entry.html', [
+            'entry' => $entry,
+            'tag_list' => $tagList,
+        ]);
     }
 
     public function updateEntry(

@@ -4,6 +4,11 @@
   edit entry
 {% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="/common/awesomplete/awesomplete.css" />
+    <script src="/common/awesomplete/awesomplete.js"></script>
+{% endblock %}
+
 {% block content %}
 
 <p>
@@ -28,8 +33,36 @@
 
   <label>
     Tags
-    <input type="text" name="tags" value="{{ entry.tags | join(', ') | e('html_attr') }}">
+    <input
+        type="text" name="tags"
+        data-multiple
+        value="{{ entry.tags | join(', ') | e('html_attr') }}"
+        list="tag-list"
+    >
+    <datalist id="tag-list">
+        {% for tag in tag_list %}
+            <option>{{ tag }}</option>
+        {% endfor %}
+    </datalist>
   </label>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        new Awesomplete('input[data-multiple]', {
+            filter: function(text, input) {
+                return Awesomplete.FILTER_CONTAINS(text, input.match(/[^,]*$/)[0]);
+            },
+
+            item: function(text, input) {
+                return Awesomplete.ITEM(text, input.match(/[^,]*$/)[0]);
+            },
+
+            replace: function(text) {
+                var before = this.input.value.match(/^.+,\s*|/)[0];
+                this.input.value = before + text + ", ";
+            }
+        });
+    })
+  </script>
 
   <label class="block">
     <input type="checkbox" name="draft" value="1" {{ entry.draft ? 'checked' }}> draft

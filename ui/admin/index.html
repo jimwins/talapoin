@@ -4,6 +4,11 @@
   admin
 {% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="/common/awesomplete/awesomplete.css" />
+    <script src="/common/awesomplete/awesomplete.js"></script>
+{% endblock %}
+
 {% block content %}
 
 <h1>Admin</h1>
@@ -83,8 +88,36 @@
 
   <label>
     Tags
-    <input type="text" id="tags" name="tags">
+    <input
+        type="text" name="tags"
+        data-multiple
+        value="{{ entry.tags | join(', ') | e('html_attr') }}"
+        list="tag-list"
+    >
+    <datalist id="tag-list">
+        {% for tag in tag_list %}
+            <option>{{ tag }}</option>
+        {% endfor %}
+    </datalist>
   </label>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        new Awesomplete('input[data-multiple]', {
+            filter: function(text, input) {
+                return Awesomplete.FILTER_CONTAINS(text, input.match(/[^,]*$/)[0]);
+            },
+
+            item: function(text, input) {
+                return Awesomplete.ITEM(text, input.match(/[^,]*$/)[0]);
+            },
+
+            replace: function(text) {
+                var before = this.input.value.match(/^.+,\s*|/)[0];
+                this.input.value = before + text + ", ";
+            }
+        });
+    })
+  </script>
 
   <label>
     Privacy

@@ -7,6 +7,7 @@ Talapoin uses:
 - [Twig][twig]: The flexible, fast, and secure template engine for PHP
 - [Phinx][phinx]: PHP database migrations for everyone
 - [SHJS][shjs]: Syntax Highlighting in JavaScript
+- [Awesomeplete][awesomeplete]: Simple autocomplete widget
 
 You can find information about the talapoin, a small, yellow Central African
 monkey, here:
@@ -24,3 +25,4 @@ https://trainedmonkey.com/projects/talapoin/
 [monolog]: https://seldaek.github.io/monolog/
 [phinx]: https://phinx.org
 [shjs]: http://shjs.sourceforge.net
+[awesomeplete]: https://projects.verou.me/awesomplete/
