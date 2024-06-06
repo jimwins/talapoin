@@ -195,7 +195,7 @@ form.stacked {
     display: block;
   }
 
-  & button, label input, label textarea {
+  & button, label input, label textarea, .awesomplete {
     display: block;
     margin-top: 0.5rem;
     width: 100%;
