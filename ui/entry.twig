@@ -9,7 +9,7 @@
   <div class="details">
     &raquo; 
     <a class="permalink u-url"
-       href="{{ entry.canonicalUrl() }}">
+       href="{{ entry.canonicalUrl }}">
       <time class="dt-published" datetime="{{ entry.created_at | date('c') | e('html_attr') }}">
         {{- blog.date_format(entry.created_at) -}}
       </time>
@@ -17,8 +17,8 @@
     {% if entry.tags %}
       &raquo;
       {% for tag in entry.tags %}
-        <a class="p-category" href="{{ url_for('tag', { 'tag' : tag }) }}"
-           >{{ tag }}</a>{{ not loop.last ? ', ' }}
+        <a class="p-category" href="{{ url_for('blog.tag', { 'tag' : tag.name }) }}"
+           >{{ tag.name }}</a>{% if not loop.last %}, {% endif %}
       {% endfor %}
     {% endif %}
     {% if entry.mastodon_uri or entry.bluesky_uri %}
@@ -37,12 +37,12 @@
       {% endif %}
     {% endif %}
     &raquo;
-    <a href="{{ entry.canonicalUrl() }}">
+    <a href="{{ entry.canonicalUrl }}">
       {% if entry.article %}More, {% endif %}
       {% if not entry.comment_count %}
         Comment
       {% else %}
-        {{ entry.comment_count }} comment{{ entry.comment_count > 1 ? 's' }}, add yours
+        {{ entry.comment_count }} comment{% if entry.comment_count > 1 %}s{% endif %}, add yours
       {% endif %}
     </a>
   </div>

@@ -191,7 +191,7 @@ $app->get('/archive', [ \Talapoin\Controller\Blog::class, 'archive' ])
     ->setName('archive');
 
 $app->get('/tag/{tag}', [ \Talapoin\Controller\Blog::class, 'tag' ])
-    ->setName('tag');
+    ->setName('blog.tag');
 
 $app->get('/search', [ \Talapoin\Controller\Blog::class, 'search' ])
     ->setName('search');
@@ -203,7 +203,7 @@ $app->get('/scratch[/{path:.*}]', function (Request $request, Response $response
 
 /* Atom feeds */
 $app->get('/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
-    ->setName('atom');
+    ->setName('blog.atom');
 
 $app->get('/tag/{tag}/index.atom', [ \Talapoin\Controller\Blog::class, 'atomFeed' ])
     ->setName('tag_atom');

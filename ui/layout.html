@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>
     {% block title %}trainedmonkey{% endblock %}
+    {#
     {% if not block('title') matches '/trainedmonkey/' %}
       @ trainedmonkey
     {% endif %}
+    #}
   </title>
-  <link rel="author" href="{{ full_url_for('page', { path : '' }) }}" />
+  <link rel="author" href="{{ full_url_for('top') }}" />
   <link rel="authorization_endpoint" href="https://indieauth.com/auth">
   <link rel="icon" href="/common/fav.ico" />
   <link rel="stylesheet" type="text/css" media="screen"
@@ -43,10 +45,8 @@
 
       {{ include(template_from_string(includeFragment('@navigation').content)) }}
 
-      {% set url = current_url() starts with '/photo' ? '/photo' : '/search' %}
-
       <search>
-        <form id="search" class="stacked" method="get" action="{{ url }}">
+        <form id="search" class="stacked" method="get" action="/search">
           <label>
             <span class="visually-hidden">Search</span>
             <input type="search"
@@ -77,7 +77,7 @@
   </div>
 
   <footer>
-    <p><a rel="copyright" href="https://creativecommons.org/publicdomain/zero/1.0/">Dedicated to the public domain</a> by <a class="h-card" href="{{ full_url_for('page', { path : '' }) }}">Jim&nbsp;Winstead&nbsp;Jr.</a></p>
+    <p><a rel="copyright" href="https://creativecommons.org/publicdomain/zero/1.0/">Dedicated to the public domain</a> by <a class="h-card" href="{{ full_url_for('top') }}">Jim&nbsp;Winstead&nbsp;Jr.</a></p>
   </footer>
 
 </div>

@@ -5,9 +5,15 @@
 {% endblock %}
 
 {% block content %}
-  <h1>error!</h1>
+  <h1>Error!</h1>
 
-  <p class="error">{{ exception.getMessage() }}</p>
+  <p class="error">
+    {% if exception %}
+        {{ exception.getMessage() }}
+    {% else %}
+        An unexpected error has occured!
+    {% endif %}
+  </p>
 
   {% if exception.code == 401 %}
     <form class="stacked" method="POST" action="{{ url_for('login') }}">
@@ -33,7 +39,7 @@
           {{ trace.class }}{{ trace.type }}{{ trace.function -}}
           (
             {%- for arg in trace.args -%}
-              {{- arg | get_debug_type -}}{{ not loop.last ? ", " -}}
+              {{- arg | get_debug_type -}}{% if not loop.last %}, {% endif -%}
             {%- endfor -%}
           )
         </li>
