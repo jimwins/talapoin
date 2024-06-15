@@ -1,12 +1,4 @@
-{% macro date_format(dt) %}
-  {% if dt | date('Y') == "now" | date('Y') %}
-    {{ dt | date('F j (l) g:ia') }}
-  {% else %}
-    {{ dt | date('F j, Y g:ia') }}
-  {% endif %}
-{% endmacro %}
-
-{% import _self as blog %}
+{% import 'blog.twig' as blog %}
 <div class="h-entry" id="entry_{{ entry.id }}">
   {% if entry.title %}
     <h2 class="p-name">{{ entry.title }}</h2>

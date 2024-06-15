@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
       {%- block title -%}
-        {% import 'entry.twig' as blog %}
+        {% import 'blog.twig' as blog %}
         {{ entry.title ?: blog.date_format(entry.created_at) }}
       {%- endblock -%}
     </title>

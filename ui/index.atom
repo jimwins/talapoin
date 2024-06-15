@@ -1,4 +1,4 @@
-{% import 'entry.twig' as blog %}
+{% import 'blog.twig' as blog %}
 {% set html_url = tag ? full_url_for('tag', { tag: tag }) : full_url_for('page', { path: '' }) %}
 <?xml version="1.0" encoding="utf-8"?>
 <feed

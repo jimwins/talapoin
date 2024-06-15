@@ -1,0 +1,7 @@
+{% macro date_format(dt) %}
+  {% if dt | date('Y') == "now" | date('Y') %}
+    {{ dt | date('F j (l) g:ia') }}
+  {% else %}
+    {{ dt | date('F j, Y g:ia') }}
+  {% endif %}
+{% endmacro %}
