@@ -43,8 +43,13 @@ trait HasTags
             }
         }
 
+        /*
+         * This doesn't turn these into full-fledged Model\Tag objects, but
+         * enough for our templates.
+         **/
         if ($this->tags_json) {
-            return json_decode($this->tags_json);
+            $tags= json_decode($this->tags_json);
+            return array_map(fn ($tag) => [ 'name' => $tag ], $tags);
         }
 
         return $this->has_many_through($model_name, $tag_model_name)->find_many();
