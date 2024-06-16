@@ -219,7 +219,7 @@ class Admin
                 }
 
                 $root = $routeParser->fullUrlFor($uri, 'top');
-                $feed = $routeParser->fullUrlFor($uri, 'atom');
+                $feed = $routeParser->fullUrlFor($uri, 'blog.atom');
                 $template = $view->getEnvironment()->load('index.html');
                 $title = $template->renderBlock('title');
 
