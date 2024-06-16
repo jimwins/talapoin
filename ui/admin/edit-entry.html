@@ -36,7 +36,7 @@
     <input
         type="text" name="tags"
         data-multiple
-        value="{{ entry.tags | join(', ') | e('html_attr') }}"
+        value="{{ entry.tags | map((value, key) => value.name) | join(', ') | e('html_attr') }}"
         list="tag-list"
     >
     <datalist id="tag-list">
