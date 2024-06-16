@@ -27,7 +27,7 @@
      <updated>{{ entry.updated_at | date('Y-m-d\\TH:i:s\\Z', 'UTC') }}</updated>
      <published>{{ entry.created_at | date('c', 'America/Los_Angeles') }}</published>
      {% for tag in entry.tags %}
-       <category term="{{ tag }}" scheme="{{ full_url_for('archive') }}" />
+       <category term="{{ tag.name }}" scheme="{{ full_url_for('archive') }}" />
      {% endfor %}
      <content type="html">{{ entry.entry | markdown_to_html | expand_psuedo_urls | escape }}</content>
    </entry>
