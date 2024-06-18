@@ -19,7 +19,7 @@ class PageLoader implements \Twig\Loader\LoaderInterface
 
             if ($page) {
                 $timestamp = (new \Datetime($page->updated_at))->getTimestamp();
-                return new \Twig\Source($page->content, $name, $timestamp);
+                return new \Twig\Source($page->content, $name);
             }
         }
 
