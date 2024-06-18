@@ -43,7 +43,7 @@
   <div role="navigation" id="sidebar" class="left-sidebar">
     {% block sidebar %}
 
-      {{ include(template_from_string(includeFragment('@navigation').content)) }}
+      {% include '@navigation' %}
 
       <search>
         <form id="search" class="stacked" method="get" action="/search">

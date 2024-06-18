@@ -55,11 +55,13 @@ $container->set('db', function ($c) {
 
 /* Twig for templating */
 $container->set('view', function ($container) use($tz) {
+    /* We use two loaders and chain them together. */
+    $db_loader = new \Talapoin\PageLoader($container->get(\Talapoin\Service\Page::class));
+    $file_loader = new \Twig\Loader\FilesystemLoader('../ui');
+    $loader = new \Twig\Loader\ChainLoader([ $db_loader, $file_loader] );
+
     /* No cache for now */
-    $view = \Slim\Views\Twig::create(
-        [ '../ui' ],
-        [ 'cache' => false ]
-    );
+    $view = new \Slim\Views\Twig($loader, [ 'cache' => false ]);
 
     /* Set timezone for date functions */
     if ($tz) {

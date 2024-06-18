@@ -35,7 +35,7 @@
   </h1>
 
   {% if not tag %}
-    {{ includeFragment('@hireMe').content | raw }}
+      {% include '@hireMe' %}
   {% endif %}
 
   {% include 'entries.twig' %}
