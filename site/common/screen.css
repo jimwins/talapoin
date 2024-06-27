@@ -434,7 +434,7 @@ form.stacked {
     table th, table td {
         padding: 0.25em 1em;
     }
-    table tbody tr:nth-child(even) {
+    table tbody tr:nth-child(odd) {
         background: rgb(0,0,0,0.05);
     }
     table thead {
