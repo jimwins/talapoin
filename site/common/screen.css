@@ -469,9 +469,11 @@ form.stacked {
 
 footer {
   text-align: right;
+  margin-top: 1em;
   padding-right: 0.5em;
   width: 100%;
-  max-width: 80ch;
+  max-width: 100ch;
+  font-size: 0.8em;
 }
 
 @media print {
