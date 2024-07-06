@@ -98,7 +98,7 @@ $container->set('view', function ($container) use($tz) {
 $filter = new \Twig\TwigFilter('expand_psuedo_urls', function ($text) {
     $text = preg_replace(
         '/isbn:([0-9x]+)/i',
-        'https://bookshop.org/a/94608/$1',
+        'https://openlibrary.org/isbn/$1',
         $text
     );
     $text = preg_replace(
