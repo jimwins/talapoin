@@ -8,7 +8,7 @@
   {%- if title -%}
     {{ title }} @ trainedmonkey
   {%- else -%}
-    trainedmonkey: aka Jim Winstead Jr.
+    trainedmonkey: Jim Winstead Jr.
   {%- endif -%}
 {% endblock %}
 
@@ -26,13 +26,11 @@
 {% endblock %}
 
 {% block content %}
-  <h1>
-    {% if tag %}
+  {% if tag %}
+    <h1>
       Entries tagged '{{ tag }}'
-    {% else %}
-      aka Jim Winstead Jr.
-    {% endif %}
-  </h1>
+    </h1>
+  {% endif %}
 
   {% if not tag %}
       {% include '@hireMe' %}
