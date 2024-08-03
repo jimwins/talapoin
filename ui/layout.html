@@ -11,8 +11,9 @@
     {% endif %}
     #}
   </title>
-  <link rel="author" href="{{ full_url_for('top') }}" />
-  <link rel="authorization_endpoint" href="https://indieauth.com/auth">
+  <link rel="author home" href="{{ full_url_for('top') }}" />
+  <link rel="author" type="application/activity+json" href="https://mefi.social/@jimw" />
+  <link rel="authorization_endpoint" href="https://indieauth.com/auth" />
   <link rel="icon" href="/common/fav.ico" />
   <link rel="stylesheet" type="text/css" media="screen"
         href="/common/screen.css?{{ current_release() }}" />
