@@ -61,7 +61,7 @@ class Bluesky
         ];
 
         // Add facets for hashtags
-        preg_match_all('/\b(#\w+)\b/', $content, $matches, \PREG_OFFSET_CAPTURE);
+        preg_match_all('/#(\w+)/', $content, $matches, \PREG_OFFSET_CAPTURE);
         foreach ($matches[1] as $match) {
             $args['records']['facets'][] = [
                 'index' => [
