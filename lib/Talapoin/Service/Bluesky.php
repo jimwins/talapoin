@@ -60,6 +60,23 @@ class Bluesky
             ]
         ];
 
+        // Add facets for hashtags
+        preg_match_all('/\b(#\w+)\b/', $content, $matches, \PREG_OFFSET_CAPTURE);
+        foreach ($matches[1] as $match) {
+            $args['records']['facets'][] = [
+                'index' => [
+                    'byteStart' => $match[1] - 1,
+                    'byteEnd' => $match[1] + strlen($match[0]) - 1,
+                ],
+                'features' => [
+                    [
+                        '$type' => 'app.bsky.richtext.facet#tag',
+                        'tag' => preg_replace('/^#/', '', $match[0]),
+                    ],
+                ],
+            ];
+        }
+
         return $client->request('POST', 'com.atproto.repo.createRecord', $args);
     }
 
