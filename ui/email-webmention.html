@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>
+      {%- block title -%}
+        {% import 'blog.twig' as blog %}
+        {{ entry.title ?: blog.date_format(entry.created_at) }}
+      {%- endblock -%}
+    </title>
+  </head>
+  <body>
+    <p>
+      Webmention from:
+      <a href="{{source | e('html_attr') }}">{{ source }}</a>
+    </p>
+    <hr />
+    <small><a href="{{ url }}">{{ url }}</a></small>
+  </body>
+</html>

@@ -346,8 +346,12 @@ class Blog
         return $response;
     }
 
-    public function handleWebmention(Response $response, Request $request, \Slim\App $app)
-    {
+    public function handleWebmention(
+        Response $response,
+        Request $request,
+        \Talapoin\Service\Email $sendmail,
+        \Slim\App $app
+    ) {
         $target = $request->getParam('target');
         $target_url = parse_url($target);
         $source = $request->getParam('source');
@@ -414,10 +418,16 @@ class Blog
         /* XXX if we had a task queue of some sort, we'd bail here and handle it
          * asynchronously */
 
-        /* Now check the source */
-        $mf = \Mf2\fetch($source);
+        $data = [
+            'entry' => $entry,
+            'source' => $source,
+        ];
 
-        /* XXX this is actually where the magic happens */
+        $template = $this->view->getEnvironment()->load('email-webmention.html');
+        $subject = $template->renderBlock('title', $data);
+        $body = $template->render($data);
+
+        $sendmail->send($sendmail->defaultFromAddress(), $subject, $body);
 
         return $response->withJson([]);
     }
