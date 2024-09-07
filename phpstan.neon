@@ -4,4 +4,4 @@ parameters:
 	level: 5
 	paths:
 		- public
-		- lib
+		- src
