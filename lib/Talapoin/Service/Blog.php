@@ -42,7 +42,8 @@ class Blog
                 ->find_one();
     }
 
-    public function getTags() {
+    public function getTags()
+    {
         return $this->data->factory('Tag')->order_by_asc('name')->find_many();
     }
 }

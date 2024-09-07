@@ -48,7 +48,7 @@ trait HasTags
          * enough for our templates.
          **/
         if ($this->tags_json) {
-            $tags= json_decode($this->tags_json);
+            $tags = json_decode($this->tags_json);
             return array_map(fn ($tag) => [ 'name' => $tag ], $tags);
         }
 

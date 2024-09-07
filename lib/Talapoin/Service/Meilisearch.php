@@ -101,9 +101,9 @@ class Meilisearch
             $index = $this->client->index('talapoin');
             $response = $index->deleteAllDocuments();
         }
-        $total= $this->reindexEntries($id);
-        $total+= $this->reindexPhotos($id);
-        $total+= $this->reindexBookmarks($id);
+        $total = $this->reindexEntries($id);
+        $total += $this->reindexPhotos($id);
+        $total += $this->reindexBookmarks($id);
         return $total;
     }
 

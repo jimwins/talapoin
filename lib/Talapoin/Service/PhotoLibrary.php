@@ -24,8 +24,9 @@ class PhotoLibrary
                 ->where('privacy', $privacy)
                 ->order_by_desc('created_at');
 
-        if ($page_size)
-            $photos= $photos->limit($page_size)->offset($page * $page_size);
+        if ($page_size) {
+            $photos = $photos->limit($page_size)->offset($page * $page_size);
+        }
 
         return $photos;
     }

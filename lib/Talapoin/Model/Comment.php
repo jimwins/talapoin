@@ -7,7 +7,8 @@ namespace Talapoin\Model;
 class Comment extends \Talapoin\Model
 {
     /* For the URL to refer to something external-ish, even if that breaks. */
-    public function externalUrl() {
+    public function externalUrl()
+    {
         if (preg_match('/^(ftp|gopher|https?|mailto):/i', $this->url)) {
             return $this->url;
         }
