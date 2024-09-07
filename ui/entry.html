@@ -20,7 +20,7 @@
   <meta property="article:modified_time"
         content="{{ entry.updated_at | date('c') | e('html_attr') }}">
   {% for tag in entry.tags %}
-    <meta property="article:tag" content="{{ tag | e('html_attr') }}">
+    <meta property="article:tag" content="{{ tag.name | e('html_attr') }}">
   {% endfor %}
 
   <script>
