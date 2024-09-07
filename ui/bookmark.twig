@@ -1,0 +1,30 @@
+{% import 'blog.twig' as blog %}
+<div class="h-entry" id="bookmark_{{ bookmark.ulid }}">
+    <h2>
+        <a class="u-bookmark-of h-cite" href="{{ bookmark.href }}">
+            {{ bookmark.title }}
+        </a>
+    </h2>
+    {% if bookmark.excerpt %}
+        <blockquote>{{ bookmark.excerpt }}</blockquote>
+    {% endif %}
+    {% if bookmark.comment %}
+        <p>{{ bookmark.comment }}</p>
+    {% endif %}
+    <div class="details">
+        <a class="permalink u-url" href="{{ bookmark.canonicalUrl }}">
+            <time class="dt-published"
+                datetime="{{ bookmark.created_at | date('c') | e('html_attr') }}">
+                {{- blog.date_format(bookmark.created_at) -}}
+            </time>
+        </a>
+        {% if bookmark.tags %}
+            &raquo;
+            {% for tag in bookmark.tags %}
+                <a class="p-category"
+                    href="{{ url_for('bookmark-tag', { 'tag' : tag.name }) }}"
+                >{{ tag.name }}</a>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

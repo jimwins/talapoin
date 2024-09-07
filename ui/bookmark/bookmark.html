@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    {% if title %}
+        {{ title }} @ trainedmonkey
+    {% else %}
+        trainedmonkey: Bookmarks from Jim Winstead Jr.
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1 class="p-name">
+        {{ block('title') }}
+    </h1>
+    {{ include('bookmark.twig') }}
+{% endblock %}

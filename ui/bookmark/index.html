@@ -1,0 +1,112 @@
+{% extends 'layout.html' %}
+
+{% if tag %}
+    {% set title = "with '" ~ tag ~ "' tag " %}
+{% endif %}
+
+{% block title %}
+    {% if title %}
+        {{ title }} @ trainedmonkey
+    {% else %}
+        trainedmonkey: bookmarks from jim winstead jr.
+    {% endif %}
+{% endblock %}
+
+{% block extra_head %}
+    <style>
+        .pager {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 1em;
+        }
+        .pager .previous {
+            text-align: left;
+        }
+        .pager .current {
+            text-align: center;
+        }
+        .pager .next {
+            text-align: right;
+        }
+
+        .h-entry h2 {
+            font-weight: normal;
+            font-size: 1rem;
+            position: relative;
+        }
+        .h-entry h2 a {
+            text-decoration: none;
+        }
+        .h-entry h2 a::after {
+            display: block;
+            content: attr(href);
+            font-size: smaller;
+            font-family: var(--sans-serif);
+            text-decoration: none;
+            color: var(--text-color);
+            position: relative;
+            top: -0.25rem;
+        }
+    </style>
+{% endblock %}
+
+{% block prevnext %}
+    {% set total = bookmarks[0].records %}
+    <div class="pager">
+        <div class="previous">
+            {% if page > 0 %}
+                <a href="{{ current_url() ~ "?" ~ query_params | merge({ 'page': page - 1 }) | url_encode }}">
+                    &larr; previous
+                </a>
+            {% endif %}
+        </div>
+        <div class="current">
+            showing {{ (page * page_size) + 1 }} to {{ (page * page_size) + (bookmarks|length) }}
+            of {{ total }}
+        </div>
+        <div class="next">
+            {% if (page + 1) * page_size < total %}
+                <a href="{{ current_url() ~ "?" ~ query_params | merge({ 'page': page + 1 }) | url_encode }}">
+                    next &rarr;
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {{ parent() }}
+    <ul>
+        <li>
+            <a href="{{ url_for('bookmark-tags') }}">Tags</a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <h1>
+        {% if tag %}
+            Bookmarks tagged '{{ tag }}'
+        {% elseif q %}
+            Search results for '{{ q }}'
+        {% else %}
+            Bookmarks
+        {% endif %}
+    </h1>
+
+    {% if q and not bookmarks|length %}
+        <div class="error">
+            <strong>No results</strong> were found for '{{ q }}'.
+        </div>
+    {% else %}
+        {{ block('prevnext') }}
+
+        {% for bookmark in bookmarks %}
+            {{ include('bookmark.twig') }}
+        {% endfor %}
+
+        {{ block('prevnext') }}
+    {% endif %}
+
+{% endblock %}

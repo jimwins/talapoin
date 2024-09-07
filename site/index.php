@@ -231,6 +231,11 @@ $app->group('/photo', function (RouteCollectorProxy $app) {
     \Talapoin\Controller\PhotoLibrary::registerRoutes($app);
 });
 
+/* Bookmarks */
+$app->group('/bookmark', function (RouteCollectorProxy $app) {
+    \Talapoin\Controller\BookmarkLibrary::registerRoutes($app);
+});
+
 /* Behind the scenes stuff */
 $app->get('/~reindex', [ \Talapoin\Controller\Blog::class, 'reindex' ])
     ->setName('reindex');
