@@ -11,6 +11,7 @@ class Meilisearch
     public function __construct(
         private Blog $blog,
         private PhotoLibrary $photos,
+        private BookmarkLibrary $bookmarks,
         Config $config
     ) {
         $search = $config['meilisearch'];
@@ -69,6 +70,31 @@ class Meilisearch
                 ->find_many();
     }
 
+    public function findBookmarks($q)
+    {
+        $index = $this->client->index('talapoin');
+
+        $results = $index->search($q, [
+            'filter' => 'type = "bookmark"'
+        ])->getHits();
+
+        $ids = array_map(function ($e) {
+            // Chop off the leading bookmark_
+            return substr($e['id'], strlen('bookmark_'));
+        }, $results);
+
+        if (!$ids) {
+            error_log("Nothing found for '$q'");
+            return [];
+        }
+
+        return
+            $this->bookmarks->getBookmarks()
+                ->where_in('id', $ids)
+                ->order_by_desc('created_at')
+                ->find_many();
+    }
+
     public function reindex($id = null)
     {
         if (!$id) {
@@ -77,6 +103,7 @@ class Meilisearch
         }
         $total= $this->reindexEntries($id);
         $total+= $this->reindexPhotos($id);
+        $total+= $this->reindexBookmarks($id);
         return $total;
     }
 
@@ -156,6 +183,47 @@ class Meilisearch
                 'caption' => $entry->caption,
                 'tags' => $entry->tags_json ? json_decode($entry->tags_json) : [],
                 'type' => 'photo',
+            ];
+        }, $entries);
+
+        $res = $index->addDocuments($documents);
+
+        return count($documents);
+    }
+
+    public function reindexBookmarks($id = null)
+    {
+        $entries =
+            $this->bookmarks->getBookmarks(page_size: 0)
+                ->order_by_asc('created_at');
+
+        if ($id) {
+            $entries = $entries->where('id', $id);
+        }
+
+        $entries = $entries->find_many();
+
+        $index = $this->client->index('talapoin');
+
+        if ($id) {
+            $response = $index->deleteDocument('bookmark_' . $id);
+        } else {
+            /* Just delete and re-create the index. YOLO! */
+            try {
+                $response = $index->deleteDocuments(['filter' => 'type = "bookmark"']);
+            } catch (\Exception $e) {
+                error_log("failed to delete index: " . (string)$e);
+            }
+        }
+
+        $documents = array_map(function ($entry) {
+            return [
+                'id' => 'bookmark_' . $entry->id,
+                'title' => $entry->title,
+                'excerpt' => $entry->excerpt,
+                'comment' => $entry->comment,
+                'tags' => $entry->tags_json ? json_decode($entry->tags_json) : [],
+                'type' => 'bookmark',
             ];
         }, $entries);
 
