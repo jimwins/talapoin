@@ -151,7 +151,7 @@ class BookmarkLibrary
 
             $this->data->commit();
 
-            return $response->withJson($bookmark);
+            return $response->withJson(['message' => 'Success!']);
         } else {
             throw new \Exception("Expected Pinboard JSON data");
         }
