@@ -57,7 +57,7 @@ $container->set('db', function ($c) {
 $container->set('view', function ($container) use ($tz) {
     /* We use two loaders and chain them together. */
     $db_loader = new \Talapoin\PageLoader($container->get(\Talapoin\Service\Page::class));
-    $file_loader = new \Twig\Loader\FilesystemLoader('../ui');
+    $file_loader = new \Twig\Loader\FilesystemLoader('../templates');
     $loader = new \Twig\Loader\ChainLoader([ $db_loader, $file_loader]);
 
     /* No cache for now */

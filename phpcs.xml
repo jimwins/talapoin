@@ -8,5 +8,5 @@
     <arg name="extensions" value="php"/>
 
     <file>lib</file>
-    <file>site</file>
+    <file>public</file>
 </ruleset>

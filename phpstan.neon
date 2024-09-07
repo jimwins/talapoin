@@ -3,5 +3,5 @@ parameters:
 		- Talapoin\Model
 	level: 5
 	paths:
-		- site
+		- public
 		- lib

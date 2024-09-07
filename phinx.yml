@@ -1,9 +1,9 @@
 paths:
-    migrations: '%%PHINX_CONFIG_DIR%%/db/migrations'
-    seeds: '%%PHINX_CONFIG_DIR%%/db/seeds'
+    migrations: '%%PHINX_CONFIG_DIR%%/resources/migrations'
+    seeds: '%%PHINX_CONFIG_DIR%%/resources/seeds'
 
 templates:
-    file: 'db/templates/migration.php'
+    file: 'resources/templates/migration.php'
 
 environments:
     default_migration_table: phinxlog

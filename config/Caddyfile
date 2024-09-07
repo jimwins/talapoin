@@ -3,10 +3,10 @@
 	encode zstd gzip
 
 	# our root is in /srv
-	root * /app/site
+	root * /app/public
 
 	# pass everything else to php
-	php_fastcgi talapoin:9000 {
+	php_fastcgi backend:9000 {
 		env HTTPS on
 		env SERVER_PORT 443
 	}
