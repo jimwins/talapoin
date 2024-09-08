@@ -13,6 +13,12 @@
           "Talapoin\\" : "src/"
         }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jimwins/backblaze-b2-sdk-php"
+        }
+    ],
     "require": {
         "slim/slim": "4.*",
         "twig/twig": "^3.3",
