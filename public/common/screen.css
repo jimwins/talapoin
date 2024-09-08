@@ -86,10 +86,15 @@ h2 {
  margin-bottom: 0.25em;
 }
 
-p, blockquote {
- margin: 0.25em 0;
- text-indent: 1em;
- line-height: 150%;
+p {
+    margin: 0.25em 0;
+    text-indent: 1em;
+}
+blockquote {
+    margin: 0.75em 1em;
+}
+blockquote > p {
+    text-indent: 0;
 }
 
 div {
