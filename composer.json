@@ -41,7 +41,6 @@
         "robinvdvleuten/ulid": "^5.0",
         "tarikozket/backblaze-b2-sdk-php": "dev-master",
         "aws/aws-sdk-php": "^3.298",
-        "mf2/mf2": "^0.5.0",
         "masterminds/html5": "^2.8",
         "cjrasmussen/bluesky-api": "^2.0",
         "meilisearch/meilisearch-php": "^1.6",
