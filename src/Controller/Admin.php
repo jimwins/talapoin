@@ -28,6 +28,10 @@ class Admin
             ->setName('editEntry');
         $app->post('/entry[/{id}]', [ self::class, 'updateEntry' ]);
 
+        $app->get('/bookmark[/{id}]', [ self::class, 'editBookmark' ])
+            ->setName('bookmark-edit');
+        $app->post('/bookmark[/{id}]', [ self::class, 'updateBookmark' ]);
+
         $app->get('/page[/{id}]', [ self::class, 'editPage' ])
             ->setName('editPage');
         $app->post('/page[/{id}]', [ self::class, 'updatePage' ]);
@@ -232,6 +236,77 @@ class Admin
             }
             // TODO send WebMention updates?
         }
+
+        return $response->withRedirect($url);
+    }
+
+    public function editBookmark(
+        Request $request,
+        Response $response,
+        \Talapoin\Service\BookmarkLibrary $library,
+        View $view,
+        $id = null
+    ) {
+        if ($id) {
+            $entry = $library->fetchById($id);
+            if (!$entry) {
+                throw new \Slim\Exception\HttpNotFoundException($request);
+            }
+        } else {
+            $entry = $library->create();
+
+            if (($url = $request->getParam('url'))) {
+                $entry->href = $url;
+                $entry->title = $request->getParam('title') ?: $url;
+                $entry->excerpt = $request->getParam('description');
+                $entry->comment = null;
+                $entry->ulid = null;
+                $entry->created_at = (new \Datetime())->format("Y-m-d H:i:s");
+                $entry->updated_at = null;
+            }
+        }
+
+        $tagList = $this->blog->getTags();
+
+        return $view->render($response, 'bookmark/edit.html', [
+            'bookmark' => $entry,
+            'tag_list' => $tagList,
+        ]);
+    }
+
+    public function updateBookmark(
+        Request $request,
+        Response $response,
+        View $view,
+        \Talapoin\Service\BookmarkLibrary $library,
+        $id = null
+    ) {
+        if ($id) {
+            $entry = $library->fetchById($id);
+            if (!$entry) {
+                throw new \Slim\Exception\HttpNotFoundException($request);
+            }
+        } else {
+            $entry = $library->create();
+        }
+
+        /* Wrapped in a transaction because tags() also does stuff */
+        $this->data->beginTransaction();
+
+        $entry->href = $request->getParam('href');
+        $entry->title = $request->getParam('title');
+        $entry->excerpt = $request->getParam('excerpt');
+        $entry->comment = $request->getParam('comment');
+        $entry->tags($request->getParam('tags'));
+
+        $entry->save();
+
+        $this->data->commit();
+
+        // reload to make sure we have created_at
+        $entry->reload();
+
+        $url = $entry->canonicalUrl();
 
         return $response->withRedirect($url);
     }

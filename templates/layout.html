@@ -21,6 +21,7 @@
         href="/common/sh_style.css" />
   {% block extra_head %}{% endblock %}
   <script type="text/javascript" src="/common/sh_main.js"></script>
+  {{ include('add-edit-links.twig') }}
 </head>
 
 <body onload="sh_highlightDocument('/common/sh_lang/', '.min.js');">

@@ -22,40 +22,6 @@
   {% for tag in entry.tags %}
     <meta property="article:tag" content="{{ tag.name | e('html_attr') }}">
   {% endfor %}
-
-  <script>
-    function getCookie(name) {
-      var match= document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-      if (match) return decodeURIComponent(match[2]);
-    }
-
-    function fromHTML(html, trim = true) {
-      // Process the HTML string.
-      html = trim ? html.trim() : html;
-      if (!html) return null;
-
-      // Then set up a new template element.
-      const template = document.createElement('template');
-      template.innerHTML = html;
-      const result = template.content.children;
-
-      // Then return either an HTMLElement or HTMLCollection,
-      // based on whether the input HTML had one or more roots.
-      if (result.length === 1) return result[0];
-      return result;
-    }
-
-    document.addEventListener('DOMContentLoaded', (ev) => {
-      document.querySelectorAll('.h-entry').forEach((entry) => {
-        if (getCookie('hasToken')) {
-          const details = entry.querySelector('.details')
-          const id = entry.id.match(new RegExp('^entry_([0-9]+)'))[1]
-          const link = fromHTML(`<span>&raquo; <a href="/~admin/entry/${id}">edit</a></span>`);
-          details.append(link);
-        }
-      })
-    });
-  </script>
 {% endblock %}
 
 {% block content %}

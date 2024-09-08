@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  Edit bookmark
+{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="/common/awesomplete/awesomplete.css" />
+    <script src="/common/awesomplete/awesomplete.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<p>
+    <a href="{{ url_for('admin') }}">&larr; Back to admin</a>
+</p>
+
+<form class="stacked" method="POST" action="{{ url_for('bookmark-edit', bookmark.id ? { id: bookmark.id } : {}) }}">
+    <label>
+        URL
+        <input type="text" name="href" value="{{ bookmark.href | e('html_attr') }}">
+    </label>
+
+    <label>
+        Title
+        <input type="text" name="title" value="{{ bookmark.title | e('html_attr') }}">
+    </label>
+
+    <label>
+        Excerpt
+        <textarea name="excerpt" rows="10">{{ bookmark.excerpt }}</textarea>
+    </label>
+
+    <label>
+        Comment
+        <textarea name="comment" rows="10">{{ bookmark.comment }}</textarea>
+    </label>
+
+    <label>
+        Tags
+        <input
+            type="text" name="tags"
+            data-multiple
+            value="{{ bookmark.tags | map((value, key) => value.name) | join(', ') | e('html_attr') }}"
+            list="tag-list"
+        >
+        <datalist id="tag-list">
+            {% for tag in tag_list %}
+                <option>{{ tag }}</option>
+            {% endfor %}
+        </datalist>
+    </label>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            new Awesomplete('input[data-multiple]', {
+                filter: function(text, input) {
+                    return Awesomplete.FILTER_CONTAINS(text, input.match(/[^,]*$/)[0]);
+                },
+
+                item: function(text, input) {
+                    return Awesomplete.ITEM(text, input.match(/[^,]*$/)[0]);
+                },
+
+                replace: function(text) {
+                    var before = this.input.value.match(/^.+,\s*|/)[0];
+                    this.input.value = before + text + ", ";
+                }
+            });
+        })
+    </script>
+
+    <button type="submit">
+        Save
+    </button>
+</form>
+
+{{ include('bookmark/single.twig') }}
+
+{% endblock %}

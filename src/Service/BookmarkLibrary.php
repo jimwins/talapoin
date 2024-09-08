@@ -4,11 +4,21 @@ declare(strict_types=1);
 
 namespace Talapoin\Service;
 
-class BookmarkLibrary
+class BookmarkLibrary extends Library
 {
-    public function __construct(
-        private Data $data,
-    ) {
+    public function getModelName(): string
+    {
+        return 'Bookmark';
+    }
+
+    public function create()
+    {
+        $entry = parent::create();
+        // XXX assumes we're on a 64-bit system
+        $mt = explode(' ', microtime());
+        $ts = intval($mt[1]) * 1000 + intval(round(floatval($mt[0]) * 1E3));
+        $entry->ulid = \Ulid\Ulid::fromTimestamp($ts, true);
+        return $entry;
     }
 
     public function getBookmarks($page = 0, $page_size = 24)

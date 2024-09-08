@@ -103,7 +103,7 @@
         {{ block('prevnext') }}
 
         {% for bookmark in bookmarks %}
-            {{ include('bookmark.twig') }}
+            {{ include('bookmark/single.twig') }}
         {% endfor %}
 
         {{ block('prevnext') }}
