@@ -64,7 +64,7 @@ class BookmarkLibrary
                    ORDER BY name";
         $tags = $this->data->fetch_all($query);
 
-        $query = "SELECT DISTINCT YEAR(taken_at) AS year
+        $query = "SELECT DISTINCT YEAR(created_at) AS year
                     FROM bookmark
                    ORDER BY year DESC";
         $years = $this->data->fetch_all($query);
@@ -85,7 +85,7 @@ class BookmarkLibrary
                 ->where_raw("? IN (SELECT name
                                      FROM tag, bookmark_to_tag ec
                                     WHERE bookmark_id = bookmark.id AND tag_id = tag.id)", $tag)
-                ->order_by_desc('taken_at')
+                ->order_by_desc('created_at')
                 ->find_many();
         return $view->render($response, 'bookmark/index.html', [
             'query_params' => $request->getParams(),
