@@ -40,7 +40,6 @@ https://trainedmonkey.com/projects/talapoin/
 
 [slim]: https://www.slimframework.com
 [twig]: https://twig.symfony.com/
-[monolog]: https://seldaek.github.io/monolog/
 [phinx]: https://phinx.org
 [shjs]: http://shjs.sourceforge.net
 [awesomeplete]: https://projects.verou.me/awesomplete/
