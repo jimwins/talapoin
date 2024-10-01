@@ -30,8 +30,8 @@
             &raquo;
             <a class="permalink u-url" href="{{ photo.canonicalUrl() }}">
                 <time class="dt-published"
-                    datetime="{{ photo.created_at | date('c') | e('html_attr') }}">
-                    {{- blog.date_format(photo.created_at) -}}
+                    datetime="{{ photo.taken_at | date('c') | e('html_attr') }}">
+                    {{- blog.date_format(photo.taken_at) -}}
                 </time>
             </a>
             {% if photo.tags %}
