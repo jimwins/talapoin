@@ -70,14 +70,21 @@ h1 {
  text-align: right;
 }
 
-header h1 {
-  font-size: 1.8em;
-  color: var(--primary-color);
-  text-align: inherit;
-}
-header h1 a:link, header h1 a:visited {
-  color: var(--primary-color);
-  text-decoration: none;
+header {
+    h1 {
+      font-size: 1.8em;
+      color: var(--primary-color);
+      text-align: inherit;
+      margin: 0;
+    }
+    h1 a:link, h1 a:visited {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+    p {
+        margin: 0;
+        text-align: right;
+    }
 }
 
 h2 {
@@ -310,6 +317,7 @@ form.stacked {
 /* assign columns to grid areas */
 .left-sidebar-grid > header {
   grid-area:header;
+  padding-bottom: 1em;
 }
 .left-sidebar-grid > .main-content {
   grid-area:main-content;
@@ -325,6 +333,10 @@ form.stacked {
 @media (max-width:767.99px) {
     h1 {
         margin: 0;
+    }
+    header {
+        display: flex;
+        align-items: center;
     }
     footer {
         /* clear the monkey from background */
