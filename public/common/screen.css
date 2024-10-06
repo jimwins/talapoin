@@ -64,20 +64,17 @@ body {
  background-color: var(--background-color);
 }
 
-h1 {
- font-family: var(--sans-serif);
- font-weight: normal;
- text-align: right;
-}
+hgroup {
+    margin-bottom: 1em;
 
-header {
-    h1 {
+    h2 {
       font-size: 1.8em;
+      font-weight: normal;
       color: var(--primary-color);
       text-align: inherit;
       margin: 0;
     }
-    h1 a:link, h1 a:visited {
+    h2 a:link, h2 a:visited {
       color: var(--primary-color);
       text-decoration: none;
     }
@@ -85,6 +82,11 @@ header {
         margin: 0;
         text-align: right;
     }
+}
+
+h1 {
+ font-family: var(--sans-serif);
+ font-weight: 500;
 }
 
 h2 {

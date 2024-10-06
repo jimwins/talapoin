@@ -1,7 +1,8 @@
 {% import 'blog.twig' as blog %}
 <div class="h-entry" id="entry_{{ entry.id }}">
   {% if entry.title %}
-    <h2 class="p-name">{{ entry.title }}</h2>
+    {% set level = entries ? 'h2' : 'h1' %}
+    <{{level}} class="p-name">{{ entry.title }}</{{level}}>
   {% endif %}
   <div class="e-content">
       {{ entry.entry | markdown_to_html | expand_psuedo_urls | raw }}

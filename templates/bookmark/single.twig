@@ -1,10 +1,11 @@
 {% import 'blog.twig' as blog %}
 <div class="h-entry" id="bookmark_{{ bookmark.id }}">
-    <h2>
+    {% set level = bookmarks ? 'h2' : 'h1' %}
+    <{{level}}>
         <a class="u-bookmark-of h-cite" href="{{ bookmark.href }}">
             {{ bookmark.title }}
         </a>
-    </h2>
+    </{{level}}>
     {% if bookmark.excerpt %}
         <blockquote>{{ bookmark.excerpt }}</blockquote>
     {% endif %}
