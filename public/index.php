@@ -13,7 +13,11 @@ use Respect\Validation\Validator as v;
 use Slim\Routing\RouteCollectorProxy as RouteCollectorProxy;
 
 /* Some defaults */
-error_reporting(E_ALL ^ E_DEPRECATED);
+if ($DEBUG) {
+    error_reporting(E_ALL);
+} else {
+    error_reporting(0);
+}
 $tz = getenv('PHP_TIMEZONE') ?: getenv('TZ');
 if ($tz) {
     date_default_timezone_set($tz);
@@ -42,16 +46,6 @@ $container->set('data', new \Talapoin\Service\Data($config));
 $app = \DI\Bridge\Slim\Bridge::create($container);
 
 $app->addRoutingMiddleware();
-
-/* PDO */
-$container->set('db', function ($c) {
-    $db = $c->get('config')['db'];
-    $dsn = 'mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'];
-    $pdo = new PDO($dsn . ';charset=utf8mb4', $db['user'], $db['pass']);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    return $pdo;
-});
 
 /* Twig for templating */
 $container->set('view', function ($container) use ($tz) {
@@ -262,17 +256,6 @@ if ($DEBUG) {
             return $response;
         }
     )->setName('info');
-
-    $app->get(
-        '/info/db',
-        function (Request $request, Response $response) use ($container) {
-            $db = $container->get('db');
-            $stmt = $db->prepare("SHOW VARIABLES");
-            $stmt->execute();
-            $vars = $stmt->fetchAll();
-            return $container->get('view')->render($response, 'info-db.html', [ 'vars' => $vars ]);
-        }
-    );
 
     $app->get(
         '/info/xdebug',
