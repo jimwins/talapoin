@@ -32,7 +32,7 @@ proxy:
 # the last command to be long-running (e.g. an application server). When the
 # last command exits, LiteFS is shut down.
 exec:
-  - cmd: "/usr/local/bin/frankenphp run"
+  - cmd: "/usr/local/bin/docker-php-entrypoint --config /etc/caddy/Caddyfile --adapter caddyfile"
 
 # The lease section specifies how the cluster will be managed. We're using the
 # "consul" lease type so that our application can dynamically change the primary.
