@@ -7,7 +7,7 @@ RUN install-php-extensions \
     zip \
     opcache
 
-ENV SERVER_NAME=":8000"
+ENV SERVER_NAME=":8080"
 
 # These defaults are for production usage, other defaults are in
 # conf/php/opcache.ini
