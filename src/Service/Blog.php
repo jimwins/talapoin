@@ -17,7 +17,7 @@ class Blog
             $this->data->factory('Entry')
                 ->select('*')
                 ->select_expr("
-                     (SELECT JSON_ARRAYAGG(name)
+                     (SELECT JSON_GROUP_ARRAY(name)
                         FROM entry_to_tag, tag
                        WHERE entry_id = entry.id AND tag_id = tag.id)", 'tags_json')
                 ->select_expr("
@@ -37,7 +37,7 @@ class Blog
         $ymd = "$year-$month-$day";
         return
             $this->getEntries(true)
-                ->where_raw('DATE(created_at) BETWEEN ? AND (? + INTERVAL 1 DAY)', [ $ymd, $ymd ])
+                ->where_raw('DATE(created_at) BETWEEN ? AND DATE(?, "+1 days")', [ $ymd, $ymd ])
                 ->where_like('title', $slug)
                 ->find_one();
     }

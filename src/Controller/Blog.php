@@ -46,19 +46,19 @@ class Blog
 
     public function year(Response $response, $year)
     {
-        $query = "SELECT DISTINCT YEAR(created_at) AS year
+        $query = "SELECT DISTINCT strftime('%Y', created_at) AS year
                     FROM entry
                    ORDER BY year DESC";
         $years = $this->data->fetch_all($query);
 
         $query = <<<QUERY
             SELECT MIN(created_at) AS created_at,
-                   DAYOFMONTH(MIN(created_at)) AS day,
-                   MONTH(MIN(created_at)) AS month,
-                   YEAR(MIN(created_at)) AS year,
-                   TO_DAYS(created_at) AS ymd
+                   strftime('%d', MIN(created_at)) AS day,
+                   strftime('%m', MIN(created_at)) AS month,
+                   strftime('%Y', MIN(created_at)) AS year,
+                   floor(julianday(date(created_at))) AS ymd
               FROM entry
-             WHERE created_at BETWEEN '$year-1-1' AND '$year-1-1' + INTERVAL 1 YEAR
+             WHERE DATE(created_at) BETWEEN DATE('$year-01-01') AND DATE('$year-01-01', '+1 years')
              GROUP BY ymd
              ORDER BY month ASC, day ASC
         QUERY;
@@ -73,20 +73,22 @@ class Blog
 
     public function month(Response $response, $year, $month)
     {
-        $query = "SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m-01') AS ym
+        $query = "SELECT DISTINCT strftime('%Y-%m-01', created_at) AS ym
                     FROM entry
-                   WHERE created_at BETWEEN '$year-1-1' AND '$year-12-31'";
+                   WHERE DATE(created_at) BETWEEN '$year-01-01' AND '$year-12-31'";
         $months = $this->data->fetch_all($query);
+
+        $month = sprintf('%02d', $month);
 
         $query = <<<QUERY
             SELECT MIN(created_at) AS created_at,
-                   DAYOFMONTH(MIN(created_at)) AS day,
-                   MONTH(MIN(created_at)) AS month,
-                   YEAR(MIN(created_at)) AS year,
-                   TO_DAYS(created_at) AS ymd
+                   strftime('%d', MIN(created_at)) AS day,
+                   strftime('%m', MIN(created_at)) AS month,
+                   strftime('%Y', MIN(created_at)) AS year,
+                   floor(julianday(date(created_at))) AS ymd
               FROM entry
-             WHERE created_at BETWEEN '$year-$month-1'
-                                  AND '$year-$month-1' + INTERVAL 1 MONTH
+             WHERE DATE(created_at) BETWEEN DATE('$year-$month-01')
+                                  AND DATE('$year-$month-01', "+1 months")
              GROUP BY ymd
              ORDER BY month ASC, day ASC
         QUERY;
@@ -102,7 +104,7 @@ class Blog
 
         $query = <<<QUERY
             SELECT created_at FROM entry
-             WHERE created_at >= '$year-$month-1' + INTERVAL 1 MONTH
+             WHERE created_at >= DATE('$year-$month-01', "+1 months")
                AND NOT draft
              ORDER BY created_at ASC LIMIT 1
         QUERY;
@@ -120,11 +122,11 @@ class Blog
 
     public function day(Response $response, $year, $month, $day)
     {
-        $ymd = "$year-$month-$day";
+        $ymd = sprintf('%d-%02d-%02d', $year, $month, $day);
 
         $entries =
             $this->blog->getEntries()
-                ->where_raw("created_at BETWEEN ? and ? + INTERVAL 1 DAY", [ $ymd, $ymd ])
+                ->where_raw("DATE(created_at) BETWEEN DATE(?) and DATE(?, '+1 days')", [ $ymd, $ymd ])
                 ->order_by_asc('created_at')
                 ->find_many();
 
@@ -138,7 +140,7 @@ class Blog
 
         $query = <<<QUERY
             SELECT created_at FROM entry
-             WHERE created_at >= ? + INTERVAL 1 DAY
+             WHERE created_at >= DATE(?, "+1 days")
                AND NOT draft
              ORDER BY created_at ASC LIMIT 1
         QUERY;
@@ -167,7 +169,7 @@ class Blog
                    ORDER BY name";
         $tags = $this->data->fetch_all($query);
 
-        $query = "SELECT DISTINCT YEAR(created_at) AS year
+        $query = "SELECT DISTINCT strftime('%Y', created_at) AS year
                     FROM entry
                    ORDER BY year DESC";
         $years = $this->data->fetch_all($query);
@@ -327,7 +329,7 @@ class Blog
     public function search(
         Request $request,
         Response $response,
-        \Talapoin\Service\Meilisearch $search
+        \Talapoin\Service\SQLiteSearch $search
     ) {
         $q = $request->getParam('q');
 

@@ -150,14 +150,14 @@ class Admin
         /* Wrapped in a transaction because tags() also does stuff */
         $this->data->beginTransaction();
 
+        $entry->tags($tags);
         $entry->title = $title;
         $entry->entry = $text;
         $entry->toot = $toot;
-        $entry->tags($tags);
 
         /* When going from draft -> !draft, we set our created_at date */
         if ($entry->draft && !$draft) {
-            $entry->set_expr('created_at', 'NOW()');
+            $entry->set_expr('created_at', 'DATETIME()');
         }
 
         $entry->draft = $draft;
@@ -293,11 +293,11 @@ class Admin
         /* Wrapped in a transaction because tags() also does stuff */
         $this->data->beginTransaction();
 
+        $entry->tags($request->getParam('tags'));
         $entry->href = $request->getParam('href');
         $entry->title = $request->getParam('title');
         $entry->excerpt = $request->getParam('excerpt');
         $entry->comment = $request->getParam('comment');
-        $entry->tags($request->getParam('tags'));
 
         $entry->save();
 
@@ -425,6 +425,8 @@ class Admin
         $photo->ulid = \Ulid\Ulid::generate(true);
         $photo->filename = $fn;
 
+        $photo->tags($request->getParam('tags'));
+
         $photo->name = $request->getParam('name');
         $photo->alt_text = $request->getParam('alt_text');
         $photo->caption = $request->getParam('caption');
@@ -439,8 +441,6 @@ class Admin
         if (@$details->exif?->Image?->DateTime) {
             $photo->taken_at = (new \DateTime($details->exif->Image->DateTime))->format('Y-m-d H:i:s');
         }
-
-        $photo->tags($request->getParam('tags'));
 
         $photo->save();
 

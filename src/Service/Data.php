@@ -11,8 +11,12 @@ class Data
 
     public function __construct($config)
     {
-        $this->dsn = 'mysql:host=' . $config['db']['host'] . ';' .
-                        'dbname=' . $config['db']['dbname'];
+        if ($config['db']['dsn']) {
+            $this->dsn = $config['db']['dsn'];
+        } else {
+            $this->dsn = 'mysql:host=' . $config['db']['host'] . ';' .
+                            'dbname=' . $config['db']['dbname'];
+        }
 
         $this->options = [
             'username' => $config['db']['user'],
@@ -24,9 +28,11 @@ class Data
         foreach ($this->options as $option => $value) {
             \Titi\ORM::configure($option, $value);
         }
-        \Titi\ORM::configure('driver_options', [
-            \PDO::MYSQL_ATTR_LOCAL_INFILE => true,
-        ]);
+        if (str_starts_with($this->dsn, 'mysql:')) {
+            \Titi\ORM::configure('driver_options', [
+                \PDO::MYSQL_ATTR_LOCAL_INFILE => true,
+            ]);
+        }
 
         /* Always want to throw exceptions for errors */
         \Titi\ORM::configure('error_mode', \PDO::ERRMODE_EXCEPTION);

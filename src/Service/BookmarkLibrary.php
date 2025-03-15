@@ -28,7 +28,7 @@ class BookmarkLibrary extends Library
                 ->select('*')
                 ->select_expr('COUNT(*) OVER()', 'records')
                 ->select_expr("
-                     (SELECT JSON_ARRAYAGG(name)
+                     (SELECT JSON_GROUP_ARRAY(name)
                         FROM bookmark_to_tag, tag
                        WHERE bookmark_id = bookmark.id AND tag_id = tag.id)", 'tags_json')
                 ->order_by_desc('created_at');

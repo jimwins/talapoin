@@ -18,7 +18,7 @@ class PhotoLibrary
                 ->select('*')
                 ->select_expr('COUNT(*) OVER()', 'records')
                 ->select_expr("
-                     (SELECT JSON_ARRAYAGG(name)
+                     (SELECT JSON_GROUP_ARRAY(name)
                         FROM photo_to_tag, tag
                        WHERE photo_id = photo.id AND tag_id = tag.id)", 'tags_json')
                 ->where('privacy', $privacy)
