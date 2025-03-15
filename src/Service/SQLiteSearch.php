@@ -11,7 +11,6 @@ class SQLiteSearch
         private Blog $blog,
         private PhotoLibrary $photos,
         private BookmarkLibrary $bookmarks,
-        Config $config
     ) {
     }
 
