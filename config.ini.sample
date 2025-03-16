@@ -1,9 +1,0 @@
-; Top-level options for Slim
-displayErrorDetails= true
-static=//static.example.net
-
-[db]
-host= localhost
-user= username
-pass= psssword
-dbname= talapoin
