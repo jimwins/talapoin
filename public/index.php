@@ -6,6 +6,12 @@ require '../vendor/autoload.php';
 
 $DEBUG = getenv('TALAPOIN_DEBUG');
 
+$CANONICAL_HOST = getenv('CANONICAL_HOST');
+if ($CANONICAL_HOST && $CANONICAL_HOST != $_SERVER['SERVER_NAME']) {
+    header("Location: //{$CANONICAL_HOST}/{$_SERVER['REQUEST_URI']}", true, 301);
+    exit();
+}
+
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response as Response;
 use Slim\Views\Twig as View;
