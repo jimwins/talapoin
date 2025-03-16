@@ -238,9 +238,6 @@ $app->group('/bookmark', function (RouteCollectorProxy $app) {
 });
 
 /* Behind the scenes stuff */
-$app->get('/~reindex', [ \Talapoin\Controller\Blog::class, 'reindex' ])
-    ->setName('reindex');
-
 $app->post('/~webmention', [ \Talapoin\Controller\Blog::class, 'handleWebmention' ])
     ->setName('webmention');
 

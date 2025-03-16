@@ -126,7 +126,6 @@ class Admin
         \Talapoin\Service\Bluesky $bluesky,
         \Talapoin\Service\Mastodon $mastodon,
         \Talapoin\Service\Blodotgs $blogs,
-        \Talapoin\Service\Meilisearch $search,
         $id = null
     ) {
         if ($id) {
@@ -168,10 +167,6 @@ class Admin
 
         // reload to make sure we have created_at
         $entry->reload();
-
-        if (!$entry->draft) {
-            $search->reindexEntries($entry->id);
-        }
 
         $routeContext = \Slim\Routing\RouteContext::fromRequest($request);
         $routeParser = $routeContext->getRouteParser();
@@ -377,7 +372,6 @@ class Admin
         Response $response,
         \Talapoin\Service\Gumlet $gumlet,
         \Talapoin\Service\FileStorage $storage,
-        \Talapoin\Service\Meilisearch $search,
         View $view,
         $id = null
     ) {
@@ -445,8 +439,6 @@ class Admin
         $photo->save();
 
         $this->data->commit();
-
-        $search->reindexEntries($photo->id);
 
         $routeContext = \Slim\Routing\RouteContext::fromRequest($request);
         $routeParser = $routeContext->getRouteParser();

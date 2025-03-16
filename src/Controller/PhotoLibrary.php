@@ -31,7 +31,7 @@ class PhotoLibrary
         Request $request,
         Response $response,
         View $view,
-        \Talapoin\Service\Meilisearch $search,
+        \Talapoin\Service\SQLiteSearch $search,
     ) {
         $q = $request->getParam('q');
         $page = (int) $request->getParam('page') ?: 0;

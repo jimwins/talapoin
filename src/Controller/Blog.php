@@ -341,13 +341,6 @@ class Blog
         ]);
     }
 
-    public function reindex(Response $response, \Talapoin\Service\Meilisearch $search)
-    {
-        $count = $search->reindex();
-        $response->getBody()->write("Indexed $count rows.");
-        return $response;
-    }
-
     public function handleWebmention(
         Response $response,
         Request $request,

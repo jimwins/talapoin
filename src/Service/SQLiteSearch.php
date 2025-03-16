@@ -73,24 +73,4 @@ class SQLiteSearch
                 ->order_by_desc('created_at')
                 ->find_many();
     }
-
-    public function reindex($id = null)
-    {
-        return 0;
-    }
-
-    public function reindexEntries($id = null)
-    {
-        return 0;
-    }
-
-    public function reindexPhotos($id = null)
-    {
-        return 0;
-    }
-
-    public function reindexBookmarks($id = null)
-    {
-        return 0;
-    }
 }
