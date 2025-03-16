@@ -125,7 +125,6 @@ class Admin
         View $view,
         \Talapoin\Service\Bluesky $bluesky,
         \Talapoin\Service\Mastodon $mastodon,
-        \Talapoin\Service\Blodotgs $blogs,
         $id = null
     ) {
         if ($id) {
@@ -221,8 +220,6 @@ class Admin
                 $feed = $routeParser->fullUrlFor($uri, 'blog.atom');
                 $template = $view->getEnvironment()->load('index.html');
                 $title = $template->renderBlock('title');
-
-                $blogs->ping($root, $title, $feed);
 
                 $client = new \IndieWeb\MentionClient();
                 $sent = $client->sendMentions($url, $entry->entry);
