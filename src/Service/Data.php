@@ -16,12 +16,11 @@ class Data
         } else {
             $this->dsn = 'mysql:host=' . $config['db']['host'] . ';' .
                             'dbname=' . $config['db']['dbname'];
+            $this->options = [
+                'username' => $config['db']['user'],
+                'password' => $config['db']['pass'],
+            ];
         }
-
-        $this->options = [
-            'username' => $config['db']['user'],
-            'password' => $config['db']['pass'],
-        ];
 
         /* Configure Titi */
         \Titi\ORM::configure($this->dsn);
