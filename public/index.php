@@ -8,7 +8,7 @@ $DEBUG = getenv('TALAPOIN_DEBUG');
 
 $CANONICAL_HOST = getenv('CANONICAL_HOST');
 if ($CANONICAL_HOST && $CANONICAL_HOST != $_SERVER['SERVER_NAME']) {
-    header("Location: //{$CANONICAL_HOST}/{$_SERVER['REQUEST_URI']}", true, 301);
+    header("Location: //{$CANONICAL_HOST}{$_SERVER['REQUEST_URI']}", true, 301);
     exit();
 }
 
