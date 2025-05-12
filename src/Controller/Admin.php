@@ -426,8 +426,8 @@ class Admin
         $photo->details = json_encode($details);
         $photo->thumbhash = $thumbhash;
 
-        $photo->width = $details->width;
-        $photo->height = $details->height;
+        $photo->width = $details->width ?? 0;
+        $photo->height = $details->height ?? 0;
 
         if (@$details->exif?->Image?->DateTime) {
             $photo->taken_at = (new \DateTime($details->exif->Image->DateTime))->format('Y-m-d H:i:s');
