@@ -41,7 +41,6 @@ class Gumlet
     {
         $url = $this->getSignedUrl($path, [ 'w' => 100, 'h' => 100, 'mode' => 'fit', 'fm' => 'jpeg' ]);
         $body = file_get_contents($url);
-        error_log("got $url");
         list($width, $height, $pixels) = extract_size_and_pixels_with_gd($body);
         return Thumbhash::convertHashToString(Thumbhash::RGBAToHash($width, $height, $pixels));
     }

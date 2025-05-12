@@ -411,6 +411,7 @@ class Admin
         $this->data->beginTransaction();
 
         $details = $gumlet->getImageDetails($fn);
+        error_log("details for {$fn}: " . json_encode($details));
         $thumbhash = $gumlet->getThumbHash($fn);
 
         $photo->ulid = \Ulid\Ulid::generate(true);
