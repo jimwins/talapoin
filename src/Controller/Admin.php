@@ -417,8 +417,6 @@ class Admin
         $photo->ulid = \Ulid\Ulid::generate(true);
         $photo->filename = $fn;
 
-        $photo->tags($request->getParam('tags'));
-
         $photo->name = $request->getParam('name');
         $photo->alt_text = $request->getParam('alt_text');
         $photo->caption = $request->getParam('caption');
@@ -427,12 +425,14 @@ class Admin
         $photo->details = json_encode($details);
         $photo->thumbhash = $thumbhash;
 
-        $photo->width = $details->width ?? 0;
-        $photo->height = $details->height ?? 0;
+        $photo->width = $details->width;
+        $photo->height = $details->height;
 
         if (@$details->exif?->Image?->DateTime) {
             $photo->taken_at = (new \DateTime($details->exif->Image->DateTime))->format('Y-m-d H:i:s');
         }
+
+        $photo->tags($request->getParam('tags'));
 
         $photo->save();
 
