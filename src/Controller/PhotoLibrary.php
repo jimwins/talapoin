@@ -107,7 +107,7 @@ class PhotoLibrary
                    ORDER BY name";
         $tags = $this->data->fetch_all($query);
 
-        $query = "SELECT DISTINCT YEAR(taken_at) AS year
+        $query = "SELECT DISTINCT strftime('%Y', taken_at) AS year
                     FROM photo
                    ORDER BY year DESC";
         $years = $this->data->fetch_all($query);

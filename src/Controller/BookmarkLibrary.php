@@ -64,7 +64,7 @@ class BookmarkLibrary
                    ORDER BY name";
         $tags = $this->data->fetch_all($query);
 
-        $query = "SELECT DISTINCT YEAR(created_at) AS year
+        $query = "SELECT DISTINCT strftime('%Y', created_at) AS year
                     FROM bookmark
                    ORDER BY year DESC";
         $years = $this->data->fetch_all($query);
