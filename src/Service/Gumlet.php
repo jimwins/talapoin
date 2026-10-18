@@ -34,6 +34,9 @@ class Gumlet
     {
         $url = $this->getSignedUrl($path, [ 'format' => 'json' ]);
         $body = file_get_contents($url);
+        if (!$body) {
+            throw new Exception("Failed to get image details from {$url}");
+        }
         return json_decode($body, flags: \JSON_THROW_ON_ERROR);
     }
 
